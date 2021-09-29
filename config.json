@@ -1,0 +1,13 @@
+{
+    "localhost": true,
+    "port": "1323",
+    "cors": "127.0.0.1",
+    "database": {
+        "engine": "postgres",
+        "server": "127.0.0.1",
+        "port": "5432",
+        "user": "postgres",
+        "password": "1234567@",
+        "name": "go_practice1"
+    }
+}
