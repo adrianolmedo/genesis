@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"go-rest-practice/model"
+	"go-restapi-practice/model"
 )
 
 // UserDAO it's implementation of UserDAO interface of service/.

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"go-rest-practice/model"
+	"go-restapi-practice/model"
 
 	"github.com/dgrijalva/jwt-go"
 )

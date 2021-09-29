@@ -1,7 +1,7 @@
 package rest
 
 import (
-	"go-rest-practice/service"
+	"go-restapi-practice/service"
 
 	"github.com/labstack/echo/v4"
 )

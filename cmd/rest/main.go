@@ -6,12 +6,12 @@ import (
 	"log"
 	"strings"
 
-	"go-rest-practice/auth"
-	"go-rest-practice/config"
-	"go-rest-practice/server/rest"
-	"go-rest-practice/service"
-	"go-rest-practice/storage/mysql"
-	"go-rest-practice/storage/postgres"
+	"go-restapi-practice/auth"
+	"go-restapi-practice/config"
+	"go-restapi-practice/server/rest"
+	"go-restapi-practice/service"
+	"go-restapi-practice/storage/mysql"
+	"go-restapi-practice/storage/postgres"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

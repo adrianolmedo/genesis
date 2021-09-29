@@ -3,7 +3,7 @@ package service
 import (
 	"testing"
 
-	"go-rest-practice/model"
+	"go-restapi-practice/model"
 )
 
 func TestValidEmail(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"go-rest-practice/config"
+	"go-restapi-practice/config"
 
 	_ "github.com/lib/pq"
 )

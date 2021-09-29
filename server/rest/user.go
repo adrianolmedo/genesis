@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"go-rest-practice/model"
-	"go-rest-practice/service"
+	"go-restapi-practice/model"
+	"go-restapi-practice/service"
 
 	"github.com/labstack/echo/v4"
 )

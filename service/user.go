@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"time"
 
-	"go-rest-practice/model"
+	"go-restapi-practice/model"
 )
 
 // UserDAO interface is InterfaceDAO in Pattern DAO.

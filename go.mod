@@ -1,4 +1,4 @@
-module go-rest-practice
+module go-restapi-practice
 
 go 1.15
 
