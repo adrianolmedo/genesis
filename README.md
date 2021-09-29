@@ -1,7 +1,7 @@
 
 # Practice RESTful API in Go
 
-My first prototype of RESTful API written in Go based in DAO Pattern https://github.com/adrianolmedo/design-patterns/tree/main/go/dao-pattern. Whit persistence to MySQL and Postgres.
+My first prototype of RESTful API written in Go based in [Dao Pattern](https://github.com/adrianolmedo/design-patterns/tree/main/go/dao-pattern). Whit persistence to MySQL and Postgres.
 
 ## TO-DO:
 
