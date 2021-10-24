@@ -39,5 +39,5 @@ func login(c echo.Context) error {
 
 // validateLogin is a bussisnes logic for validation username and password.
 func validateLogin(data *model.Login) bool {
-	return data.Email == "adrianolmedo@gmail.com" && data.Password == "1234567@"
+	return data.Email == "a@g.com" && data.Password == "1234567a"
 }
