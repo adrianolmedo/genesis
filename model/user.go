@@ -48,3 +48,13 @@ func ScanRowUser(s scanner) (*User, error) {
 
 	return user, nil
 }
+
+// TimeToNull helper to try empty time fields.
+func TimeToNull(t time.Time) sql.NullTime {
+	null := sql.NullTime{Time: t}
+
+	if !null.Time.IsZero() {
+		null.Valid = true
+	}
+	return null
+}

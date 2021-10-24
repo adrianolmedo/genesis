@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"database/sql"
-	"time"
 
 	"go-restapi-practice/model"
 )
@@ -54,7 +53,7 @@ func (u UserDAO) Update(m *model.User) error {
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(m.FirstName, m.LastName, m.Email, m.Password, timeToNull(m.UpdatedAt), m.ID)
+	result, err := stmt.Exec(m.FirstName, m.LastName, m.Email, m.Password, model.TimeToNull(m.UpdatedAt), m.ID)
 	if err != nil {
 		return err
 	}
@@ -119,13 +118,4 @@ func (u UserDAO) Delete(id int64) error {
 		return model.ErrResourceDoesNotExist
 	}
 	return nil
-}
-
-// timeToNull helper to try empty time fields.
-func timeToNull(t time.Time) sql.NullTime {
-	null := sql.NullTime{Time: t}
-	if !null.Time.IsZero() {
-		null.Valid = true
-	}
-	return null
 }
