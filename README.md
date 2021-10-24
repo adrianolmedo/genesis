@@ -6,7 +6,7 @@ My first prototype of RESTful API written in Go based in [Dao Pattern](https://g
 ## Content
 
 * [Run](#run)
-* [End points](#end-points)
+* [Endpoints](#endpoints)
   * [Sign Up](#sign-up)
   * [Get user by ID](#get-user-by-id)
   * [Login](#login)
@@ -40,7 +40,7 @@ $ ./compile.sh
 $ ./rest -c config.json
 ```
 
-## End points:
+## Endpoints:
 
 ### Sign Up
 
