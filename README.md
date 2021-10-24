@@ -3,6 +3,17 @@
 
 My first prototype of RESTful API written in Go based in [Dao Pattern](https://github.com/adrianolmedo/design-patterns/tree/main/go/dao-pattern). Whit persistence to MySQL and Postgres.
 
+## Content
+
+* [Run](#run)
+* [End points](#end-points)
+  * [Sign Up](#sign-up)
+  * [Get user by ID](#get-user-by-id)
+  * [Login](#login)
+  * [Update user by ID](#update-user-by-id)
+  * [Get all users](#get-all-users)
+  * [Delete user by ID](#delete-user-by-id)
+
 ## TO-DO:
 
 - [ ] Connect login to storage.
@@ -12,7 +23,8 @@ My first prototype of RESTful API written in Go based in [Dao Pattern](https://g
 1- Prepare certificates for JWT:
 
 ```bash
-$ cd auth
+$ git clone https://github.com/adrianolmedo/go-restapi-practice.git
+$ cd auth/
 $ openssl genrsa -out app.sra 1024
 $ openssl rsa -in app.sra -pubout > app.sra.pub
 ```
