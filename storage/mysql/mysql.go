@@ -19,6 +19,7 @@ func NewStorage(database config.Database) (*sql.DB, error) {
 
 	// En los parámetros de conexión para mysql vamos a establecer ParseTime (bool),
 	// ya que sin eso no se podría hacer el maping del campo CreatedAt a time.Time:
+	//
 	// user:password@tcp(server:port)/dbname?tls=false&autocommit=true&parseTime=true
 	conn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?tls=false&autocommit=true&parseTime=true",
 		database.User, database.Password, database.Server, database.Port, database.Name)

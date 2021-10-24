@@ -3,18 +3,28 @@
 
 My first prototype of RESTful API written in Go based in [Dao Pattern](https://github.com/adrianolmedo/design-patterns/tree/main/go/dao-pattern). Whit persistence to MySQL and Postgres.
 
+## Content
+
+* [Run](#run)
+* [Endpoints](#endpoints)
+  * [Sign Up](#sign-up)
+  * [Get user by ID](#get-user-by-id)
+  * [Login](#login)
+  * [Update user by ID](#update-user-by-id)
+  * [Get all users](#get-all-users)
+  * [Delete user by ID](#delete-user-by-id)
+
 ## TO-DO:
 
 - [ ] Connect login to storage.
-
-- [ ] Complete code of `mysql` package.
 
 ## Run:
 
 1- Prepare certificates for JWT:
 
 ```bash
-$ cd auth
+$ git clone https://github.com/adrianolmedo/go-restapi-practice.git
+$ cd auth/
 $ openssl genrsa -out app.sra 1024
 $ openssl rsa -in app.sra -pubout > app.sra.pub
 ```
@@ -26,18 +36,17 @@ $ openssl rsa -in app.sra -pubout > app.sra.pub
 4- Compile and run:
 
 ```bash
-$ cd cmd/rest
-$ go build .
-$ mv rest ../../
-$ cd ../../
+$ ./compile.sh
 $ ./rest -c config.json
 ```
 
-## End points:
+## Endpoints:
+
+### Sign Up
 
 **POST:** `/v1/signup`
 
-This is for Sing up users or create account. *First Name, Email and Password are fields required.*
+Sing up users or create account. *First Name, Email and Password are fields required.*
 
 Body (JSON):
 
@@ -70,6 +79,10 @@ Reponse (201 Created):
 }
 ```
 
+---
+
+### Get user by ID
+
 **GET:** `/v1/users/:id`
 
 For example to get user with ID 1 make GET request to `/v1/users/1` route. Not required JWT Authorization.
@@ -94,6 +107,10 @@ Reponse (200 OK):
 }
 ```
 
+---
+
+### Login
+
 **POST:** `/v1/login`
 
 Login users with data account.
@@ -102,8 +119,8 @@ Body (JSON):
 
 ```json
 {
-  "email": "exmaple@gmail.com",
-  "password": "1234567@"
+  "email": "a@g.com",
+  "password": "1234567a"
 }
 ```
 
@@ -121,9 +138,13 @@ Reponse (201 Created):
 }
 ```
 
+---
+
+### Update user by ID
+
 **PUT:** `/v1/users/:id`
 
-UPDATE User by ID. For example to update user with ID 1, make PUT request to `/v1/users/1` route. Required JWT Authorization.
+For example to update user with ID 1, make PUT request to `/v1/users/1` route. Required JWT Authorization.
 
 Body (JSON):
 
@@ -142,7 +163,7 @@ Response (200 OK):
 {
   "message_ok": {
     "code": "OK002",
-    "content": "user updated"
+    "content": "resource updated"
   },
   "data": {
     "created_at": "0001-01-01T00:00:00Z",
@@ -157,9 +178,13 @@ Response (200 OK):
 }
 ```
 
+---
+
+### Get all users
+
 **GET:** `v1/users`
 
-Get all users. Required JWT Authorization.
+Required JWT Authorization.
 
 Response (200 OK):
 
@@ -194,9 +219,13 @@ Response (200 OK):
 }
 ```
 
+---
+
+### Delete user by ID
+
 **DELETE:** `v1/users/:id`
 
-Delete user by ID. For example to delete user with ID 1, make DELETE request to `/v1/users/1` route. Required JWT Authorization.
+For example to delete user with ID 1, make DELETE request to `/v1/users/1` route. Required JWT Authorization.
 
 Response (200 OK):
 
@@ -204,7 +233,7 @@ Response (200 OK):
 {
   "message_ok": {
     "code": "OK002",
-    "content": "user deleted"
+    "content": "resource deleted"
   },
   "data": null
 }
