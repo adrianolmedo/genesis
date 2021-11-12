@@ -8,10 +8,10 @@ import (
 
 	"go-restapi-practice/auth"
 	"go-restapi-practice/config"
+	"go-restapi-practice/repository/mysql"
+	"go-restapi-practice/repository/postgres"
 	"go-restapi-practice/server/rest"
-	"go-restapi-practice/service"
-	"go-restapi-practice/storage/mysql"
-	"go-restapi-practice/storage/postgres"
+	"go-restapi-practice/user"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -29,8 +29,8 @@ func main() {
 
 	var err error
 	var db *sql.DB
-	var srv *config.Server
-	var user service.UserDAO // interface
+	var conf *config.Server
+	var userRepository user.Repository // interface
 
 	// Load authentication credentials.
 	err = auth.LoadFiles("auth/app.sra", "auth/app.sra.pub")
@@ -38,27 +38,30 @@ func main() {
 		log.Fatalf("certificates could not be loaded: %v", err)
 	}
 
-	srv, err = config.NewServer(*c)
+	conf, err = config.NewServer(*c)
 	if err != nil {
 		log.Fatalf("error setting server: %v\n", err)
 	}
 
 	// - Set up storage from configuration loaded.
-	switch srv.Engine {
+	switch conf.Engine {
+
 	case MySQL:
-		db, err = mysql.NewStorage(srv.Database)
+		db, err = mysql.NewRepository(conf.Database)
 		if err != nil {
 			log.Fatalf("error from mysql storage: %v\n", err)
 		}
-		user = mysql.NewUserDAO(db)
+		userRepository = mysql.NewUserRepository(db)
+
 	case PostgreSQL:
-		db, err = postgres.NewStorage(srv.Database)
+		db, err = postgres.NewRepository(conf.Database)
 		if err != nil {
 			log.Fatalf("error from postgres storage: %v\n", err)
 		}
-		user = postgres.NewUserDAO(db)
+		userRepository = postgres.NewUserRepository(db)
+
 	default:
-		log.Fatalf("driver not implemented %s:", srv.Engine)
+		log.Fatalf("driver not implemented %s:", conf.Engine)
 	}
 
 	// Echo framework.
@@ -70,16 +73,16 @@ func main() {
 
 	// - CORS restricted with GET, PUT, POST or DELETE method.
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: strings.Split(srv.CORS, ","),
+		AllowOrigins: strings.Split(conf.CORS, ","),
 		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
 	}))
 
 	// - Call handlers.
-	rest.Handlers(e, user)
-	rest.HandlersAuthRequired(e, user)
+	rest.Handlers(e, userRepository)
+	rest.HandlersAuthRequired(e, userRepository)
 
 	// - Up server.
-	err = e.Start(srv.Address())
+	err = e.Start(conf.Address())
 	if err != nil {
 		log.Printf("error server: %v\n", err)
 	}

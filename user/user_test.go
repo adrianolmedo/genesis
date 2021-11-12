@@ -1,9 +1,7 @@
-package service
+package user
 
 import (
 	"testing"
-
-	"go-restapi-practice/model"
 )
 
 func TestValidEmail(t *testing.T) {
@@ -30,7 +28,7 @@ func TestValidEmail(t *testing.T) {
 func TestValidateUser(t *testing.T) {
 	tt := []struct {
 		name        string
-		user        *model.User
+		user        *Request
 		errExpected bool
 	}{
 		{
@@ -40,17 +38,17 @@ func TestValidateUser(t *testing.T) {
 		},
 		{
 			name:        "empty-struct",
-			user:        &model.User{},
+			user:        &Request{},
 			errExpected: true,
 		},
 		{
 			name:        "empty-fields",
-			user:        &model.User{FirstName: "", LastName: "", Email: "", Password: ""},
+			user:        &Request{FirstName: "", LastName: "", Email: "", Password: ""},
 			errExpected: true,
 		},
 		{
 			name:        "filled-fields",
-			user:        &model.User{FirstName: "Adrián", LastName: "Olmedo", Email: "aol.ve@aol.com", Password: "1234567@"},
+			user:        &Request{FirstName: "Adrián", LastName: "Olmedo", Email: "aol.ve@aol.com", Password: "1234567@"},
 			errExpected: false,
 		},
 	}

@@ -14,7 +14,7 @@ var (
 	db *sql.DB
 )
 
-func NewStorage(database config.Database) (*sql.DB, error) {
+func NewRepository(database config.Database) (*sql.DB, error) {
 	var err error
 
 	// postgres://user:password@server:port/dbname?sslmode=disable
