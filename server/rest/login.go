@@ -4,14 +4,13 @@ import (
 	"net/http"
 
 	"go-restapi-practice/auth"
-	"go-restapi-practice/model"
 
 	"github.com/labstack/echo/v4"
 )
 
 // login for validate JWT. POST: /login.
 func login(c echo.Context) error {
-	data := model.Login{}
+	data := auth.LoginRequest{}
 
 	// Bind nos ayuda hacer el volcado a una estructura JSON,
 	// automáticamente Bind captura el r.Body o w del ResponseWriter.
@@ -38,6 +37,6 @@ func login(c echo.Context) error {
 }
 
 // validateLogin is a bussisnes logic for validation username and password.
-func validateLogin(data *model.Login) bool {
+func validateLogin(data *auth.LoginRequest) bool {
 	return data.Email == "a@g.com" && data.Password == "1234567a"
 }

@@ -4,13 +4,11 @@ import (
 	"errors"
 	"time"
 
-	"go-restapi-practice/model"
-
 	"github.com/dgrijalva/jwt-go"
 )
 
-func GenerateToken(data *model.Login) (string, error) {
-	claim := model.Claim{
+func GenerateToken(data *LoginRequest) (string, error) {
+	claim := Claim{
 		Email: data.Email,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 2).Unix(),
@@ -27,18 +25,18 @@ func GenerateToken(data *model.Login) (string, error) {
 }
 
 // ValidateToken is for validation token.
-func ValidateToken(t string) (model.Claim, error) {
-	token, err := jwt.ParseWithClaims(t, &model.Claim{}, verify)
+func ValidateToken(t string) (Claim, error) {
+	token, err := jwt.ParseWithClaims(t, &Claim{}, verify)
 	if err != nil {
-		return model.Claim{}, err
+		return Claim{}, err
 	}
 	if !token.Valid {
-		return model.Claim{}, errors.New("invalid token")
+		return Claim{}, errors.New("invalid token")
 	}
 
-	claim, ok := token.Claims.(*model.Claim)
+	claim, ok := token.Claims.(*Claim)
 	if !ok {
-		return model.Claim{}, errors.New("the claims could not be obtained")
+		return Claim{}, errors.New("the claims could not be obtained")
 	}
 	return *claim, nil
 }

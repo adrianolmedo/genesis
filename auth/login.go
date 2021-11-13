@@ -1,9 +1,9 @@
-package model
+package auth
 
 import "github.com/dgrijalva/jwt-go"
 
-// Login is for JSON struct of login data.
-type Login struct {
+// LoginRequest is for JSON struct of login data.
+type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
