@@ -19,24 +19,23 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	}
 }
 
-func (u UserRepository) Create(req *user.Request) error {
+func (r UserRepository) Create(model *user.User) error {
 	query := "INSERT INTO users (first_name, last_name, email, password, created_at) VALUES(?, ?, ?, ?, ?)"
-	stmt, err := u.db.Prepare(query)
+	stmt, err := r.db.Prepare(query)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	// TO-DO: Cambiar el nombre de la variable m.
-	m := User{
+	u := User{
 		CreatedAt: time.Now(),
-		FirstName: req.FirstName,
-		LastName:  req.LastName,
-		Email:     req.Email,
-		Password:  req.Password,
+		FirstName: model.FirstName,
+		LastName:  model.LastName,
+		Email:     model.Email,
+		Password:  model.Password,
 	}
 
-	result, err := stmt.Exec(m.FirstName, m.LastName, m.Email, m.Password, m.CreatedAt)
+	result, err := stmt.Exec(u.FirstName, u.LastName, u.Email, u.Password, u.CreatedAt)
 	if err != nil {
 		return err
 	}
@@ -46,48 +45,48 @@ func (u UserRepository) Create(req *user.Request) error {
 		return err
 	}
 
-	m.ID = id // Important!
+	u.ID = id // Important!
 	return nil
 }
 
-func (u UserRepository) ByID(id int64) (*user.Response, error) {
-	stmt, err := u.db.Prepare("SELECT * FROM users WHERE id = ?")
+func (r UserRepository) ByID(id int64) (*user.User, error) {
+	stmt, err := r.db.Prepare("SELECT * FROM users WHERE id = ?")
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
 	// As QueryRow returns a rows we can pass it directly to the mapping
-	userDB, err := scanRowUser(stmt.QueryRow(id))
+	u, err := scanRowUser(stmt.QueryRow(id))
 	if err != nil {
 		return nil, user.ErrResourceDoesNotExist
 	}
 
-	return &user.Response{
-		ID:        userDB.ID,
-		FirstName: userDB.FirstName,
-		LastName:  userDB.LastName,
-		Email:     userDB.Email,
+	return &user.User{
+		ID:        u.ID,
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+		Email:     u.Email,
 	}, nil
 }
 
-func (u UserRepository) Update(req *user.Request) error {
-	stmt, err := u.db.Prepare("UPDATE users SET first_name = ?, last_name = ?, email = ?, password = ?, updated_at = ? WHERE id = ?")
+func (r UserRepository) Update(model *user.User) error {
+	stmt, err := r.db.Prepare("UPDATE users SET first_name = ?, last_name = ?, email = ?, password = ?, updated_at = ? WHERE id = ?")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	m := User{
+	u := User{
 		UpdatedAt: time.Now(),
-		ID:        req.ID,
-		FirstName: req.FirstName,
-		LastName:  req.LastName,
-		Email:     req.Email,
-		Password:  req.Password,
+		ID:        model.ID,
+		FirstName: model.FirstName,
+		LastName:  model.LastName,
+		Email:     model.Email,
+		Password:  model.Password,
 	}
 
-	result, err := stmt.Exec(m.FirstName, m.LastName, m.Email, m.Password, timeToNull(m.UpdatedAt), m.ID)
+	result, err := stmt.Exec(u.FirstName, u.LastName, u.Email, u.Password, timeToNull(u.UpdatedAt), u.ID)
 	if err != nil {
 		return err
 	}
@@ -103,8 +102,8 @@ func (u UserRepository) Update(req *user.Request) error {
 	return nil
 }
 
-func (u UserRepository) All() ([]*user.Response, error) {
-	stmt, err := u.db.Prepare("SELECT * FROM users")
+func (r UserRepository) All() ([]*user.User, error) {
+	stmt, err := r.db.Prepare("SELECT * FROM users")
 	if err != nil {
 		return nil, err
 	}
@@ -117,29 +116,38 @@ func (u UserRepository) All() ([]*user.Response, error) {
 	defer rows.Close()
 
 	users := make([]*User, 0)
-
 	for rows.Next() {
-		user, err := scanRowUser(rows)
+		u, err := scanRowUser(rows)
 		if err != nil {
 			return nil, err
 		}
-		users = append(users, user)
+		users = append(users, u)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	resp := make([]*user.Response, 0)
+	resp := make([]*user.User, 0, len(users))
 
-	for i := 0; i < len(users); i++ {
-		resp[i].ID = users[i].ID
+	assemble := func(u *User) *user.User {
+		return &user.User{
+			ID:        u.ID,
+			FirstName: u.FirstName,
+			LastName:  u.LastName,
+			Email:     u.Email,
+			Password:  u.Password,
+		}
+	}
+
+	for _, u := range users {
+		resp = append(resp, assemble(u))
 	}
 
 	return resp, nil
 }
 
-func (u UserRepository) Delete(id int64) error {
-	stmt, err := u.db.Prepare("DELETE FROM users WHERE id = ?")
+func (r UserRepository) Delete(id int64) error {
+	stmt, err := r.db.Prepare("DELETE FROM users WHERE id = ?")
 	if err != nil {
 		return err
 	}
@@ -161,7 +169,7 @@ func (u UserRepository) Delete(id int64) error {
 	return nil
 }
 
-// User databse model.
+// User database model.
 type User struct {
 	CreatedAt time.Time //`json:"created_at"`
 	UpdatedAt time.Time //`json:"updated_at"`
@@ -182,15 +190,15 @@ type scanner interface {
 // scanRowUser return nulled fields of User parsed.
 func scanRowUser(s scanner) (*User, error) {
 	var updatedAtNull, deletedAtNull sql.NullTime
-	user := &User{}
+	u := &User{}
 
 	err := s.Scan(
-		&user.ID,
-		&user.FirstName,
-		&user.LastName,
-		&user.Email,
-		&user.Password,
-		&user.CreatedAt,
+		&u.ID,
+		&u.FirstName,
+		&u.LastName,
+		&u.Email,
+		&u.Password,
+		&u.CreatedAt,
 		&updatedAtNull,
 		&deletedAtNull,
 	)
@@ -198,10 +206,10 @@ func scanRowUser(s scanner) (*User, error) {
 		return &User{}, err
 	}
 
-	user.UpdatedAt = updatedAtNull.Time
-	user.DeletedAt = updatedAtNull.Time
+	u.UpdatedAt = updatedAtNull.Time
+	u.DeletedAt = updatedAtNull.Time
 
-	return user, nil
+	return u, nil
 }
 
 // timeToNull helper to try empty time fields.

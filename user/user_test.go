@@ -5,6 +5,8 @@ import (
 )
 
 func TestValidEmail(t *testing.T) {
+	user := new(User)
+
 	tt := []struct {
 		name        string
 		email       string
@@ -16,7 +18,9 @@ func TestValidEmail(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		err := validateEmail(tc.email)
+		user.Email = tc.email
+
+		err := user.validateEmail()
 		errReceived := err != nil
 
 		if errReceived != tc.errExpected {
@@ -25,36 +29,36 @@ func TestValidEmail(t *testing.T) {
 	}
 }
 
-func TestValidateUser(t *testing.T) {
+func TestValidateNoEmptyFields(t *testing.T) {
 	tt := []struct {
 		name        string
-		user        *Request
+		user        *User
 		errExpected bool
 	}{
-		{
+		/*{
 			name:        "nill-struct",
 			user:        nil,
 			errExpected: true,
-		},
+		},*/
 		{
 			name:        "empty-struct",
-			user:        &Request{},
+			user:        &User{},
 			errExpected: true,
 		},
 		{
 			name:        "empty-fields",
-			user:        &Request{FirstName: "", LastName: "", Email: "", Password: ""},
+			user:        &User{FirstName: "", LastName: "", Email: "", Password: ""},
 			errExpected: true,
 		},
 		{
 			name:        "filled-fields",
-			user:        &Request{FirstName: "Adrián", LastName: "Olmedo", Email: "aol.ve@aol.com", Password: "1234567@"},
+			user:        &User{FirstName: "Adrián", LastName: "Olmedo", Email: "aol.ve@aol.com", Password: "1234567@"},
 			errExpected: false,
 		},
 	}
 
 	for _, tc := range tt {
-		err := validateUser(tc.user)
+		err := tc.user.validateNoEmptyFields()
 		errReceived := err != nil
 
 		if errReceived != tc.errExpected {

@@ -12,30 +12,39 @@ import (
 )
 
 // createUser handler for POST: /users.
-func createUser(u user.Repository) echo.HandlerFunc {
+func createUser(r user.Repository) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		data := user.Request{}
+		req := user.ProfileRequest{}
 
-		err := c.Bind(&data)
+		err := c.Bind(&req)
 		if err != nil {
 			resp := newResponse(MsgError, "ER002", "a field in the JSON structure does not have the correct type", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		err = user.NewService(u).Register(&data)
+		err = user.NewService(r).Register(&user.User{
+			FirstName: req.FirstName,
+			LastName:  req.LastName,
+			Email:     req.Email,
+			Password:  req.Password,
+		})
 		if err != nil {
 			resp := newResponse(MsgError, "ER004", fmt.Sprintf("%s", err), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
 
-		data.Password = ""
-		resp := newResponse(MsgOK, "OK002", "resource created", data)
+		resp := newResponse(MsgOK, "OK002", "resource created", user.ProfileResponse{
+			FirstName: req.FirstName,
+			LastName:  req.LastName,
+			Email:     req.Email,
+		})
+
 		return c.JSON(http.StatusCreated, resp)
 	}
 }
 
 // getUserByID handler for GET: /users/:id.
-func getUserByID(u user.Repository) echo.HandlerFunc {
+func getUserByID(r user.Repository) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if id <= 0 || err != nil {
@@ -43,7 +52,7 @@ func getUserByID(u user.Repository) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, resp) // 400
 		}
 
-		data, err := user.NewService(u).ByID(int64(id))
+		data, err := user.NewService(r).ByID(int64(id))
 		if errors.Is(err, user.ErrResourceDoesNotExist) {
 			resp := newResponse(MsgError, "ER007", fmt.Sprintf("%s", err), nil)
 			return c.JSON(http.StatusNoContent, resp)
@@ -55,13 +64,18 @@ func getUserByID(u user.Repository) echo.HandlerFunc {
 		}
 
 		//data.Password = ""
-		resp := newResponse(MsgOK, "OK002", "", data)
+		resp := newResponse(MsgOK, "OK002", "", user.ProfileResponse{
+			ID:        data.ID,
+			FirstName: data.FirstName,
+			LastName:  data.LastName,
+			Email:     data.Email,
+		})
 		return c.JSON(http.StatusOK, resp)
 	}
 }
 
 // updateUserByID handler for PUT: /users/:id.
-func updateUserByID(u user.Repository) echo.HandlerFunc {
+func updateUserByID(r user.Repository) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if id <= 0 || err != nil {
@@ -69,15 +83,22 @@ func updateUserByID(u user.Repository) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		data := user.Request{}
-		err = c.Bind(&data)
+		req := user.UpdateRequest{}
+		err = c.Bind(&req)
 		if err != nil {
 			resp := newResponse(MsgError, "ER002", "a field in the JSON structure does not have the correct type", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		data.ID = int64(id)
-		err = user.NewService(u).Update(&data)
+		req.ID = int64(id)
+
+		err = user.NewService(r).Update(&user.User{
+			ID:        req.ID,
+			FirstName: req.FirstName,
+			LastName:  req.LastName,
+			Email:     req.Email,
+			Password:  req.Password,
+		})
 		if errors.Is(err, user.ErrResourceDoesNotExist) {
 			resp := newResponse(MsgError, "ER007", fmt.Sprintf("%s", err), nil)
 			return c.JSON(http.StatusNoContent, resp)
@@ -88,15 +109,20 @@ func updateUserByID(u user.Repository) echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
 
-		resp := newResponse(MsgOK, "OK002", "resource updated", data)
+		resp := newResponse(MsgOK, "OK002", "resource updated", user.ProfileResponse{
+			ID:        req.ID,
+			FirstName: req.FirstName,
+			LastName:  req.LastName,
+			Email:     req.Email,
+		})
 		return c.JSON(http.StatusOK, resp)
 	}
 }
 
 // getAllUsers handler for GET: /users.
-func getAllUsers(u user.Repository) echo.HandlerFunc {
+func getAllUsers(r user.Repository) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		users, err := user.NewService(u).All()
+		users, err := user.NewService(r).All()
 		if err != nil {
 			resp := newResponse(MsgError, "ER003", fmt.Sprintf("%s", err), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
@@ -107,13 +133,28 @@ func getAllUsers(u user.Repository) echo.HandlerFunc {
 			return c.JSON(http.StatusOK, resp) // maybe 204
 		}
 
-		resp := newResponse(MsgOK, "OK002", "", users)
+		list := make(user.ListResponse, 0, len(users))
+
+		assemble := func(m *user.User) user.ProfileResponse {
+			return user.ProfileResponse{
+				ID:        m.ID,
+				FirstName: m.FirstName,
+				LastName:  m.LastName,
+				Email:     m.Email,
+			}
+		}
+
+		for _, v := range users {
+			list = append(list, assemble(v))
+		}
+
+		resp := newResponse(MsgOK, "OK002", "", list)
 		return c.JSON(http.StatusOK, resp)
 	}
 }
 
 // deleteUserByID handler for DELETE: /users/:id.
-func deleteUserByID(u user.Repository) echo.HandlerFunc {
+func deleteUserByID(r user.Repository) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 
@@ -122,7 +163,7 @@ func deleteUserByID(u user.Repository) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		err = user.NewService(u).Delete(int64(id))
+		err = user.NewService(r).Delete(int64(id))
 		if errors.Is(err, user.ErrResourceDoesNotExist) {
 			resp := newResponse(MsgError, "ER007", fmt.Sprintf("%s", err), nil)
 			return c.JSON(http.StatusNoContent, resp)
