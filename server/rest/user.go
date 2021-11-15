@@ -52,7 +52,7 @@ func getUserByID(r user.Repository) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, resp) // 400
 		}
 
-		data, err := user.NewService(r).ByID(int64(id))
+		u, err := user.NewService(r).ByID(int64(id))
 		if errors.Is(err, user.ErrResourceDoesNotExist) {
 			resp := newResponse(MsgError, "ER007", fmt.Sprintf("%s", err), nil)
 			return c.JSON(http.StatusNoContent, resp)
@@ -63,12 +63,12 @@ func getUserByID(r user.Repository) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		//data.Password = ""
+		//u.Password = ""
 		resp := newResponse(MsgOK, "OK002", "", user.ProfileResponse{
-			ID:        data.ID,
-			FirstName: data.FirstName,
-			LastName:  data.LastName,
-			Email:     data.Email,
+			ID:        u.ID,
+			FirstName: u.FirstName,
+			LastName:  u.LastName,
+			Email:     u.Email,
 		})
 		return c.JSON(http.StatusOK, resp)
 	}
@@ -83,21 +83,22 @@ func updateUserByID(r user.Repository) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		req := user.UpdateRequest{}
-		err = c.Bind(&req)
+		usr := user.UpdateRequest{}
+
+		err = c.Bind(&usr)
 		if err != nil {
 			resp := newResponse(MsgError, "ER002", "a field in the JSON structure does not have the correct type", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		req.ID = int64(id)
+		usr.ID = int64(id)
 
 		err = user.NewService(r).Update(&user.User{
-			ID:        req.ID,
-			FirstName: req.FirstName,
-			LastName:  req.LastName,
-			Email:     req.Email,
-			Password:  req.Password,
+			ID:        usr.ID,
+			FirstName: usr.FirstName,
+			LastName:  usr.LastName,
+			Email:     usr.Email,
+			Password:  usr.Password,
 		})
 		if errors.Is(err, user.ErrResourceDoesNotExist) {
 			resp := newResponse(MsgError, "ER007", fmt.Sprintf("%s", err), nil)
@@ -110,10 +111,10 @@ func updateUserByID(r user.Repository) echo.HandlerFunc {
 		}
 
 		resp := newResponse(MsgOK, "OK002", "resource updated", user.ProfileResponse{
-			ID:        req.ID,
-			FirstName: req.FirstName,
-			LastName:  req.LastName,
-			Email:     req.Email,
+			ID:        usr.ID,
+			FirstName: usr.FirstName,
+			LastName:  usr.LastName,
+			Email:     usr.Email,
 		})
 		return c.JSON(http.StatusOK, resp)
 	}
@@ -135,12 +136,12 @@ func getAllUsers(r user.Repository) echo.HandlerFunc {
 
 		list := make(user.ListResponse, 0, len(users))
 
-		assemble := func(m *user.User) user.ProfileResponse {
+		assemble := func(u *user.User) user.ProfileResponse {
 			return user.ProfileResponse{
-				ID:        m.ID,
-				FirstName: m.FirstName,
-				LastName:  m.LastName,
-				Email:     m.Email,
+				ID:        u.ID,
+				FirstName: u.FirstName,
+				LastName:  u.LastName,
+				Email:     u.Email,
 			}
 		}
 

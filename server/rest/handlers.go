@@ -14,10 +14,10 @@ func Handlers(e *echo.Echo, u user.Repository) {
 }
 
 // HandlersAuthRequired end-points that required JWT authentication.
-func HandlersAuthRequired(e *echo.Echo, u user.Repository) {
-	user := e.Group("/v1/users")
-	user.Use(Auth)
-	user.GET("", getAllUsers(u)) // GET /v1/users
-	user.PUT("/:id", updateUserByID(u))
-	user.DELETE("/:id", deleteUserByID(u))
+func HandlersAuthRequired(e *echo.Echo, r user.Repository) {
+	u := e.Group("/v1/users")
+	u.Use(Auth)
+	u.GET("", getAllUsers(r)) // GET /v1/users
+	u.PUT("/:id", updateUserByID(r))
+	u.DELETE("/:id", deleteUserByID(r))
 }
