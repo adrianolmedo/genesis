@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"go-restapi-practice/user"
+	"github.com/adrianolmedo/go-restapi-practice/user"
 )
 
 // UserRepository (before UserDAO) it's implementation of UserDAO interface of service/.
@@ -123,6 +123,7 @@ func (r UserRepository) All() ([]*user.User, error) {
 	resp := make([]*user.User, 0, len(users))
 
 	assemble := func(u *User) *user.User {
+
 		return &user.User{
 			ID:        u.ID,
 			FirstName: u.FirstName,

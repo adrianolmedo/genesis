@@ -3,7 +3,7 @@ package rest
 import (
 	"net/http"
 
-	"go-restapi-practice/auth"
+	"github.com/adrianolmedo/go-restapi-practice/auth"
 
 	"github.com/labstack/echo/v4"
 )

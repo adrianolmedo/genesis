@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"go-restapi-practice/user"
+	"github.com/adrianolmedo/go-restapi-practice/user"
 
 	"github.com/labstack/echo/v4"
 )

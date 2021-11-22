@@ -58,7 +58,7 @@ func TestValidateNoEmptyFields(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		err := tc.user.validateNoEmptyFields()
+		err := tc.user.checkEmptyFields()
 		errReceived := err != nil
 
 		if errReceived != tc.errExpected {

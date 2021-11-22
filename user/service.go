@@ -10,12 +10,12 @@ type Service interface {
 	Delete(id int64) error
 }
 
-// Repository para desacoplar el paquete `repository` de persistencia
-// de datos entre postgres o mysql.
+// Repository to uncouple persistence `repository` package
+// data between postgres or mysql.
 //
-// Si no hubiera persistencia de datos, esta interface no debería existir,
-// y en su lugar se debería importar directamente el modelo, domain u objeto de dominio/valor
-// como un campo en la estructura `service`.
+// If there is no data persistence, this interface should not exist,
+// and instead, the model, domain or domain/value object should be imported
+// from `repository` directly as field in the `service` struct.
 type Repository interface {
 	Create(*User) error
 	ByID(id int64) (*User, error)
@@ -33,47 +33,46 @@ func NewService(r Repository) Service {
 }
 
 // Create is business logic for create a User.
-func (s service) Register(user *User) error {
-	err := user.validateNoEmptyFields()
+func (s service) Register(u *User) error {
+	err := u.checkEmptyFields()
 	if err != nil {
 		return err
 	}
 
-	err = user.validateEmail()
+	err = u.validateEmail()
 	if err != nil {
 		return err
 	}
 
-	//user.CreatedAt = time.Now()
-	return s.repository.Create(user)
+	u.UUID = NextUserID()
+	return s.repository.Create(u)
 }
 
-// ByID is business logic for get a User by it's ID.
+// ByID is business logic for get a User by its ID.
 func (s service) ByID(id int64) (*User, error) {
 	return s.repository.ByID(id)
 }
 
 // Update is business logic for update a User.
-func (s service) Update(user *User) error {
-	err := user.validateNoEmptyFields()
+func (s service) Update(u *User) error {
+	err := u.checkEmptyFields()
 	if err != nil {
 		return err
 	}
 
-	err = user.validateEmail()
+	err = u.validateEmail()
 	if err != nil {
 		return err
 	}
 
-	//user.UpdatedAt = time.Now()
-	return s.repository.Update(user)
+	return s.repository.Update(u)
 }
 
 func (s service) All() ([]*User, error) {
 	return s.repository.All()
 }
 
-// Delete is business logic for delete User by it's ID.
+// Delete is business logic for delete User by its ID.
 func (s service) Delete(id int64) error {
 	return s.repository.Delete(id)
 }

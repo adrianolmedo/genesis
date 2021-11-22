@@ -6,12 +6,12 @@ import (
 	"log"
 	"strings"
 
-	"go-restapi-practice/auth"
-	"go-restapi-practice/config"
-	"go-restapi-practice/repository/mysql"
-	"go-restapi-practice/repository/postgres"
-	"go-restapi-practice/server/rest"
-	"go-restapi-practice/user"
+	"github.com/adrianolmedo/go-restapi-practice/auth"
+	"github.com/adrianolmedo/go-restapi-practice/config"
+	"github.com/adrianolmedo/go-restapi-practice/repository/mysql"
+	"github.com/adrianolmedo/go-restapi-practice/repository/postgres"
+	"github.com/adrianolmedo/go-restapi-practice/server/rest"
+	"github.com/adrianolmedo/go-restapi-practice/user"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

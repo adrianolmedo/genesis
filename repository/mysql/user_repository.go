@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"go-restapi-practice/user"
+	"github.com/adrianolmedo/go-restapi-practice/user"
 )
 
 // UserRepository (before UserDAO) it's implementation of UserDAO interface of service/.
@@ -175,6 +175,7 @@ type User struct {
 	UpdatedAt time.Time //`json:"updated_at"`
 	DeletedAt time.Time //`json:"deleted_at"`
 	ID        int64     //`json:"id"`
+	UUID      string    //`json:"uuid"`
 	FirstName string    //`json:"first_name"`
 	LastName  string    //`json:"last_name"`
 	Email     string    //`json:"email"`
@@ -194,6 +195,7 @@ func scanRowUser(s scanner) (*User, error) {
 
 	err := s.Scan(
 		&u.ID,
+		&u.UUID,
 		&u.FirstName,
 		&u.LastName,
 		&u.Email,

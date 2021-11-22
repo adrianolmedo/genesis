@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"go-restapi-practice/config"
+	"github.com/adrianolmedo/go-restapi-practice/config"
 
 	_ "github.com/go-sql-driver/mysql"
 )
