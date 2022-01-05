@@ -1,5 +1,5 @@
 {
-    "localhost": true,
+    "localhost": false,
     "port": "1323",
     "cors": "127.0.0.1",
     "database": {
