@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"go-restapi-practice/config"
+	"github.com/adrianolmedo/go-restapi-practice/config"
 
 	_ "github.com/lib/pq"
 )
@@ -14,14 +14,14 @@ var (
 	db *sql.DB
 )
 
-func NewStorage(database config.Database) (*sql.DB, error) {
+func NewStorage(dbcfg config.Database) (*sql.DB, error) {
 	var err error
 
 	// postgres://user:password@server:port/dbname?sslmode=disable
 	conn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		database.User, database.Password, database.Server, database.Port, database.Name)
+		dbcfg.User, dbcfg.Password, dbcfg.Server, dbcfg.Port, dbcfg.Name)
 
-	db, err = sql.Open(string(database.Engine), conn)
+	db, err = sql.Open(string(dbcfg.Engine), conn)
 	if err != nil {
 		return nil, fmt.Errorf("can't open the data base, %v", err)
 	}

@@ -5,16 +5,14 @@ import (
 	"fmt"
 	"log"
 
-	"go-restapi-practice/config"
+	"github.com/adrianolmedo/go-restapi-practice/config"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var (
-	db *sql.DB
-)
+var db *sql.DB
 
-func NewStorage(database config.Database) (*sql.DB, error) {
+func NewStorage(dbcfg config.Database) (*sql.DB, error) {
 	var err error
 
 	// En los parámetros de conexión para mysql vamos a establecer ParseTime (bool),
@@ -22,9 +20,9 @@ func NewStorage(database config.Database) (*sql.DB, error) {
 	//
 	// user:password@tcp(server:port)/dbname?tls=false&autocommit=true&parseTime=true
 	conn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?tls=false&autocommit=true&parseTime=true",
-		database.User, database.Password, database.Server, database.Port, database.Name)
+		dbcfg.User, dbcfg.Password, dbcfg.Server, dbcfg.Port, dbcfg.Name)
 
-	db, err = sql.Open(string(database.Engine), conn)
+	db, err = sql.Open(string(dbcfg.Engine), conn)
 	if err != nil {
 		return nil, fmt.Errorf("can't open the data base, %v", err)
 	}
