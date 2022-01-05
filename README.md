@@ -14,17 +14,12 @@ My first prototype of RESTful API written in Go based in [Dao Pattern](https://g
   * [Get all users](#get-all-users)
   * [Delete user by ID](#delete-user-by-id)
 
-## TO-DO:
-
-- [ ] Connect login to storage.
-
 ## Run:
 
 1- Prepare certificates for JWT:
 
 ```bash
 $ git clone https://github.com/adrianolmedo/go-restapi-practice.git
-$ cd auth/
 $ openssl genrsa -out app.sra 1024
 $ openssl rsa -in app.sra -pubout > app.sra.pub
 ```
@@ -42,7 +37,7 @@ $ ./rest -c config.json
 
 ## Endpoints:
 
-### Sign Up
+### **Sign Up**
 
 **POST:** `/v1/signup`
 
@@ -81,7 +76,7 @@ Reponse (201 Created):
 
 ---
 
-### Get user by ID
+### **Get user by ID**
 
 **GET:** `/v1/users/:id`
 
@@ -109,7 +104,7 @@ Reponse (200 OK):
 
 ---
 
-### Login
+### **Login**
 
 **POST:** `/v1/login`
 
@@ -140,7 +135,7 @@ Reponse (201 Created):
 
 ---
 
-### Update user by ID
+### **Update user by ID**
 
 **PUT:** `/v1/users/:id`
 
@@ -180,7 +175,7 @@ Response (200 OK):
 
 ---
 
-### Get all users
+### **Get all users**
 
 **GET:** `v1/users`
 
@@ -221,7 +216,7 @@ Response (200 OK):
 
 ---
 
-### Delete user by ID
+### **Delete user by ID**
 
 **DELETE:** `v1/users/:id`
 
