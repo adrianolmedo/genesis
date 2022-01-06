@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/adrianolmedo/go-restapi-practice/config"
-	"github.com/adrianolmedo/go-restapi-practice/infra/jwt"
-	"github.com/adrianolmedo/go-restapi-practice/internal/server/rest"
+	"github.com/adrianolmedo/go-restapi-practice/internal/rest"
 	"github.com/adrianolmedo/go-restapi-practice/internal/storage"
+	"github.com/adrianolmedo/go-restapi-practice/jwt"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -37,7 +37,7 @@ func Run(cfgPath string) {
 	// Echo framework.
 	e := echo.New()
 
-	// - Load middlewares.
+	// - Load Echo middlewares.
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
 
