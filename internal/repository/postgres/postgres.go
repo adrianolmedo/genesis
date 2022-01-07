@@ -10,13 +10,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var (
-	db *sql.DB
-)
-
-func NewStorage(dbcfg config.Database) (*sql.DB, error) {
-	var err error
-
+func New(dbcfg config.Database) (db *sql.DB, err error) {
 	// postgres://user:password@server:port/dbname?sslmode=disable
 	conn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		dbcfg.User, dbcfg.Password, dbcfg.Server, dbcfg.Port, dbcfg.Name)
@@ -30,6 +24,6 @@ func NewStorage(dbcfg config.Database) (*sql.DB, error) {
 		return nil, fmt.Errorf("can't do ping, %v", err)
 	}
 
-	log.Println("connected to postgres!")
+	log.Println("Connected to postgres!")
 	return db, nil
 }

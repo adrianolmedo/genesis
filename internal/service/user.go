@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
-	"github.com/adrianolmedo/go-restapi-practice/internal/storage"
+	"github.com/adrianolmedo/go-restapi-practice/internal/repository"
 )
 
 // UserService (before UserDAO) interface is InterfaceDAO in Pattern DAO.
@@ -16,15 +16,15 @@ type UserService interface {
 }
 
 type userService struct {
-	repository storage.UserRepository
+	repo repository.UserRepository
 }
 
-func NewUserService(r storage.UserRepository) UserService {
-	return &userService{r}
+func NewUserService(repo repository.UserRepository) UserService {
+	return &userService{repo}
 }
 
 // SignUp is business logic to register a User.
-func (s userService) SignUp(user domain.User) error {
+func (us userService) SignUp(user domain.User) error {
 	err := user.CheckEmptyFields()
 	if err != nil {
 		return err
@@ -36,16 +36,16 @@ func (s userService) SignUp(user domain.User) error {
 	}
 
 	user.UUID = domain.NextUserID()
-	return s.repository.Create(user)
+	return us.repo.Create(user)
 }
 
 // ByID is business logic for get a User by its ID.
-func (s userService) Find(id int64) (*domain.User, error) {
-	return s.repository.ByID(id)
+func (us userService) Find(id int64) (*domain.User, error) {
+	return us.repo.ByID(id)
 }
 
 // Update is business logic for update a User.
-func (s userService) Update(user domain.User) error {
+func (us userService) Update(user domain.User) error {
 	err := user.CheckEmptyFields()
 	if err != nil {
 		return err
@@ -56,14 +56,14 @@ func (s userService) Update(user domain.User) error {
 		return err
 	}
 
-	return s.repository.Update(user)
+	return us.repo.Update(user)
 }
 
-func (s userService) List() ([]*domain.User, error) {
-	return s.repository.All()
+func (us userService) List() ([]*domain.User, error) {
+	return us.repo.All()
 }
 
 // Remove is business logic for delete User by its ID.
-func (s userService) Remove(id int64) error {
-	return s.repository.Delete(id)
+func (us userService) Remove(id int64) error {
+	return us.repo.Delete(id)
 }

@@ -10,11 +10,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var db *sql.DB
-
-func NewStorage(dbcfg config.Database) (*sql.DB, error) {
-	var err error
-
+func New(dbcfg config.Database) (db *sql.DB, err error) {
 	// En los parámetros de conexión para mysql vamos a establecer ParseTime (bool),
 	// ya que sin eso no se podría hacer el maping del campo CreatedAt a time.Time:
 	//
@@ -31,6 +27,6 @@ func NewStorage(dbcfg config.Database) (*sql.DB, error) {
 		return nil, fmt.Errorf("can't do ping, %v", err)
 	}
 
-	log.Println("connected to mysql!")
+	log.Println("Connected to mysql!")
 	return db, nil
 }

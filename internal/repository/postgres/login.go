@@ -40,7 +40,7 @@ func (r LoginRepository) UserByLogin(email, password string) error {
 	return nil
 }
 
-/*func (r LoginRepository) UserByLogin(email, password string) error {
+/*func (r loginRepository) UserByLogin(email, password string) error {
 	stmt, err := r.db.Prepare("SELECT email, password FROM users WHERE email = $1 AND password = $2")
 	if err != nil {
 		return err
