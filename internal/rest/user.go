@@ -8,13 +8,12 @@ import (
 
 	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
 	"github.com/adrianolmedo/go-restapi-practice/internal/service"
-	"github.com/adrianolmedo/go-restapi-practice/internal/storage"
 
 	"github.com/labstack/echo/v4"
 )
 
 // POST: /users
-func signUpUser(r storage.UserRepository) echo.HandlerFunc {
+func signUpUser(svc service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		form := domain.UserSignUpForm{}
 
@@ -24,7 +23,7 @@ func signUpUser(r storage.UserRepository) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		err = service.NewUserService(r).SignUp(domain.User{
+		err = svc.UserService.SignUp(domain.User{
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
 			Email:     form.Email,
@@ -46,7 +45,7 @@ func signUpUser(r storage.UserRepository) echo.HandlerFunc {
 }
 
 // GET: /users/:id
-func findUser(r storage.UserRepository) echo.HandlerFunc {
+func findUser(svc service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if id <= 0 || err != nil {
@@ -54,7 +53,7 @@ func findUser(r storage.UserRepository) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, resp) // 400
 		}
 
-		user, err := service.NewUserService(r).Find(int64(id))
+		user, err := svc.UserService.Find(int64(id))
 		if errors.Is(err, domain.ErrUserNotFound) {
 			resp := newResponse(MsgError, "ER007", err.Error(), nil)
 			return c.JSON(http.StatusBadRequest, resp) // http.StatusNoContent 204
@@ -77,7 +76,7 @@ func findUser(r storage.UserRepository) echo.HandlerFunc {
 }
 
 // PUT: /users/:id.
-func updateUser(r storage.UserRepository) echo.HandlerFunc {
+func updateUser(svc service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if id <= 0 || err != nil {
@@ -95,7 +94,7 @@ func updateUser(r storage.UserRepository) echo.HandlerFunc {
 
 		form.ID = int64(id)
 
-		err = service.NewUserService(r).Update(domain.User{
+		err = svc.UserService.Update(domain.User{
 			ID:        form.ID,
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
@@ -123,9 +122,9 @@ func updateUser(r storage.UserRepository) echo.HandlerFunc {
 }
 
 // listUsers handler for GET: /users.
-func listUsers(r storage.UserRepository) echo.HandlerFunc {
+func listUsers(svc service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		users, err := service.NewUserService(r).List()
+		users, err := svc.UserService.List()
 		if err != nil {
 			resp := newResponse(MsgError, "ER003", fmt.Sprintf("%s", err), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
@@ -157,7 +156,7 @@ func listUsers(r storage.UserRepository) echo.HandlerFunc {
 }
 
 // deleteUser handler for DELETE: /users/:id.
-func deleteUser(r storage.UserRepository) echo.HandlerFunc {
+func deleteUser(svc service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 
@@ -166,7 +165,7 @@ func deleteUser(r storage.UserRepository) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		err = service.NewUserService(r).Remove(int64(id))
+		err = svc.UserService.Remove(int64(id))
 		if errors.Is(err, domain.ErrUserNotFound) {
 			resp := newResponse(MsgError, "ER007", err.Error(), nil)
 			return c.JSON(http.StatusNoContent, resp)

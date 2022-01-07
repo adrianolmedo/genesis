@@ -7,14 +7,13 @@ import (
 
 	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
 	"github.com/adrianolmedo/go-restapi-practice/internal/service"
-	"github.com/adrianolmedo/go-restapi-practice/internal/storage"
 	"github.com/adrianolmedo/go-restapi-practice/jwt"
 
 	"github.com/labstack/echo/v4"
 )
 
 // POST: /login
-func loginUser(r storage.LoginRepository) echo.HandlerFunc {
+func loginUser(svc service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		form := domain.UserLoginForm{}
 
@@ -26,7 +25,7 @@ func loginUser(r storage.LoginRepository) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		err = service.NewLoginService(r).Execute(form.Email, form.Password)
+		err = svc.LoginService.Execute(form.Email, form.Password)
 		if errors.Is(err, domain.ErrUserNotFound) {
 			resp := newResponse(MsgError, "ER007", err.Error(), nil)
 			return c.JSON(http.StatusUnauthorized, resp)
