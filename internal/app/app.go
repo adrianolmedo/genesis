@@ -6,7 +6,7 @@ import (
 
 	"github.com/adrianolmedo/go-restapi-practice/config"
 	"github.com/adrianolmedo/go-restapi-practice/internal/rest"
-	"github.com/adrianolmedo/go-restapi-practice/internal/storage"
+	"github.com/adrianolmedo/go-restapi-practice/internal/service"
 	"github.com/adrianolmedo/go-restapi-practice/jwt"
 
 	"github.com/labstack/echo/v4"
@@ -14,8 +14,6 @@ import (
 )
 
 func Run(cfgPath string) {
-	var repos *storage.Repositories
-
 	// Load config file.
 	cfg, err := config.Init(cfgPath)
 	if err != nil {
@@ -26,12 +24,6 @@ func Run(cfgPath string) {
 	err = jwt.LoadFiles("app.sra", "app.sra.pub")
 	if err != nil {
 		log.Fatalf("Certificates could not be loaded: %v", err)
-	}
-
-	// - Set up storage from configuration loaded.
-	repos, err = storage.NewRepositories(cfg.Database)
-	if err != nil {
-		log.Fatalf("Error from storage: %v\n", err)
 	}
 
 	// Echo framework.
@@ -47,8 +39,14 @@ func Run(cfgPath string) {
 		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
 	}))
 
+	// Prepare services.
+	svc, err := service.New(cfg.Database)
+	if err != nil {
+		log.Printf("%v\n", err)
+	}
+
 	// - Call routes.
-	rest.Routes(e, repos)
+	rest.Routes(e, *svc)
 
 	// - Up server.
 	err = e.Start(cfg.Address())
