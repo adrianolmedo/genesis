@@ -14,7 +14,7 @@ func Auth(f echo.HandlerFunc) echo.HandlerFunc {
 		token := c.Request().Header.Get("Authorization")
 		_, err := jwt.Verify(token)
 		if err != nil {
-			return c.JSON(http.StatusForbidden, map[string]string{"message_error": "You don't have authorization"})
+			return c.JSON(http.StatusForbidden, map[string]string{"message_error": "you don't have authorization"})
 		}
 		return f(c)
 	}

@@ -1,16 +1,16 @@
 package service
 
-import "github.com/adrianolmedo/go-restapi-practice/internal/repository"
+import "github.com/adrianolmedo/go-restapi-practice/internal/storage"
 
 type LoginService interface {
 	Execute(email, password string) error
 }
 
 type loginService struct {
-	repo repository.LoginRepository
+	repo storage.LoginRepository
 }
 
-func NewLoginService(repo repository.LoginRepository) LoginService {
+func NewLoginService(repo storage.LoginRepository) LoginService {
 	return &loginService{repo}
 }
 

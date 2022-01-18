@@ -12,25 +12,25 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// POST: /users
-func signUpUser(svc service.Service) echo.HandlerFunc {
+// signUpUser handler POST: /users
+func signUpUser(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		form := domain.UserSignUpForm{}
 
 		err := c.Bind(&form)
 		if err != nil {
-			resp := newResponse(MsgError, "ER002", "a field in the JSON structure does not have the correct type", nil)
+			resp := newResponse(MsgError, "ER002", "the JSON structure is not correct", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		err = svc.UserService.SignUp(domain.User{
+		err = s.User.SignUp(&domain.User{
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
 			Email:     form.Email,
 			Password:  form.Password,
 		})
 		if err != nil {
-			resp := newResponse(MsgError, "ER004", fmt.Sprintf("%s", err), nil)
+			resp := newResponse(MsgError, "ER004", err.Error(), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
 
@@ -44,8 +44,8 @@ func signUpUser(svc service.Service) echo.HandlerFunc {
 	}
 }
 
-// GET: /users/:id
-func findUser(svc service.Service) echo.HandlerFunc {
+// findUser handler GET: /users/:id
+func findUser(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if id <= 0 || err != nil {
@@ -53,18 +53,17 @@ func findUser(svc service.Service) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, resp) // 400
 		}
 
-		user, err := svc.UserService.Find(int64(id))
+		user, err := s.User.Find(int64(id))
 		if errors.Is(err, domain.ErrUserNotFound) {
 			resp := newResponse(MsgError, "ER007", err.Error(), nil)
-			return c.JSON(http.StatusBadRequest, resp) // http.StatusNoContent 204
+			return c.JSON(http.StatusNotFound, resp) // 404
 		}
 
 		if err != nil {
-			resp := newResponse(MsgError, "ER009", fmt.Sprintf("%s", err), nil)
+			resp := newResponse(MsgError, "ER009", err.Error(), nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		//u.Password = ""
 		resp := newResponse(MsgOK, "OK002", "", domain.UserProfileDTO{
 			ID:        user.ID,
 			FirstName: user.FirstName,
@@ -75,8 +74,8 @@ func findUser(svc service.Service) echo.HandlerFunc {
 	}
 }
 
-// PUT: /users/:id.
-func updateUser(svc service.Service) echo.HandlerFunc {
+// updateUser handler PUT: /users/:id.
+func updateUser(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if id <= 0 || err != nil {
@@ -85,16 +84,15 @@ func updateUser(svc service.Service) echo.HandlerFunc {
 		}
 
 		form := domain.UserUpdateForm{}
-
 		err = c.Bind(&form)
 		if err != nil {
-			resp := newResponse(MsgError, "ER002", "a field in the JSON structure does not have the correct type", nil)
+			resp := newResponse(MsgError, "ER002", "the JSON structure is not correct", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
 		form.ID = int64(id)
 
-		err = svc.UserService.Update(domain.User{
+		err = s.User.Update(domain.User{
 			ID:        form.ID,
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
@@ -107,7 +105,7 @@ func updateUser(svc service.Service) echo.HandlerFunc {
 		}
 
 		if err != nil {
-			resp := newResponse(MsgError, "ER004", fmt.Sprintf("%s", err), nil)
+			resp := newResponse(MsgError, "ER004", err.Error(), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
 
@@ -121,12 +119,12 @@ func updateUser(svc service.Service) echo.HandlerFunc {
 	}
 }
 
-// listUsers handler for GET: /users.
-func listUsers(svc service.Service) echo.HandlerFunc {
+// listUsers handler GET: /users.
+func listUsers(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		users, err := svc.UserService.List()
+		users, err := s.User.List()
 		if err != nil {
-			resp := newResponse(MsgError, "ER003", fmt.Sprintf("%s", err), nil)
+			resp := newResponse(MsgError, "ER003", err.Error(), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
 
@@ -155,8 +153,8 @@ func listUsers(svc service.Service) echo.HandlerFunc {
 	}
 }
 
-// deleteUser handler for DELETE: /users/:id.
-func deleteUser(svc service.Service) echo.HandlerFunc {
+// deleteUser handler DELETE: /users/:id.
+func deleteUser(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 
@@ -165,7 +163,7 @@ func deleteUser(svc service.Service) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		err = svc.UserService.Remove(int64(id))
+		err = s.User.Remove(int64(id))
 		if errors.Is(err, domain.ErrUserNotFound) {
 			resp := newResponse(MsgError, "ER007", err.Error(), nil)
 			return c.JSON(http.StatusNoContent, resp)

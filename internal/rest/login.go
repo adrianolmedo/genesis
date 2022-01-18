@@ -2,7 +2,6 @@ package rest
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
@@ -12,8 +11,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// POST: /login
-func loginUser(svc service.Service) echo.HandlerFunc {
+// loginUser handler POST: /login
+func loginUser(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		form := domain.UserLoginForm{}
 
@@ -21,22 +20,22 @@ func loginUser(svc service.Service) echo.HandlerFunc {
 		// automáticamente Bind captura el r.Body o w del ResponseWriter.
 		err := c.Bind(&form)
 		if err != nil {
-			resp := newResponse(MsgError, "ER002", "a field in the JSON structure does not have the correct type", nil)
+			resp := newResponse(MsgError, "ER002", "the JSON structure is not correct", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		err = svc.LoginService.Execute(form.Email, form.Password)
+		err = s.Login.Execute(form.Email, form.Password)
 		if errors.Is(err, domain.ErrUserNotFound) {
 			resp := newResponse(MsgError, "ER007", err.Error(), nil)
 			return c.JSON(http.StatusUnauthorized, resp)
 		}
 
 		if err != nil {
-			resp := newResponse(MsgError, "ER009", fmt.Sprintf("%s", err), nil)
+			resp := newResponse(MsgError, "ER009", err.Error(), nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		token, err := jwt.New(form.Email)
+		token, err := jwt.Generate(form.Email)
 		if err != nil {
 			resp := newResponse(MsgError, "ER008", "the token could not be generated", nil)
 			return c.JSON(http.StatusInternalServerError, resp)

@@ -14,9 +14,8 @@ func Routes(e *echo.Echo, s service.Service) {
 	e.GET("/v1/users/:id", findUser(s))
 
 	u := e.Group("/v1/users")
-	// Routes that required authentication.
-	u.Use(middleware.Auth) // E.g.: GET /v1/users
-	u.GET("", listUsers(s))
+	u.Use(middleware.Auth)  // Routes that required authentication.
+	u.GET("", listUsers(s)) // E.g.: GET /v1/users
 	u.PUT("/:id", updateUser(s))
 	u.DELETE("/:id", deleteUser(s))
 }
