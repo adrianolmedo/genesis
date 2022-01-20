@@ -7,13 +7,13 @@ import (
 )
 
 type Service struct {
-	Repo  storage.RepoProvider
-	User  UserService
-	Login LoginService
+	Storage storage.Storage
+	User    UserService
+	Login   LoginService
 }
 
-func New(p storage.RepoProvider) (*Service, error) {
-	r, err := p.ProvideRepo()
+func New(s storage.Storage) (*Service, error) {
+	r, err := s.ProvideRepository()
 	if err != nil {
 		return nil, fmt.Errorf("error from storage: %v", err)
 	}

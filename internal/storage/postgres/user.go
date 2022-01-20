@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -44,8 +45,12 @@ func (r UserRepository) ByID(id int64) (*domain.User, error) {
 	defer stmt.Close()
 
 	user, err := scanRowUser(stmt.QueryRow(id))
+	if errors.Is(err, sql.ErrNoRows) {
+		return &domain.User{}, domain.ErrUserNotFound
+	}
+
 	if err != nil {
-		return nil, err
+		return &domain.User{}, err
 	}
 
 	return user, nil

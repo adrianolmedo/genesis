@@ -72,11 +72,6 @@ func TestSignUpUser(t *testing.T) {
 			t.Fatalf("%s: %v", tc.name, err)
 		}
 
-		// Check HTTP status code.
-		if tc.wantHTTPCode != w.Code {
-			t.Errorf("%s: http code: want %d, got %d", tc.name, tc.wantHTTPCode, w.Code)
-		}
-
 		// Check body JSON reponse. To fix linebreak in w.Body.String(), add strings.TrimRight and cut if right off the string.
 		// https://stackoverflow.com/a/45275479/3408901
 		if tc.wantResponse != strings.TrimRight(w.Body.String(), "\n") {
@@ -85,6 +80,11 @@ func TestSignUpUser(t *testing.T) {
 
 		// w.Body es lo que devuelve c.JSON, para comprobarlo, lo mostramos w.Body.String() en un t.Logf
 		//t.Logf("%s: response body: %v\n", tc.name, w.Body.String())
+
+		// Check HTTP status code.
+		if tc.wantHTTPCode != w.Code {
+			t.Errorf("%s: http code: want %d, got %d", tc.name, tc.wantHTTPCode, w.Code)
+		}
 	}
 }
 
@@ -95,12 +95,12 @@ func TestFindUser(t *testing.T) {
 		wantResponse string
 	}{
 		{
-			input:        "16",
+			input:        "1",
 			wantHTTPCode: http.StatusOK,
-			wantResponse: `{"message_ok":{"code":"OK002","content":""},"data":{"id":16,"first_name":"Adrián","last_name":"Olmedo","email":"qwerty@hotmail.com"}}`,
+			wantResponse: `{"message_ok":{"code":"OK002","content":""},"data":{"id":1,"first_name":"John","last_name":"Doe","email":"example@gmail.com"}}`,
 		},
 		{
-			input:        "1",
+			input:        "3",
 			wantHTTPCode: http.StatusNotFound,
 			wantResponse: `{"message_error":{"code":"ER007","content":"user not found"}}`,
 		},
@@ -131,12 +131,12 @@ func TestFindUser(t *testing.T) {
 			t.Fatalf("input %s: %v", tc.input, err)
 		}
 
-		if tc.wantHTTPCode != w.Code {
-			t.Errorf("input %s: http code: want %d, got %d", tc.input, tc.wantHTTPCode, w.Code)
-		}
-
 		if tc.wantResponse != strings.TrimRight(w.Body.String(), "\n") {
 			t.Errorf("input %s: response body: want %s, got %s", tc.input, tc.wantResponse, w.Body.String())
+		}
+
+		if tc.wantHTTPCode != w.Code {
+			t.Errorf("input %s: http code: want %d, got %d", tc.input, tc.wantHTTPCode, w.Code)
 		}
 	}
 }

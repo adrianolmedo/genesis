@@ -13,18 +13,22 @@ func (UserRepositoryOk) Create(*domain.User) error {
 	return nil
 }
 
-func (UserRepositoryOk) ByID(int64) (*domain.User, error) {
-	return &domain.User{
-		ID:        1,
-		UUID:      "a25sH4gd6s2",
-		FirstName: "John",
-		LastName:  "Doe",
-		Email:     "example@gmail.com",
-		Password:  "1234567a",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Time{},
-		DeletedAt: time.Time{},
-	}, nil
+func (UserRepositoryOk) ByID(id int64) (*domain.User, error) {
+	if id == 1 {
+		return &domain.User{
+			ID:        1,
+			UUID:      "7f5bb73c-d893-4de1-9dc9-beef376e3fbb",
+			FirstName: "John",
+			LastName:  "Doe",
+			Email:     "example@gmail.com",
+			Password:  "1234567a",
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Time{},
+			DeletedAt: time.Time{},
+		}, nil
+	}
+
+	return &domain.User{}, domain.ErrUserNotFound
 }
 
 func (UserRepositoryOk) Update(domain.User) error {
@@ -35,7 +39,7 @@ func (UserRepositoryOk) All() ([]*domain.User, error) {
 	users := []*domain.User{
 		{
 			ID:        1,
-			UUID:      "a25sH4gd6s2",
+			UUID:      "7f5bb73c-d893-4de1-9dc9-beef376e3fbb",
 			FirstName: "John",
 			LastName:  "Doe",
 			Email:     "example@gmail.com",
@@ -46,7 +50,7 @@ func (UserRepositoryOk) All() ([]*domain.User, error) {
 		},
 		{
 			ID:        2,
-			UUID:      "a25sH4gd6s1",
+			UUID:      "230dd357-e116-4baa-be61-c802ad968f3c",
 			FirstName: "Jane",
 			LastName:  "Roe",
 			Email:     "qwerty@hotmail.com",

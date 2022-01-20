@@ -85,7 +85,7 @@ func TestLoginUser(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	wantResponse := newResponse(MsgOK, "OK004", "logged", gotResponse.Data)
+	wantResponse := newResponse(msgOK, "OK004", "logged", gotResponse.Data)
 	want, err := json.Marshal(wantResponse)
 	if err != nil {
 		t.Fatal(err)
@@ -106,9 +106,9 @@ func TestLoginUserFailure(t *testing.T) {
 		wantHTTPCode int
 	}{
 		{
-			name: "wrong-body-json",
+			name: "wrong-login-form",
 			inputForm: []byte(`{
-				"email": qwerty@hotmail.com",
+				"email": example@gmail.com",
 				"password": "1234567a"
 			}`),
 			wantResponse: `{"message_error":{"code":"ER002","content":"the JSON structure is not correct"}}`,
@@ -124,7 +124,7 @@ func TestLoginUserFailure(t *testing.T) {
 			wantHTTPCode: http.StatusBadRequest,
 		},
 		{
-			name: "not-found",
+			name: "user-not-found",
 			inputForm: []byte(`{
 				"email": "ytrewq@hotmail.com",
 				"password": "1234567a"
@@ -140,7 +140,7 @@ func TestLoginUserFailure(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	s, err := service.New(mock.StorageOk{})
+	s, err := service.New(mock.StorageError{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -157,14 +157,14 @@ func TestLoginUserFailure(t *testing.T) {
 			t.Fatalf("%s: %v", tc.name, err)
 		}
 
-		// Check HTTP status code.
-		if tc.wantHTTPCode != w.Code {
-			t.Errorf("%s: http code: want %d, got %d", tc.name, tc.wantHTTPCode, w.Code)
-		}
-
 		// Check body JSON reponse.
 		if tc.wantResponse != strings.TrimRight(w.Body.String(), "\n") {
 			t.Errorf("%s: response body: want %s, got %s", tc.name, tc.wantResponse, w.Body.String())
+		}
+
+		// Check HTTP status code.
+		if tc.wantHTTPCode != w.Code {
+			t.Errorf("%s: http code: want %d, got %d", tc.name, tc.wantHTTPCode, w.Code)
 		}
 	}
 }

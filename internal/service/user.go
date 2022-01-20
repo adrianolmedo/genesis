@@ -60,6 +60,8 @@ func (us userService) Update(user domain.User) error {
 		return err
 	}
 
+	user.UpdatedAt = time.Now()
+
 	return us.repo.Update(user)
 }
 

@@ -10,19 +10,19 @@ import (
 	"github.com/adrianolmedo/go-restapi-practice/internal/storage/postgres"
 )
 
-type RepoProvider interface {
-	ProvideRepo() (*Repository, error)
+type Storage interface {
+	ProvideRepository() (*Repository, error)
 }
 
-type Storage struct {
+type storage struct {
 	dbcfg config.Database
 }
 
-func New(dbcfg config.Database) *Storage {
-	return &Storage{dbcfg}
+func New(dbcfg config.Database) *storage {
+	return &storage{dbcfg}
 }
 
-func (s Storage) ProvideRepo() (*Repository, error) {
+func (s storage) ProvideRepository() (*Repository, error) {
 	var err error
 	var db *sql.DB
 

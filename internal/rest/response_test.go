@@ -17,7 +17,7 @@ func TestNewResponse(t *testing.T) {
 	}{
 		{
 			name:         "test-1",
-			inputMsgType: MsgOK,
+			inputMsgType: msgOK,
 			inputCode:    "OK200",
 			inputContent: "resource created",
 			inputData:    nil,
@@ -25,7 +25,7 @@ func TestNewResponse(t *testing.T) {
 		},
 		{
 			name:         "test-2",
-			inputMsgType: MsgError,
+			inputMsgType: msgError,
 			inputCode:    "ER404",
 			inputContent: "resource not found",
 			inputData:    nil,

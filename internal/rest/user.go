@@ -19,7 +19,7 @@ func signUpUser(s service.Service) echo.HandlerFunc {
 
 		err := c.Bind(&form)
 		if err != nil {
-			resp := newResponse(MsgError, "ER002", "the JSON structure is not correct", nil)
+			resp := newResponse(msgError, "ER002", "the JSON structure is not correct", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
@@ -30,11 +30,11 @@ func signUpUser(s service.Service) echo.HandlerFunc {
 			Password:  form.Password,
 		})
 		if err != nil {
-			resp := newResponse(MsgError, "ER004", err.Error(), nil)
+			resp := newResponse(msgError, "ER004", err.Error(), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
 
-		resp := newResponse(MsgOK, "OK002", "user created", domain.UserProfileDTO{
+		resp := newResponse(msgOK, "OK002", "user created", domain.UserProfileDTO{
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
 			Email:     form.Email,
@@ -49,22 +49,22 @@ func findUser(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if id <= 0 || err != nil {
-			resp := newResponse(MsgError, "ER005", "positive number expected for ID user", nil)
+			resp := newResponse(msgError, "ER005", "positive number expected for ID user", nil)
 			return c.JSON(http.StatusBadRequest, resp) // 400
 		}
 
 		user, err := s.User.Find(int64(id))
 		if errors.Is(err, domain.ErrUserNotFound) {
-			resp := newResponse(MsgError, "ER007", err.Error(), nil)
+			resp := newResponse(msgError, "ER007", err.Error(), nil)
 			return c.JSON(http.StatusNotFound, resp) // 404
 		}
 
 		if err != nil {
-			resp := newResponse(MsgError, "ER009", err.Error(), nil)
+			resp := newResponse(msgError, "ER009", err.Error(), nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		resp := newResponse(MsgOK, "OK002", "", domain.UserProfileDTO{
+		resp := newResponse(msgOK, "OK002", "", domain.UserProfileDTO{
 			ID:        user.ID,
 			FirstName: user.FirstName,
 			LastName:  user.LastName,
@@ -79,14 +79,14 @@ func updateUser(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if id <= 0 || err != nil {
-			resp := newResponse(MsgError, "ER005", "positive number expected for ID user", nil)
+			resp := newResponse(msgError, "ER005", "positive number expected for ID user", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
 		form := domain.UserUpdateForm{}
 		err = c.Bind(&form)
 		if err != nil {
-			resp := newResponse(MsgError, "ER002", "the JSON structure is not correct", nil)
+			resp := newResponse(msgError, "ER002", "the JSON structure is not correct", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
@@ -100,16 +100,16 @@ func updateUser(s service.Service) echo.HandlerFunc {
 			Password:  form.Password,
 		})
 		if errors.Is(err, domain.ErrUserNotFound) {
-			resp := newResponse(MsgError, "ER007", err.Error(), nil)
+			resp := newResponse(msgError, "ER007", err.Error(), nil)
 			return c.JSON(http.StatusNoContent, resp)
 		}
 
 		if err != nil {
-			resp := newResponse(MsgError, "ER004", err.Error(), nil)
+			resp := newResponse(msgError, "ER004", err.Error(), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
 
-		resp := newResponse(MsgOK, "OK002", "user updated", domain.UserProfileDTO{
+		resp := newResponse(msgOK, "OK002", "user updated", domain.UserProfileDTO{
 			ID:        form.ID,
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
@@ -124,12 +124,12 @@ func listUsers(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		users, err := s.User.List()
 		if err != nil {
-			resp := newResponse(MsgError, "ER003", err.Error(), nil)
+			resp := newResponse(msgError, "ER003", err.Error(), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
 
 		if len(users) == 0 {
-			resp := newResponse(MsgOK, "OK002", "there are not users", nil)
+			resp := newResponse(msgOK, "OK002", "there are not users", nil)
 			return c.JSON(http.StatusOK, resp) // maybe 204
 		}
 
@@ -148,7 +148,7 @@ func listUsers(s service.Service) echo.HandlerFunc {
 			list = append(list, assemble(v))
 		}
 
-		resp := newResponse(MsgOK, "OK002", "", list)
+		resp := newResponse(msgOK, "OK002", "", list)
 		return c.JSON(http.StatusOK, resp)
 	}
 }
@@ -159,22 +159,22 @@ func deleteUser(s service.Service) echo.HandlerFunc {
 		id, err := strconv.Atoi(c.Param("id"))
 
 		if id <= 0 || err != nil {
-			resp := newResponse(MsgError, "ER005", "positive number expected for ID user", nil)
+			resp := newResponse(msgError, "ER005", "positive number expected for ID user", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
 		err = s.User.Remove(int64(id))
 		if errors.Is(err, domain.ErrUserNotFound) {
-			resp := newResponse(MsgError, "ER007", err.Error(), nil)
+			resp := newResponse(msgError, "ER007", err.Error(), nil)
 			return c.JSON(http.StatusNoContent, resp)
 		}
 
 		if err != nil {
-			resp := newResponse(MsgError, "ER006", fmt.Sprintf("could not delete user: %s", err), nil)
+			resp := newResponse(msgError, "ER006", fmt.Sprintf("could not delete user: %s", err), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
 
-		resp := newResponse(MsgOK, "OK002", "user deleted", nil)
+		resp := newResponse(msgOK, "OK002", "user deleted", nil)
 		return c.JSON(http.StatusOK, resp) // maybe 204
 	}
 }

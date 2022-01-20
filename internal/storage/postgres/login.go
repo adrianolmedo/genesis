@@ -17,7 +17,7 @@ func NewLoginRepository(db *sql.DB) *LoginRepository {
 }
 
 func (r LoginRepository) UserByLogin(email, password string) error {
-	stmt, err := r.db.Prepare("SELECT email, password FROM users WHERE email = $1 AND password = $2")
+	stmt, err := r.db.Prepare("SELECT id FROM users WHERE email = $1 AND password = $2")
 	if err != nil {
 		return err
 	}
@@ -39,18 +39,3 @@ func (r LoginRepository) UserByLogin(email, password string) error {
 
 	return nil
 }
-
-/*func (r loginRepository) UserByLogin(email, password string) error {
-	stmt, err := r.db.Prepare("SELECT email, password FROM users WHERE email = $1 AND password = $2")
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	err = stmt.QueryRow(email, password).Scan(&email, &password)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}*/

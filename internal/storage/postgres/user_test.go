@@ -2,6 +2,7 @@ package postgres_test
 
 import (
 	"database/sql"
+	"strings"
 	"testing"
 	"time"
 
@@ -57,35 +58,40 @@ func TestUserByID(t *testing.T) {
 	insertUsersData(t, db)
 
 	tt := []struct {
-		name        string
-		input       int64
-		wantEmail   string
-		errExpected bool
+		name           string
+		input          int64
+		wantEmail      string
+		errExpected    bool
+		wantErrContain string
 	}{
 		{
-			name:        "ok",
-			input:       1,
-			wantEmail:   "example@gmail.com",
-			errExpected: false,
+			name:           "ok",
+			input:          1,
+			wantEmail:      "example@gmail.com",
+			errExpected:    false,
+			wantErrContain: "",
 		},
 		{
-			name:        "not-found",
-			input:       3,
-			wantEmail:   "qwerty@hotmail.com",
-			errExpected: true,
+			name:           "user-not-found",
+			input:          3,
+			wantEmail:      "qwerty@hotmail.com",
+			errExpected:    true,
+			wantErrContain: "user not found",
 		},
 	}
 
 	for _, tc := range tt {
 		got, err := postgres.NewUserRepository(db).ByID(tc.input)
-		errReceived := err != nil
-
-		if errReceived != tc.errExpected {
+		if (err != nil) != tc.errExpected {
 			t.Fatalf("%s: ByID(%d): unexpected error status: %v", tc.name, tc.input, err)
 		}
 
+		if err != nil && !strings.Contains(err.Error(), tc.wantErrContain) {
+			t.Fatalf("want error string %q to contain %q", err.Error(), tc.wantErrContain)
+		}
+
 		if !tc.errExpected && tc.wantEmail != got.Email {
-			t.Errorf("%s: ByID(%d): want %s, got %s", tc.name, tc.input, tc.wantEmail, got.Email)
+			t.Fatalf("%s: ByID(%d): want %s, got %s", tc.name, tc.input, tc.wantEmail, got.Email)
 		}
 	}
 }
