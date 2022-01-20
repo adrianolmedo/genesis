@@ -28,6 +28,9 @@ func (r UserRepository) Create(user *domain.User) error {
 	}
 	defer stmt.Close()
 
+	user.UUID = domain.NextUserID()
+	user.CreatedAt = time.Now()
+
 	result, err := stmt.Exec(user.UUID, user.FirstName, user.LastName, user.Email, user.Password, user.CreatedAt)
 	if err != nil {
 		return err

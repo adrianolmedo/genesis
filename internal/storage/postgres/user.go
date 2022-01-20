@@ -21,15 +21,16 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 }
 
 func (r UserRepository) Create(user *domain.User) error {
-	stmt, err := r.db.Prepare("INSERT INTO users (first_name, last_name, email, password, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING id")
+	stmt, err := r.db.Prepare("INSERT INTO users (uuid, first_name, last_name, email, password, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
+	user.UUID = domain.NextUserID()
 	user.CreatedAt = time.Now()
 
-	err = stmt.QueryRow(user.FirstName, user.LastName, user.Email, user.Password, user.CreatedAt).Scan(&user.ID)
+	err = stmt.QueryRow(user.UUID, user.FirstName, user.LastName, user.Email, user.Password, user.CreatedAt).Scan(&user.ID)
 	if err != nil {
 		return err
 	}
@@ -162,6 +163,7 @@ func scanRowUser(s scanner) (*domain.User, error) {
 
 	err := s.Scan(
 		&user.ID,
+		&user.UUID,
 		&user.FirstName,
 		&user.LastName,
 		&user.Email,

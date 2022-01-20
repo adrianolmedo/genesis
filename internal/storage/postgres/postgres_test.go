@@ -15,7 +15,7 @@ var dbcfg = config.Database{
 	Port:     "5432",
 	User:     "postgres",
 	Password: "1234567@",
-	Name:     "go_practice1",
+	Name:     "go_testing_restapi",
 }
 
 // TestDB can open & close.

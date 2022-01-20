@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
 	"github.com/adrianolmedo/go-restapi-practice/internal/storage/mysql"
@@ -20,12 +19,10 @@ func TestCreateUser(t *testing.T) {
 	r := mysql.NewUserRepository(db)
 
 	input := &domain.User{
-		UUID:      domain.NextUserID(),
 		FirstName: "John",
 		LastName:  "Doe",
 		Email:     "example@gmail.com",
 		Password:  "1234567a",
-		CreatedAt: time.Now(),
 	}
 
 	if err := r.Create(input); err != nil {
@@ -113,23 +110,19 @@ func insertUsersData(t *testing.T, db *sql.DB) {
 	//defer closeDB(t, db)
 
 	if err := mysql.NewUserRepository(db).Create(&domain.User{
-		UUID:      domain.NextUserID(),
 		FirstName: "John",
 		LastName:  "Doe",
 		Email:     "example@gmail.com",
 		Password:  "1234567a",
-		CreatedAt: time.Now(),
 	}); err != nil {
 		t.Fatal(err)
 	}
 
 	if err := mysql.NewUserRepository(db).Create(&domain.User{
-		UUID:      domain.NextUserID(),
 		FirstName: "Jane",
 		LastName:  "Roe",
 		Email:     "qwerty@hotmail.com",
 		Password:  "1234567b",
-		CreatedAt: time.Now(),
 	}); err != nil {
 		t.Fatal(err)
 	}

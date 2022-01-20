@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
 	"github.com/adrianolmedo/go-restapi-practice/internal/storage/postgres"
@@ -164,7 +163,6 @@ func insertUsersData(t *testing.T, db *sql.DB) {
 		LastName:  "Doe",
 		Email:     "example@gmail.com",
 		Password:  "1234567a",
-		CreatedAt: time.Now(),
 	}); err != nil {
 		t.Fatal(err)
 	}
@@ -174,7 +172,6 @@ func insertUsersData(t *testing.T, db *sql.DB) {
 		LastName:  "Roe",
 		Email:     "qwerty@hotmail.com",
 		Password:  "1234567b",
-		CreatedAt: time.Now(),
 	}); err != nil {
 		t.Fatal(err)
 	}

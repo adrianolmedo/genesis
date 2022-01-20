@@ -15,7 +15,7 @@ var dbcfg = config.Database{
 	Port:     "3306",
 	User:     "pmadrian",
 	Password: "3eD5gfiqjSYO@x%k",
-	Name:     "go_restapi_practice",
+	Name:     "go_testing_restapi",
 }
 
 func TestDB(t *testing.T) {

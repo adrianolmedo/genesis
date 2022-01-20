@@ -1,8 +1,6 @@
 package service
 
 import (
-	"time"
-
 	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
 	"github.com/adrianolmedo/go-restapi-practice/internal/storage"
 )
@@ -37,9 +35,6 @@ func (us userService) SignUp(user *domain.User) error {
 		return err
 	}
 
-	user.UUID = domain.NextUserID()
-	user.CreatedAt = time.Now()
-
 	return us.repo.Create(user)
 }
 
@@ -59,8 +54,6 @@ func (us userService) Update(user domain.User) error {
 	if err != nil {
 		return err
 	}
-
-	user.UpdatedAt = time.Now()
 
 	return us.repo.Update(user)
 }
