@@ -86,10 +86,14 @@ func loadFiles(privateFile, publicFile string) error {
 		return err
 	}
 
-	return ParseRSA(privateBytes, publicBytes)
+	return parseRSA(privateBytes, publicBytes)
 }
 
-func ParseRSA(privateBytes, publicBytes []byte) error {
+func ParseRSA(privateRSA, publicRSA string) error {
+	return parseRSA([]byte(privateRSA), []byte(publicRSA))
+}
+
+func parseRSA(privateBytes, publicBytes []byte) error {
 	var err error
 
 	signKey, err = jwt.ParseRSAPrivateKeyFromPEM(privateBytes)

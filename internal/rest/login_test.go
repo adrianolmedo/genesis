@@ -52,7 +52,7 @@ func TestLoginUser(t *testing.T) {
 	}`)
 
 	// Read mocked credentials.
-	err := jwt.ParseRSA([]byte(privateSRA), []byte(publicSRA))
+	err := jwt.ParseRSA(privateSRA, publicSRA)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -135,7 +135,7 @@ func TestLoginUserFailure(t *testing.T) {
 	}
 
 	// Read mocked credentials.
-	err := jwt.ParseRSA([]byte(privateSRA), []byte(publicSRA))
+	err := jwt.ParseRSA(privateSRA, publicSRA)
 	if err != nil {
 		t.Fatal(err)
 	}
