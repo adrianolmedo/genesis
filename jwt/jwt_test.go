@@ -39,19 +39,20 @@ func TestJWTClaims(t *testing.T) {
 	input := "example@gmail.com"
 
 	loadKeys(t)
-	token := generateToken(t, input)
+	token := genToken(t, input)
 	verifyClaims(t, token)
 }
 
+// loadKeys read mocked credentials.
 func loadKeys(t *testing.T) {
-	// Read mocked credentials.
 	err := jwt.ParseRSA(privateSRA, publicSRA)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func generateToken(t *testing.T, email string) (token string) {
+// genToken generate token from an email input.
+func genToken(t *testing.T, email string) (token string) {
 	token, err := jwt.Generate(email)
 	if err != nil {
 		t.Fatal(err)
