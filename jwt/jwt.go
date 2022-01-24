@@ -22,8 +22,8 @@ type JWTClaims struct {
 	jwt.StandardClaims
 }
 
-// New generate signed token.
-func New(userEmail string) (string, error) {
+// Generate signed token from email user.
+func Generate(userEmail string) (string, error) {
 	claims := JWTClaims{
 		Email: userEmail,
 		StandardClaims: jwt.StandardClaims{
@@ -41,7 +41,7 @@ func New(userEmail string) (string, error) {
 	return signedToken, nil
 }
 
-// Verify is for validation token.
+// Verify signed token.
 func Verify(strToken string) (JWTClaims, error) {
 	token, err := jwt.ParseWithClaims(strToken, &JWTClaims{}, verify)
 	if err != nil {
@@ -63,8 +63,7 @@ func verify(token *jwt.Token) (interface{}, error) {
 	return verifiKey, nil
 }
 
-// LoadFiles read SRA files.
-// Se asegura poderse ejecutar una única vez.
+// LoadFiles read SRA files. Se asegura poderse ejecutar una única vez.
 func LoadFiles(privateFile, publicFile string) error {
 	var err error
 
@@ -88,6 +87,10 @@ func loadFiles(privateFile, publicFile string) error {
 	}
 
 	return parseRSA(privateBytes, publicBytes)
+}
+
+func ParseRSA(privateRSA, publicRSA string) error {
+	return parseRSA([]byte(privateRSA), []byte(publicRSA))
 }
 
 func parseRSA(privateBytes, publicBytes []byte) error {

@@ -24,9 +24,8 @@ func TestValidateEmail(t *testing.T) {
 
 		err := validateEmail(user.Email)
 		errReceived := err != nil
-
 		if errReceived != tc.errExpected {
-			t.Fatalf("%s: validateUser: unexpected error status: %v", tc.name, err)
+			t.Fatalf("%s: unexpected error value: %v", tc.name, err)
 		}
 	}
 }

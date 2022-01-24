@@ -1,15 +1,25 @@
 package service
 
-import "github.com/adrianolmedo/go-restapi-practice/internal/storage"
+import (
+	"fmt"
 
-type Services struct {
-	UserService  UserService
-	LoginService LoginService
+	"github.com/adrianolmedo/go-restapi-practice/internal/storage"
+)
+
+type Service struct {
+	Storage storage.Storage
+	User    UserService
+	Login   LoginService
 }
 
-func NewServices(r storage.Repositories) *Services {
-	return &Services{
-		UserService:  NewUserService(r.UserRepository),
-		LoginService: NewLoginService(r.LoginRepository),
+func New(s storage.Storage) (*Service, error) {
+	r, err := s.ProvideRepository()
+	if err != nil {
+		return nil, fmt.Errorf("error from storage: %v", err)
 	}
+
+	return &Service{
+		User:  NewUserService(r.User),
+		Login: NewLoginService(r.Login),
+	}, nil
 }

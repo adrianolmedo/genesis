@@ -8,7 +8,7 @@ import (
 // UserService (before UserDAO) interface is InterfaceDAO in Pattern DAO.
 // http://chuwiki.chuidiang.org/index.php?title=Patr%C3%B3n_DAO
 type UserService interface {
-	SignUp(domain.User) error
+	SignUp(*domain.User) error
 	Find(id int64) (*domain.User, error)
 	Update(domain.User) error
 	List() ([]*domain.User, error)
@@ -16,15 +16,15 @@ type UserService interface {
 }
 
 type userService struct {
-	repository storage.UserRepository
+	repo storage.UserRepository
 }
 
-func NewUserService(r storage.UserRepository) UserService {
-	return &userService{r}
+func NewUserService(repo storage.UserRepository) UserService {
+	return &userService{repo}
 }
 
-// SignUp is business logic to register a User.
-func (s userService) SignUp(user domain.User) error {
+// SignUp business logic to register a User.
+func (us userService) SignUp(user *domain.User) error {
 	err := user.CheckEmptyFields()
 	if err != nil {
 		return err
@@ -35,17 +35,16 @@ func (s userService) SignUp(user domain.User) error {
 		return err
 	}
 
-	user.UUID = domain.NextUserID()
-	return s.repository.Create(user)
+	return us.repo.Create(user)
 }
 
-// ByID is business logic for get a User by its ID.
-func (s userService) Find(id int64) (*domain.User, error) {
-	return s.repository.ByID(id)
+// Find a User by its ID.
+func (us userService) Find(id int64) (*domain.User, error) {
+	return us.repo.ByID(id)
 }
 
-// Update is business logic for update a User.
-func (s userService) Update(user domain.User) error {
+// Update business logic for update a User.
+func (us userService) Update(user domain.User) error {
 	err := user.CheckEmptyFields()
 	if err != nil {
 		return err
@@ -56,14 +55,15 @@ func (s userService) Update(user domain.User) error {
 		return err
 	}
 
-	return s.repository.Update(user)
+	return us.repo.Update(user)
 }
 
-func (s userService) List() ([]*domain.User, error) {
-	return s.repository.All()
+// List get list of users.
+func (us userService) List() ([]*domain.User, error) {
+	return us.repo.All()
 }
 
-// Remove is business logic for delete User by its ID.
-func (s userService) Remove(id int64) error {
-	return s.repository.Delete(id)
+// Remove delete User by its ID.
+func (us userService) Remove(id int64) error {
+	return us.repo.Delete(id)
 }

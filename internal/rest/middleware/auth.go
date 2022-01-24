@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/adrianolmedo/go-restapi-practice/infra/jwt"
+	"github.com/adrianolmedo/go-restapi-practice/jwt"
 
 	"github.com/labstack/echo/v4"
 )
@@ -14,7 +14,7 @@ func Auth(f echo.HandlerFunc) echo.HandlerFunc {
 		token := c.Request().Header.Get("Authorization")
 		_, err := jwt.Verify(token)
 		if err != nil {
-			return c.JSON(http.StatusForbidden, map[string]string{"message_error": "You don't have authorization"})
+			return c.JSON(http.StatusForbidden, map[string]string{"message_error": "you don't have authorization"})
 		}
 		return f(c)
 	}

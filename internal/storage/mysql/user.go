@@ -2,6 +2,8 @@ package mysql
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
@@ -18,17 +20,18 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	}
 }
 
-func (r UserRepository) Create(user domain.User) error {
-	query := "INSERT INTO users (first_name, last_name, email, password, created_at) VALUES(?, ?, ?, ?, ?)"
+func (r UserRepository) Create(user *domain.User) error {
+	query := "INSERT INTO users (uuid, first_name, last_name, email, password, created_at) VALUES(?, ?, ?, ?, ?, ?)"
 	stmt, err := r.db.Prepare(query)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
+	user.UUID = domain.NextUserID()
 	user.CreatedAt = time.Now()
 
-	result, err := stmt.Exec(user.FirstName, user.LastName, user.Email, user.Password, user.CreatedAt)
+	result, err := stmt.Exec(user.UUID, user.FirstName, user.LastName, user.Email, user.Password, user.CreatedAt)
 	if err != nil {
 		return err
 	}
@@ -51,16 +54,15 @@ func (r UserRepository) ByID(id int64) (*domain.User, error) {
 
 	// As QueryRow returns a rows we can pass it directly to the mapping
 	user, err := scanRowUser(stmt.QueryRow(id))
-	if err != nil {
-		return nil, domain.ErrUserNotFound
+	if errors.Is(err, sql.ErrNoRows) {
+		return &domain.User{}, domain.ErrUserNotFound
 	}
 
-	return &domain.User{
-		ID:        user.ID,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Email:     user.Email,
-	}, nil
+	if err != nil {
+		return &domain.User{}, err
+	}
+
+	return user, nil
 }
 
 func (r UserRepository) Update(user domain.User) error {
@@ -113,22 +115,6 @@ func (r UserRepository) All() ([]*domain.User, error) {
 		return nil, err
 	}
 
-	/*resp := make([]*domain.User, 0, len(users))
-
-	assemble := func(u *User) *domain.User {
-		return &domain.User{
-			ID:        u.ID,
-			FirstName: u.FirstName,
-			LastName:  u.LastName,
-			Email:     u.Email,
-			Password:  u.Password,
-		}
-	}
-
-	for _, u := range users {
-		resp = append(resp, assemble(u))
-	}*/
-
 	return users, nil
 }
 
@@ -152,6 +138,21 @@ func (r UserRepository) Delete(id int64) error {
 	if rows == 0 {
 		return domain.ErrUserNotFound
 	}
+	return nil
+}
+
+func (r UserRepository) DeleteAll() error {
+	stmt, err := r.db.Prepare("TRUNCATE TABLE users")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec()
+	if err != nil {
+		return fmt.Errorf("can't truncate table: %v", err)
+	}
+
 	return nil
 }
 
@@ -182,7 +183,7 @@ func scanRowUser(s scanner) (*domain.User, error) {
 	}
 
 	user.UpdatedAt = updatedAtNull.Time
-	user.DeletedAt = updatedAtNull.Time
+	user.DeletedAt = deletedAtNull.Time
 
 	return user, nil
 }

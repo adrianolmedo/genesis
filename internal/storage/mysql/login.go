@@ -2,6 +2,8 @@ package mysql
 
 import (
 	"database/sql"
+
+	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
 )
 
 type LoginRepository struct {
@@ -15,15 +17,21 @@ func NewLoginRepository(db *sql.DB) *LoginRepository {
 }
 
 func (r LoginRepository) UserByLogin(email, password string) error {
-	stmt, err := r.db.Prepare("SELECT email, password FROM users WHERE email = ? AND password = ?")
+	stmt, err := r.db.Prepare("SELECT id FROM users WHERE email = ? AND password = ?")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRow(email, password).Err()
+	var id int64
+
+	err = stmt.QueryRow(email, password).Scan(&id)
 	if err != nil {
 		return err
+	}
+
+	if id <= 0 {
+		return domain.ErrUserNotFound
 	}
 
 	return nil

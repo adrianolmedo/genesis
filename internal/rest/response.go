@@ -1,8 +1,8 @@
 package rest
 
 const (
-	MsgError = "error"
-	MsgOK    = "ok"
+	msgError = "error"
+	msgOK    = "ok"
 )
 
 type response struct {
@@ -27,7 +27,7 @@ func newResponse(message, code, content string, data interface{}) response {
 	var resp response
 
 	switch message {
-	case MsgOK:
+	case msgOK:
 		resp = response{
 			messageOK: &messageOK{
 				Code:    code,
@@ -36,7 +36,7 @@ func newResponse(message, code, content string, data interface{}) response {
 			messageError: nil,
 			Data:         data,
 		}
-	case MsgError:
+	case msgError:
 		resp = response{
 			messageOK: nil,
 			messageError: &messageError{

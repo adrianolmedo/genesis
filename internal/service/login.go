@@ -7,17 +7,17 @@ type LoginService interface {
 }
 
 type loginService struct {
-	repository storage.LoginRepository
+	repo storage.LoginRepository
 }
 
-func NewLoginService(r storage.LoginRepository) LoginService {
-	return &loginService{r}
+func NewLoginService(repo storage.LoginRepository) LoginService {
+	return &loginService{repo}
 }
 
-func (s loginService) Execute(email, password string) error {
+func (ls loginService) Execute(email, password string) error {
 	if err := validateEmail(email); err != nil {
 		return err
 	}
 
-	return s.repository.UserByLogin(email, password)
+	return ls.repo.UserByLogin(email, password)
 }

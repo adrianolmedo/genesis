@@ -7,9 +7,6 @@ import (
 	"strings"
 )
 
-// Driver type for enum driver engines in func main.
-type Driver string
-
 // Server configuration for RESTful API.
 type Config struct {
 	// LocalHost set true if you want the server runing on 127.0.0.1 by default,
@@ -28,7 +25,7 @@ type Config struct {
 // Database config.
 type Database struct {
 	// Engine eg.: "mysql" or "postgres".
-	Engine Driver `json:"engine"`
+	Engine string `json:"engine"`
 
 	// Server when is running the database Engine.
 	Server string `json:"server"`
@@ -75,7 +72,7 @@ func Init(path string) (*Config, error) {
 func (cfg *Config) Address() string {
 	IP := "127.0.0.1"
 	if !cfg.LocalHost {
-		IP = getHostIP()
+		IP = GetHostIP()
 	}
 
 	if cfg.Port == "" {
@@ -85,8 +82,8 @@ func (cfg *Config) Address() string {
 	return IP + ":" + cfg.Port
 }
 
-// getHostIP return local IP. If you are not connected to IPv4 it will return empty string.
-func getHostIP() string {
+// GetHostIP return local IP. If you are not connected to IPv4 it will return empty string.
+func GetHostIP() string {
 	netInterfaceAddresses, err := net.InterfaceAddrs()
 	if err != nil {
 		return ""

@@ -5,17 +5,16 @@ import (
 	"strings"
 
 	"github.com/adrianolmedo/go-restapi-practice/config"
-	"github.com/adrianolmedo/go-restapi-practice/infra/jwt"
-	"github.com/adrianolmedo/go-restapi-practice/internal/server/rest"
+	"github.com/adrianolmedo/go-restapi-practice/internal/rest"
+	"github.com/adrianolmedo/go-restapi-practice/internal/service"
 	"github.com/adrianolmedo/go-restapi-practice/internal/storage"
+	"github.com/adrianolmedo/go-restapi-practice/jwt"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 func Run(cfgPath string) {
-	var repos *storage.Repositories
-
 	// Load config file.
 	cfg, err := config.Init(cfgPath)
 	if err != nil {
@@ -28,16 +27,10 @@ func Run(cfgPath string) {
 		log.Fatalf("Certificates could not be loaded: %v", err)
 	}
 
-	// - Set up storage from configuration loaded.
-	repos, err = storage.NewRepositories(cfg.Database)
-	if err != nil {
-		log.Fatalf("Error from storage: %v\n", err)
-	}
-
 	// Echo framework.
 	e := echo.New()
 
-	// - Load middlewares.
+	// - Load Echo middlewares.
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
 
@@ -47,8 +40,16 @@ func Run(cfgPath string) {
 		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
 	}))
 
+	s := storage.New(cfg.Database)
+
+	// Prepare services.
+	svc, err := service.New(s)
+	if err != nil {
+		log.Printf("%v\n", err)
+	}
+
 	// - Call routes.
-	rest.Routes(e, repos)
+	rest.Routes(e, *svc)
 
 	// - Up server.
 	err = e.Start(cfg.Address())

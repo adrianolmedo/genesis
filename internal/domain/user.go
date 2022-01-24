@@ -2,7 +2,6 @@ package domain
 
 import (
 	"errors"
-	"strings"
 	"time"
 
 	"github.com/pborman/uuid"
@@ -39,7 +38,7 @@ type UserID string
 
 // NextUserID generates a new UUID.
 func NextUserID() UserID {
-	return UserID(strings.Split(strings.ToUpper(uuid.New()), "-")[0])
+	return UserID(uuid.New())
 }
 
 type UserSignUpForm struct {

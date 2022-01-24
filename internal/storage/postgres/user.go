@@ -2,6 +2,8 @@ package postgres
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
@@ -18,19 +20,21 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	}
 }
 
-func (r UserRepository) Create(user domain.User) error {
-	stmt, err := r.db.Prepare("INSERT INTO users (first_name, last_name, email, password, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING id")
+func (r UserRepository) Create(user *domain.User) error {
+	stmt, err := r.db.Prepare("INSERT INTO users (uuid, first_name, last_name, email, password, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
+	user.UUID = domain.NextUserID()
 	user.CreatedAt = time.Now()
 
-	err = stmt.QueryRow(user.FirstName, user.LastName, user.Email, user.Password, user.CreatedAt).Scan(&user.ID)
+	err = stmt.QueryRow(user.UUID, user.FirstName, user.LastName, user.Email, user.Password, user.CreatedAt).Scan(&user.ID)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -42,8 +46,12 @@ func (r UserRepository) ByID(id int64) (*domain.User, error) {
 	defer stmt.Close()
 
 	user, err := scanRowUser(stmt.QueryRow(id))
+	if errors.Is(err, sql.ErrNoRows) {
+		return &domain.User{}, domain.ErrUserNotFound
+	}
+
 	if err != nil {
-		return nil, domain.ErrUserNotFound
+		return &domain.User{}, err
 	}
 
 	return user, nil
@@ -101,23 +109,6 @@ func (r UserRepository) All() ([]*domain.User, error) {
 		return nil, err
 	}
 
-	/*resp := make([]*domain.User, 0, len(users))
-
-	assemble := func(u *User) *domain.User {
-
-		return &domain.User{
-			ID:        u.ID,
-			FirstName: u.FirstName,
-			LastName:  u.LastName,
-			Email:     u.Email,
-			Password:  u.Password,
-		}
-	}
-
-	for _, u := range users {
-		resp = append(resp, assemble(u))
-	}*/
-
 	return users, nil
 }
 
@@ -144,6 +135,21 @@ func (r UserRepository) Delete(id int64) error {
 	return nil
 }
 
+func (r UserRepository) DeleteAll() error {
+	stmt, err := r.db.Prepare("TRUNCATE TABLE users RESTART IDENTITY")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec()
+	if err != nil {
+		return fmt.Errorf("can't truncate table: %v", err)
+	}
+
+	return nil
+}
+
 // helpers...
 
 type scanner interface {
@@ -157,6 +163,7 @@ func scanRowUser(s scanner) (*domain.User, error) {
 
 	err := s.Scan(
 		&user.ID,
+		&user.UUID,
 		&user.FirstName,
 		&user.LastName,
 		&user.Email,
@@ -170,7 +177,7 @@ func scanRowUser(s scanner) (*domain.User, error) {
 	}
 
 	user.UpdatedAt = updatedAtNull.Time
-	user.DeletedAt = updatedAtNull.Time
+	user.DeletedAt = deletedAtNull.Time
 
 	return user, nil
 }
