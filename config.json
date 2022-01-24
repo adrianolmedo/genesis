@@ -8,6 +8,6 @@
         "port": "5432",
         "user": "postgres",
         "password": "1234567@",
-        "name": "go_practice1"
+        "name": "go_practice_restapi"
     }
 }
