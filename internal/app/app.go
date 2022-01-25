@@ -14,15 +14,9 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func Run(cfgPath string) {
-	// Load config file.
-	cfg, err := config.Init(cfgPath)
-	if err != nil {
-		log.Fatalf("Config error: %s", err)
-	}
-
+func Run(cfg *config.Config) {
 	// Load authentication credentials.
-	err = jwt.LoadFiles("app.sra", "app.sra.pub")
+	err := jwt.LoadFiles("app.sra", "app.sra.pub")
 	if err != nil {
 		log.Fatalf("Certificates could not be loaded: %v", err)
 	}
@@ -52,7 +46,7 @@ func Run(cfgPath string) {
 	rest.Routes(e, *svc)
 
 	// - Up server.
-	err = e.Start(cfg.Address())
+	err = e.Start(":" + cfg.Port)
 	if err != nil {
 		log.Printf("Error server: %v\n", err)
 	}

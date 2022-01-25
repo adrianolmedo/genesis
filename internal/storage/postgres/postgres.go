@@ -10,9 +10,9 @@ import (
 )
 
 func New(dbcfg config.Database) (db *sql.DB, err error) {
-	// postgres://user:password@server:port/dbname?sslmode=disable
+	// postgres://user:password@host:port/dbname?sslmode=disable
 	conn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		dbcfg.User, dbcfg.Password, dbcfg.Server, dbcfg.Port, dbcfg.Name)
+		dbcfg.User, dbcfg.Password, dbcfg.Host, dbcfg.Port, dbcfg.Name)
 
 	db, err = sql.Open(string(dbcfg.Engine), conn)
 	if err != nil {
