@@ -14,7 +14,7 @@ func New(dbcfg config.Database) (db *sql.DB, err error) {
 	conn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		dbcfg.User, dbcfg.Password, dbcfg.Host, dbcfg.Port, dbcfg.Name)
 
-	db, err = sql.Open(string(dbcfg.Engine), conn)
+	db, err = sql.Open(dbcfg.Engine, conn)
 	if err != nil {
 		return nil, fmt.Errorf("can't open the data base, %v", err)
 	}
