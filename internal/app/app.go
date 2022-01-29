@@ -1,7 +1,7 @@
 package app
 
 import (
-	"log"
+	"fmt"
 	"strings"
 
 	"github.com/adrianolmedo/go-restapi-practice/config"
@@ -14,11 +14,11 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func Run(cfg *config.Config) {
+func Run(cfg *config.Config) error {
 	// Load authentication credentials.
 	err := jwt.LoadFiles("app.sra", "app.sra.pub")
 	if err != nil {
-		log.Fatalf("Certificates could not be loaded: %v", err)
+		return fmt.Errorf("certificates could not be loaded: %v", err)
 	}
 
 	// Echo framework.
@@ -34,20 +34,17 @@ func Run(cfg *config.Config) {
 		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
 	}))
 
+	// Prepare services.
 	s := storage.New(cfg.Database)
 
-	// Prepare services.
 	svc, err := service.New(s)
 	if err != nil {
-		log.Printf("%v\n", err)
+		return err
 	}
 
 	// - Call routes.
 	rest.Routes(e, *svc)
 
 	// - Up server.
-	err = e.Start(":" + cfg.Port)
-	if err != nil {
-		log.Printf("Error server: %v\n", err)
-	}
+	return e.Start(":" + cfg.Port)
 }

@@ -8,4 +8,5 @@ require (
 	github.com/labstack/echo/v4 v4.3.0
 	github.com/lib/pq v1.10.2
 	github.com/pborman/uuid v1.2.1
+	github.com/peterbourgon/ff/v3 v3.1.2
 )

@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+
+  rest:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rest
+    environment:
+      - DBENGINE=${DBENGINE}
+      - DBHOST=${DBHOST}
+      - DBPORT=3306
+      - DBUSER=${MYSQL_USER}
+      - DBPASS=${MYSQL_PASSWORD}
+      - DBNAME=${MYSQL_DATABASE}
+    ports:
+      - ${REST_HTTP_PORT}:80
