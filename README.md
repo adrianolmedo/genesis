@@ -1,7 +1,7 @@
 
 # Practice RESTful API in Go
 
-My first prototype of RESTful API written in Go based in [Dao Pattern](https://github.com/adrianolmedo/design-patterns/tree/main/go/dao-pattern). Whit persistence to MySQL and Postgres.
+My first prototype of RESTful API written in Go whit persistence to MySQL or Postgres.
 
 ## TO-DO
 
@@ -11,7 +11,7 @@ My first prototype of RESTful API written in Go based in [Dao Pattern](https://g
 
 ## Content
 
-* [Run](#run)
+* [Run with Docker](#run-with-docker)
 * [Endpoints](#endpoints)
   * [Sign Up](#sign-up)
   * [Get user by ID](#get-user-by-id)
@@ -20,25 +20,13 @@ My first prototype of RESTful API written in Go based in [Dao Pattern](https://g
   * [Get all users](#get-all-users)
   * [Delete user by ID](#delete-user-by-id)
 
-## Run:
-
-1- Prepare certificates for JWT:
+## Run with Docker:
 
 ```bash
 $ git clone https://github.com/adrianolmedo/go-restapi-practice.git
 $ openssl genrsa -out app.sra 1024
 $ openssl rsa -in app.sra -pubout > app.sra.pub
-```
-
-2- Create a database in Postgres and execute `$ \i postsgres.sql` for install tables.
-
-3- Write configuration of server and database in `config.json` file.
-
-4- Compile and run:
-
-```bash
-$ ./compile.sh
-$ ./rest -c config.json
+$ docker-compose up -d --build 
 ```
 
 ## Endpoints:
