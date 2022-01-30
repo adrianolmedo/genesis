@@ -1,6 +1,3 @@
-install:
-	go install cmd/rest/rest.go
-
 build:
 	go build cmd/rest/rest.go
 
