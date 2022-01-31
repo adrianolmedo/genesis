@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS go_practice_restapi;
+
+USE go_practice_restapi;
+
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT,
     uuid char(36) NULL,
