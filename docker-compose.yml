@@ -1,5 +1,13 @@
 version: '3'
 
+networks:
+  backend:
+    driver: ${NETWORKS_DRIVER}
+
+volumes:
+  mysql:
+    driver: ${VOLUMES_DRIVER}
+      
 services:
 
   rest:
@@ -16,3 +24,23 @@ services:
       - DBNAME=${MYSQL_DATABASE}
     ports:
       - ${REST_HTTP_PORT}:80
+    depends_on:
+      - mysql
+    networks:
+      - backend
+
+  mysql:
+    image: mysql:${MYSQL_VERSION}
+    container_name: mysql
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    ports:
+      - ${MYSQL_PORT}:3306
+    volumes:
+      - ./mysql.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql:/var/lib/mysql
+    networks:
+      - backend
