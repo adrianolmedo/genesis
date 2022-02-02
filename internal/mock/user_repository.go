@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
+	"github.com/adrianolmedo/go-restapi/internal/domain"
 )
 
 type UserRepositoryOk struct{}

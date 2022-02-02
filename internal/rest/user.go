@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
-	"github.com/adrianolmedo/go-restapi-practice/internal/service"
+	"github.com/adrianolmedo/go-restapi/internal/domain"
+	"github.com/adrianolmedo/go-restapi/internal/service"
 
 	"github.com/labstack/echo/v4"
 )

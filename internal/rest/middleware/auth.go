@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/adrianolmedo/go-restapi-practice/jwt"
+	"github.com/adrianolmedo/go-restapi/jwt"
 
 	"github.com/labstack/echo/v4"
 )

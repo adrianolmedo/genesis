@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/adrianolmedo/go-restapi-practice/config"
-	"github.com/adrianolmedo/go-restapi-practice/internal/rest"
-	"github.com/adrianolmedo/go-restapi-practice/internal/service"
-	"github.com/adrianolmedo/go-restapi-practice/internal/storage"
-	"github.com/adrianolmedo/go-restapi-practice/jwt"
+	"github.com/adrianolmedo/go-restapi/config"
+	"github.com/adrianolmedo/go-restapi/internal/rest"
+	"github.com/adrianolmedo/go-restapi/internal/service"
+	"github.com/adrianolmedo/go-restapi/internal/storage"
+	"github.com/adrianolmedo/go-restapi/jwt"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

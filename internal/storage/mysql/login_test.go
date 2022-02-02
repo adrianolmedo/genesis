@@ -3,8 +3,8 @@ package mysql_test
 import (
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
-	"github.com/adrianolmedo/go-restapi-practice/internal/storage/mysql"
+	"github.com/adrianolmedo/go-restapi/internal/domain"
+	"github.com/adrianolmedo/go-restapi/internal/storage/mysql"
 )
 
 func TestUserByLogin(t *testing.T) {

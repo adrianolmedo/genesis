@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi-practice/internal/mock"
-	"github.com/adrianolmedo/go-restapi-practice/internal/service"
+	"github.com/adrianolmedo/go-restapi/internal/mock"
+	"github.com/adrianolmedo/go-restapi/internal/service"
 
 	"github.com/labstack/echo/v4"
 )

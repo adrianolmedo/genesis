@@ -1,6 +1,6 @@
 package mock
 
-import "github.com/adrianolmedo/go-restapi-practice/internal/storage"
+import "github.com/adrianolmedo/go-restapi/internal/storage"
 
 type StorageOk struct{}
 

@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi-practice/config"
-	"github.com/adrianolmedo/go-restapi-practice/internal/storage/postgres"
+	"github.com/adrianolmedo/go-restapi/config"
+	"github.com/adrianolmedo/go-restapi/internal/storage/postgres"
 )
 
 // dbcfg credentials for Postgres testing database connection.

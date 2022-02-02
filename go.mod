@@ -1,4 +1,4 @@
-module github.com/adrianolmedo/go-restapi-practice
+module github.com/adrianolmedo/go-restapi
 
 go 1.15
 
