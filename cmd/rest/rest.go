@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/adrianolmedo/go-restapi-practice/config"
-	"github.com/adrianolmedo/go-restapi-practice/internal/app"
+	"github.com/adrianolmedo/go-restapi/config"
+	"github.com/adrianolmedo/go-restapi/internal/app"
 
 	"github.com/peterbourgon/ff/v3"
 )

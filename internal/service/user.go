@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
-	"github.com/adrianolmedo/go-restapi-practice/internal/storage"
+	"github.com/adrianolmedo/go-restapi/internal/domain"
+	"github.com/adrianolmedo/go-restapi/internal/storage"
 )
 
 // UserService (before UserDAO) interface is InterfaceDAO in Pattern DAO.

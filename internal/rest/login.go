@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
-	"github.com/adrianolmedo/go-restapi-practice/internal/service"
-	"github.com/adrianolmedo/go-restapi-practice/jwt"
+	"github.com/adrianolmedo/go-restapi/internal/domain"
+	"github.com/adrianolmedo/go-restapi/internal/service"
+	"github.com/adrianolmedo/go-restapi/jwt"
 
 	"github.com/labstack/echo/v4"
 )

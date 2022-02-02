@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
-	"github.com/adrianolmedo/go-restapi-practice/internal/mock"
-	"github.com/adrianolmedo/go-restapi-practice/internal/storage"
+	"github.com/adrianolmedo/go-restapi/internal/domain"
+	"github.com/adrianolmedo/go-restapi/internal/mock"
+	"github.com/adrianolmedo/go-restapi/internal/storage"
 )
 
 func TestSignUp(t *testing.T) {

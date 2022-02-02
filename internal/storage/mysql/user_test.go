@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi-practice/internal/domain"
-	"github.com/adrianolmedo/go-restapi-practice/internal/storage/mysql"
+	"github.com/adrianolmedo/go-restapi/internal/domain"
+	"github.com/adrianolmedo/go-restapi/internal/storage/mysql"
 )
 
 func TestCreateUser(t *testing.T) {

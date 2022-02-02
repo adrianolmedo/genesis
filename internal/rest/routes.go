@@ -1,8 +1,8 @@
 package rest
 
 import (
-	"github.com/adrianolmedo/go-restapi-practice/internal/rest/middleware"
-	"github.com/adrianolmedo/go-restapi-practice/internal/service"
+	"github.com/adrianolmedo/go-restapi/internal/rest/middleware"
+	"github.com/adrianolmedo/go-restapi/internal/service"
 
 	"github.com/labstack/echo/v4"
 )
