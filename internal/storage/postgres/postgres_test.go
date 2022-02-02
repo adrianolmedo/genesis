@@ -11,7 +11,7 @@ import (
 // dbcfg credentials for Postgres testing database connection.
 var dbcfg = config.Database{
 	Engine:   "postgres",
-	Server:   "127.0.0.1",
+	Host:     "127.0.0.1",
 	Port:     "5432",
 	User:     "postgres",
 	Password: "1234567@",

@@ -1,101 +1,52 @@
 package config
 
-import (
-	"encoding/json"
-	"net"
-	"os"
-	"strings"
-)
+import "strings"
 
-// Server configuration for RESTful API.
+// Config server RESTful API.
 type Config struct {
-	// LocalHost set true if you want the server runing on 127.0.0.1 by default,
-	// false if you want the server run it using IPv4 address (local IP).
-	LocalHost bool `json:"localhost"`
+	// Port for address server, if is empty by default will are 80.
+	Port string
 
-	// Port server, if is empty by default will are 8080.
-	Port string `json:"port"`
+	// CORS directive. Add address separated by comma. Example, "127.0.0.1,172.17.0.1".
+	CORS string
 
-	// CORS directive, add address separated by comma.
-	CORS string `json:"cors"`
-
-	Database `json:"database"`
+	Database
 }
 
 // Database config.
 type Database struct {
 	// Engine eg.: "mysql" or "postgres".
-	Engine string `json:"engine"`
+	Engine string
 
-	// Server when is running the database Engine.
-	Server string `json:"server"`
+	// Host when is running the database Engine.
+	Host string
 
 	// Port of database Engine server.
-	Port string `json:"port"`
+	Port string
 
 	// User of database, eg.: "root".
-	User string `json:"user"`
+	User string
 
 	// Password of User database
-	Password string `json:"password"`
+	Password string
 
 	// Name of SQL database.
-	Name string `json:"name"`
+	Name string
 }
 
-// Init load .json file configuration from root and dump it in Config structure.
-func Init(path string) (*Config, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	cfg := &Config{}
-	err = json.NewDecoder(file).Decode(cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	if cfg.Port == "" {
-		cfg.Port = "8080"
+func New(port, cors, dbengine, dbhost, dbport, dbuser, dbpass, dbname string) (*Config, error) {
+	cfg := Config{
+		Port: port,
+		CORS: strings.Join(strings.Fields(cors), ""), // remove whitespaces
+		Database: Database{
+			Engine:   dbengine,
+			Host:     dbhost,
+			Port:     dbport,
+			User:     dbuser,
+			Password: dbpass,
+			Name:     dbname,
+		},
 	}
 
-	cfg.CORS = strings.Join(strings.Fields(cfg.CORS), "") // remove whitespaces
-
-	return cfg, nil
-}
-
-// Address return address server eg.: "127.0.0.1:8080".
-// If the "localhost" field is true in config.json, the IP address it will be 127.0.0.1 by default,
-// otherwise it will try to take the IPv4 (if exists), eg.: "192.168.0.107:8080".
-func (cfg *Config) Address() string {
-	IP := "127.0.0.1"
-	if !cfg.LocalHost {
-		IP = GetHostIP()
-	}
-
-	if cfg.Port == "" {
-		cfg.Port = "8080"
-	}
-
-	return IP + ":" + cfg.Port
-}
-
-// GetHostIP return local IP. If you are not connected to IPv4 it will return empty string.
-func GetHostIP() string {
-	netInterfaceAddresses, err := net.InterfaceAddrs()
-	if err != nil {
-		return ""
-	}
-
-	for _, netInterfaceAddress := range netInterfaceAddresses {
-		networkIP, ok := netInterfaceAddress.(*net.IPNet)
-
-		if ok && !networkIP.IP.IsLoopback() && networkIP.IP.To4() != nil {
-			ip := networkIP.IP.String()
-			return ip
-		}
-	}
-	return ""
+	return &cfg, nil
 }

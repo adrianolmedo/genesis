@@ -1,7 +1,7 @@
 
 # Practice RESTful API in Go
 
-My first prototype of RESTful API written in Go based in [Dao Pattern](https://github.com/adrianolmedo/design-patterns/tree/main/go/dao-pattern). Whit persistence to MySQL and Postgres.
+My first prototype of RESTful API written in Go whit persistence to MySQL or Postgres.
 
 ## TO-DO
 
@@ -11,7 +11,8 @@ My first prototype of RESTful API written in Go based in [Dao Pattern](https://g
 
 ## Content
 
-* [Run](#run)
+* [Run with MySQL service](#run-with-mysql-service)
+* [Run with Postgres service](#run-with-postgres-service)
 * [Endpoints](#endpoints)
   * [Sign Up](#sign-up)
   * [Get user by ID](#get-user-by-id)
@@ -20,25 +21,43 @@ My first prototype of RESTful API written in Go based in [Dao Pattern](https://g
   * [Get all users](#get-all-users)
   * [Delete user by ID](#delete-user-by-id)
 
-## Run:
-
-1- Prepare certificates for JWT:
+## Run with MySQL service:
 
 ```bash
 $ git clone https://github.com/adrianolmedo/go-restapi-practice.git
 $ openssl genrsa -out app.sra 1024
 $ openssl rsa -in app.sra -pubout > app.sra.pub
+$ docker-compose up -d --build app mysql
 ```
 
-2- Create a database in Postgres and execute `$ \i postsgres.sql` for install tables.
+## Run with Postgres service:
 
-3- Write configuration of server and database in `config.json` file.
-
-4- Compile and run:
+1- Prepare database.
 
 ```bash
-$ ./compile.sh
-$ ./rest -c config.json
+$ git clone https://github.com/adrianolmedo/go-restapi-practice.git
+$ docker-compose up -d --build postgres
+```
+
+2- Join to `psql` and ingress the password `1234567a`.
+
+```bash
+$ docker exec -it postgres /bin/sh
+$ psql -U johndoe -d go_practice_restapi
+```
+
+3- Install tables.
+
+```bash
+$ \i tables.sql
+```
+
+4- Up application service.
+
+```bash
+$ openssl genrsa -out app.sra 1024
+$ openssl rsa -in app.sra -pubout > app.sra.pub
+$ docker-compose up -d --build app
 ```
 
 ## Endpoints:
