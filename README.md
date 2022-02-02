@@ -43,7 +43,6 @@ $ docker-compose up -d --build postgres
 
 ```bash
 $ docker exec -it postgres /bin/sh
-$ cd home
 $ psql -U johndoe -d go_practice_restapi
 ```
 
