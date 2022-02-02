@@ -55,7 +55,7 @@ services:
       - ${POSTGRES_EXTERNAL_PORT}:${DBPORT}
     volumes:
       - ./.docker/postgres/database.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./.docker/postgres/tables.sql:/home/tables.sql
+      - ./.docker/postgres/tables.sql:/tables.sql
       - postgres:/var/lib/postgresql/data
     networks:
       - backend
