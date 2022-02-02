@@ -1,39 +1,37 @@
 package config
 
-import (
-	"strings"
-)
+import "strings"
 
 // Config server RESTful API.
 type Config struct {
 	// Port for address server, if is empty by default will are 80.
-	Port string `json:"port"`
+	Port string
 
 	// CORS directive. Add address separated by comma. Example, "127.0.0.1,172.17.0.1".
-	CORS string `json:"cors"`
+	CORS string
 
-	Database `json:"database"`
+	Database
 }
 
 // Database config.
 type Database struct {
 	// Engine eg.: "mysql" or "postgres".
-	Engine string `json:"engine"`
+	Engine string
 
 	// Host when is running the database Engine.
-	Host string `json:"host"`
+	Host string
 
 	// Port of database Engine server.
-	Port string `json:"port"`
+	Port string
 
 	// User of database, eg.: "root".
-	User string `json:"user"`
+	User string
 
 	// Password of User database
-	Password string `json:"password"`
+	Password string
 
 	// Name of SQL database.
-	Name string `json:"name"`
+	Name string
 }
 
 func New(port, cors, dbengine, dbhost, dbport, dbuser, dbpass, dbname string) (*Config, error) {
