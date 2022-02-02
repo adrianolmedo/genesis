@@ -11,7 +11,8 @@ My first prototype of RESTful API written in Go whit persistence to MySQL or Pos
 
 ## Content
 
-* [Run with Docker](#run-with-docker)
+* [Run with MySQL service](#run-with-mysql-service)
+* [Run with Postgres service](#run-with-postgres-service)
 * [Endpoints](#endpoints)
   * [Sign Up](#sign-up)
   * [Get user by ID](#get-user-by-id)
@@ -20,13 +21,44 @@ My first prototype of RESTful API written in Go whit persistence to MySQL or Pos
   * [Get all users](#get-all-users)
   * [Delete user by ID](#delete-user-by-id)
 
-## Run with Docker:
+## Run with MySQL service:
 
 ```bash
 $ git clone https://github.com/adrianolmedo/go-restapi-practice.git
 $ openssl genrsa -out app.sra 1024
 $ openssl rsa -in app.sra -pubout > app.sra.pub
-$ docker-compose up -d --build 
+$ docker-compose up -d --build app mysql
+```
+
+## Run with Postgres service:
+
+1- Prepare database.
+
+```bash
+$ git clone https://github.com/adrianolmedo/go-restapi-practice.git
+$ docker-compose up -d --build postgres
+```
+
+2- Join to `psql` and ingress the password `1234567a`.
+
+```bash
+$ docker exec -it postgres /bin/sh
+$ cd home
+$ psql -U johndoe -d go_practice_restapi
+```
+
+3- Install tables.
+
+```bash
+$ \i tables.sql
+```
+
+4- Up application service.
+
+```bash
+$ openssl genrsa -out app.sra 1024
+$ openssl rsa -in app.sra -pubout > app.sra.pub
+$ docker-compose up -d --build app
 ```
 
 ## Endpoints:
