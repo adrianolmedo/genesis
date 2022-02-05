@@ -75,7 +75,7 @@ func TestSignUpUser(t *testing.T) {
 		// Check body JSON reponse. To fix linebreak in w.Body.String(), add strings.TrimRight and cut if right off the string.
 		// https://stackoverflow.com/a/45275479/3408901
 		if tc.wantResponse != strings.TrimRight(w.Body.String(), "\n") {
-			t.Errorf("%s: response body: want %s, got %s", tc.name, tc.wantResponse, w.Body.String())
+			t.Errorf("%s: wrong response body: want %s, got %s", tc.name, tc.wantResponse, w.Body.String())
 		}
 
 		// w.Body es lo que devuelve c.JSON, para comprobarlo, lo mostramos w.Body.String() en un t.Logf
@@ -132,7 +132,7 @@ func TestFindUser(t *testing.T) {
 		}
 
 		if tc.wantResponse != strings.TrimRight(w.Body.String(), "\n") {
-			t.Errorf("input %s: response body: want %s, got %s", tc.input, tc.wantResponse, w.Body.String())
+			t.Errorf("input %s: wrong response body: want %s, got %s", tc.input, tc.wantResponse, w.Body.String())
 		}
 
 		if tc.wantHTTPCode != w.Code {
@@ -167,6 +167,6 @@ func TestListUsers(t *testing.T) {
 	t.Logf("response body: %v", w.Body.String())
 
 	/*if wantResponse != strings.TrimRight(w.Body.String(), "\n") {
-		t.Errorf("response body: want %s, got %s", wantResponse, w.Body.String())
+		t.Errorf("wrong response body: want %s, got %s", wantResponse, w.Body.String())
 	}*/
 }
