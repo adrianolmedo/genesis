@@ -35,8 +35,9 @@ func (s storage) ProvideRepository() (*Repository, error) {
 		}
 
 		return &Repository{
-			User:  mysql.NewUserRepository(db),
-			Login: mysql.NewLoginRepository(db),
+			User:    mysql.NewUserRepository(db),
+			Login:   mysql.NewLoginRepository(db),
+			Product: mysql.NewProductRepository(db),
 		}, nil
 
 	case "postgres":
@@ -46,8 +47,9 @@ func (s storage) ProvideRepository() (*Repository, error) {
 		}
 
 		return &Repository{
-			User:  postgres.NewUserRepository(db),
-			Login: postgres.NewLoginRepository(db),
+			User:    postgres.NewUserRepository(db),
+			Login:   postgres.NewLoginRepository(db),
+			Product: postgres.NewProductRepository(db),
 		}, nil
 
 	default:
@@ -56,8 +58,9 @@ func (s storage) ProvideRepository() (*Repository, error) {
 }
 
 type Repository struct {
-	User  UserRepository
-	Login LoginRepository
+	User    UserRepository
+	Login   LoginRepository
+	Product ProductRepository
 }
 
 // UserRepository to uncouple persistence `repository` package
@@ -72,4 +75,12 @@ type UserRepository interface {
 
 type LoginRepository interface {
 	UserByLogin(email, password string) error
+}
+
+type ProductRepository interface {
+	Create(*domain.Product) error
+	ByID(id int64) (*domain.Product, error)
+	Update(domain.Product) error
+	All() ([]*domain.Product, error)
+	Delete(id int64) error
 }
