@@ -6,8 +6,9 @@ type StorageOk struct{}
 
 func (StorageOk) ProvideRepository() (*storage.Repository, error) {
 	return &storage.Repository{
-		User:  &UserRepositoryOk{},
-		Login: &LoginRepositoryOk{},
+		User:    &UserRepositoryOk{},
+		Login:   &LoginRepositoryOk{},
+		Product: &ProductRepositoryOk{},
 	}, nil
 }
 
@@ -15,7 +16,8 @@ type StorageError struct{}
 
 func (StorageError) ProvideRepository() (*storage.Repository, error) {
 	return &storage.Repository{
-		User:  &UserRepositoryError{},
-		Login: &LoginRepositoryError{},
+		User:    &UserRepositoryError{},
+		Login:   &LoginRepositoryError{},
+		Product: &ProductRepositoryError{},
 	}, nil
 }
