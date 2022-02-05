@@ -10,6 +10,7 @@ type Service struct {
 	Storage storage.Storage
 	User    UserService
 	Login   LoginService
+	Store   StoreService
 }
 
 func New(s storage.Storage) (*Service, error) {
@@ -21,5 +22,6 @@ func New(s storage.Storage) (*Service, error) {
 	return &Service{
 		User:  NewUserService(r.User),
 		Login: NewLoginService(r.Login),
+		Store: NewStoreService(r.Product),
 	}, nil
 }
