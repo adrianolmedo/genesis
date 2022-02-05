@@ -3,4 +3,3 @@ app.sra
 app.sra.pub
 connect-to-mysql.sh
 connect-to-postgres.sh
-rest
