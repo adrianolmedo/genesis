@@ -133,7 +133,7 @@ func listUsers(s service.Service) echo.HandlerFunc {
 			return c.JSON(http.StatusOK, resp) // maybe 204
 		}
 
-		list := make(domain.UsersList, 0, len(users))
+		list := make(domain.UserList, 0, len(users))
 
 		assemble := func(u *domain.User) domain.UserProfileDTO {
 			return domain.UserProfileDTO{

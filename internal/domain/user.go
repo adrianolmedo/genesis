@@ -67,4 +67,4 @@ type UserProfileDTO struct {
 	Email     string `json:"email"`
 }
 
-type UsersList []UserProfileDTO
+type UserList []UserProfileDTO
