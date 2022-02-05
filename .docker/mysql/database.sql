@@ -14,3 +14,12 @@ CREATE TABLE IF NOT EXISTS users (
     deleted_at TIMESTAMP,
     CONSTRAINT users_id_pk PRIMARY KEY (id)
 );
+
+CREATE TABLE IF NOT EXISTS products (
+    id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    name VARCHAR(25) NOT NULL,
+    observations VARCHAR(100),
+    price INT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP
+);
