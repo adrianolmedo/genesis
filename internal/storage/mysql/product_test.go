@@ -10,13 +10,9 @@ import (
 )
 
 func TestCreateProduct(t *testing.T) {
-	t.Cleanup(func() {
-		cleanProductsData(t)
-	})
-
 	db := openDB(t)
 	defer closeDB(t, db)
-	r := mysql.NewProductRepository(db)
+	p := mysql.NewProductRepository(db)
 
 	input := &domain.Product{
 		Name:         "Coca-Cola",
@@ -24,11 +20,11 @@ func TestCreateProduct(t *testing.T) {
 		Price:        3,
 	}
 
-	if err := r.Create(input); err != nil {
+	if err := p.Create(input); err != nil {
 		t.Fatal(err)
 	}
 
-	product, err := r.ByID(input.ID)
+	product, err := p.ByID(input.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -40,13 +36,11 @@ func TestCreateProduct(t *testing.T) {
 	if !product.UpdatedAt.IsZero() {
 		t.Error("unexpected updated at")
 	}
+
+	cleanProductsData(t, db, input.ID)
 }
 
 func TestProductByID(t *testing.T) {
-	t.Cleanup(func() {
-		cleanProductsData(t)
-	})
-
 	db := openDB(t)
 	defer closeDB(t, db)
 	insertProductsData(t, db)
@@ -75,7 +69,9 @@ func TestProductByID(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		got, err := mysql.NewProductRepository(db).ByID(tc.input)
+		p := mysql.NewProductRepository(db)
+
+		got, err := p.ByID(tc.input)
 		if (err != nil) != tc.errExpected {
 			t.Fatalf("%s: ByID(%d): unexpected error status: %v", tc.name, tc.input, err)
 		}
@@ -88,23 +84,15 @@ func TestProductByID(t *testing.T) {
 			t.Fatalf("%s: ByID(%d): want %s, got %s", tc.name, tc.input, tc.wantName, got.Name)
 		}
 	}
-}
 
-func cleanProductsData(t *testing.T) {
-	db := openDB(t)
-	defer closeDB(t, db)
-
-	err := mysql.NewProductRepository(db).DeleteAll()
-	if err != nil {
-		t.Fatal(err)
-	}
+	cleanProductsData(t, db, 1)
+	cleanProductsData(t, db, 2)
 }
 
 func insertProductsData(t *testing.T, db *sql.DB) {
-	//db := openDB(t)
-	//defer closeDB(t, db)
+	p := mysql.NewProductRepository(db)
 
-	if err := mysql.NewProductRepository(db).Create(&domain.Product{
+	if err := p.Create(&domain.Product{
 		Name:         "Coca-Cola",
 		Observations: "",
 		Price:        3,
@@ -112,11 +100,23 @@ func insertProductsData(t *testing.T, db *sql.DB) {
 		t.Fatal(err)
 	}
 
-	if err := mysql.NewProductRepository(db).Create(&domain.Product{
+	if err := p.Create(&domain.Product{
 		Name:         "Big-Cola",
 		Observations: "Made in Venezuela",
 		Price:        2,
 	}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func cleanProductsData(t *testing.T, db *sql.DB, productID int64) {
+	p := mysql.NewProductRepository(db)
+
+	if err := p.Delete(productID); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := p.Reset(); err != nil {
 		t.Fatal(err)
 	}
 }
