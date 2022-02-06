@@ -139,16 +139,15 @@ func (r ProductRepository) Delete(id int64) error {
 	return nil
 }
 
-func (r ProductRepository) DeleteAll() error {
-	stmt, err := r.db.Prepare("TRUNCATE TABLE products")
+func (r ProductRepository) Reset() error {
+	stmt, err := r.db.Prepare("ALTER TABLE products AUTO_INCREMENT = 1")
 	if err != nil {
 		return err
 	}
-	defer stmt.Close()
 
 	_, err = stmt.Exec()
 	if err != nil {
-		return fmt.Errorf("can't truncate table: %v", err)
+		return fmt.Errorf("can't alter table: %v", err)
 	}
 
 	return nil
