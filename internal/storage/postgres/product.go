@@ -134,7 +134,7 @@ func (r ProductRepository) Delete(id int64) error {
 }
 
 func (r ProductRepository) DeleteAll() error {
-	stmt, err := r.db.Prepare("TRUNCATE TABLE products RESTART IDENTITY")
+	stmt, err := r.db.Prepare("TRUNCATE TABLE products RESTART IDENTITY CASCADE")
 	if err != nil {
 		return err
 	}

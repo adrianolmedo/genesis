@@ -9,7 +9,7 @@ import (
 	"github.com/adrianolmedo/go-restapi/internal/storage/postgres"
 )
 
-func TestAddProduct(t *testing.T) {
+func TestCreateProduct(t *testing.T) {
 	t.Cleanup(func() {
 		cleanProductsData(t)
 	})
@@ -28,7 +28,7 @@ func TestAddProduct(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	product, err := r.ByID(1)
+	product, err := r.ByID(input.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -134,21 +134,10 @@ func TestUpdateProduct(t *testing.T) {
 	}
 }
 
-func cleanProductsData(t *testing.T) {
-	db := openDB(t)
-	defer closeDB(t, db)
-
-	err := postgres.NewProductRepository(db).DeleteAll()
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
 func insertProductsData(t *testing.T, db *sql.DB) {
-	//db := openDB(t)
-	//defer closeDB(t, db)
+	p := postgres.NewProductRepository(db)
 
-	if err := postgres.NewProductRepository(db).Create(&domain.Product{
+	if err := p.Create(&domain.Product{
 		Name:         "Coca-Cola",
 		Observations: "",
 		Price:        3,
@@ -156,11 +145,21 @@ func insertProductsData(t *testing.T, db *sql.DB) {
 		t.Fatal(err)
 	}
 
-	if err := postgres.NewProductRepository(db).Create(&domain.Product{
+	if err := p.Create(&domain.Product{
 		Name:         "Big-Cola",
 		Observations: "Made in Venezuela",
 		Price:        2,
 	}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func cleanProductsData(t *testing.T) {
+	db := openDB(t)
+	defer closeDB(t, db)
+
+	err := postgres.NewProductRepository(db).DeleteAll()
+	if err != nil {
 		t.Fatal(err)
 	}
 }
