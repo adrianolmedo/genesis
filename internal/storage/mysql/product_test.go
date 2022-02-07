@@ -85,8 +85,8 @@ func TestProductByID(t *testing.T) {
 		}
 	}
 
-	cleanProductsData(t, db, 1)
 	cleanProductsData(t, db, 2)
+	cleanProductsData(t, db, 1)
 }
 
 func insertProductsData(t *testing.T, db *sql.DB) {

@@ -36,9 +36,9 @@ func TestCreateInvoice(t *testing.T) {
 		}
 	}
 
-	cleanProductsData(t, db, 2)
 	cleanInvoiceItemsData(t, db, input.Items)
 	cleanInvoiceHeadersData(t, db, input.Header.ID)
+	cleanProductsData(t, db, 2)
 	cleanProductsData(t, db, 1)
 }
 
