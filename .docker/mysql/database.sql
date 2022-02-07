@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP,
     deleted_at TIMESTAMP,
     CONSTRAINT users_id_pk PRIMARY KEY (id)
-);
+) ENGINE=INNODB;
 
 CREATE TABLE IF NOT EXISTS products (
     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -22,14 +22,14 @@ CREATE TABLE IF NOT EXISTS products (
     price INT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP
-);
+) ENGINE=INNODB;
 
 CREATE TABLE IF NOT EXISTS invoice_headers (
     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     client_id INT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP
-);
+) ENGINE=INNODB;
 
 CREATE TABLE IF NOT EXISTS invoice_items (
     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -37,6 +37,6 @@ CREATE TABLE IF NOT EXISTS invoice_items (
     product_id INT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP,
-    CONSTRAINT invoice_items_invoice_header_id_pk FOREIGN KEY (invoice_header_id) REFERENCES invoice_headers (id) ON UPDATE RESTRICT ON DELETE RESTRICT,
-    CONSTRAINT invoice_items_product_id_pk FOREIGN KEY (product_id) REFERENCES products (id) ON UPDATE RESTRICT ON DELETE RESTRICT
-);
+    CONSTRAINT invoice_items_invoice_header_id_pk FOREIGN KEY (invoice_header_id) REFERENCES invoice_headers (id) ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT invoice_items_product_id_pk FOREIGN KEY (product_id) REFERENCES products (id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=INNODB;
