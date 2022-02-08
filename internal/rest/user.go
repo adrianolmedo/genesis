@@ -48,7 +48,7 @@ func signUpUser(s service.Service) echo.HandlerFunc {
 func findUser(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
-		if id <= 0 || err != nil {
+		if id < 0 || err != nil {
 			resp := newResponse(msgError, "ER005", "positive number expected for ID user", nil)
 			return c.JSON(http.StatusBadRequest, resp) // 400
 		}
@@ -78,7 +78,7 @@ func findUser(s service.Service) echo.HandlerFunc {
 func updateUser(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
-		if id <= 0 || err != nil {
+		if id < 0 || err != nil {
 			resp := newResponse(msgError, "ER005", "positive number expected for ID user", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
@@ -133,8 +133,6 @@ func listUsers(s service.Service) echo.HandlerFunc {
 			return c.JSON(http.StatusOK, resp) // maybe 204
 		}
 
-		list := make(domain.UserList, 0, len(users))
-
 		assemble := func(u *domain.User) domain.UserProfileDTO {
 			return domain.UserProfileDTO{
 				ID:        u.ID,
@@ -144,6 +142,7 @@ func listUsers(s service.Service) echo.HandlerFunc {
 			}
 		}
 
+		list := make(domain.UserList, 0, len(users))
 		for _, v := range users {
 			list = append(list, assemble(v))
 		}
@@ -158,7 +157,7 @@ func deleteUser(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 
-		if id <= 0 || err != nil {
+		if id < 0 || err != nil {
 			resp := newResponse(msgError, "ER005", "positive number expected for ID user", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}

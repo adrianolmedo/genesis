@@ -47,7 +47,7 @@ func addProduct(s service.Service) echo.HandlerFunc {
 func findProduct(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
-		if id <= 0 || err != nil {
+		if id < 0 || err != nil {
 			resp := newResponse(msgError, "ER005", "positive number expected for ID product", nil)
 			return c.JSON(http.StatusBadRequest, resp) // 400
 		}
@@ -77,7 +77,7 @@ func findProduct(s service.Service) echo.HandlerFunc {
 func updateProduct(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
-		if id <= 0 || err != nil {
+		if id < 0 || err != nil {
 			resp := newResponse(msgError, "ER005", "positive number expected for ID product", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
@@ -151,7 +151,7 @@ func deleteProduct(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 
-		if id <= 0 || err != nil {
+		if id < 0 || err != nil {
 			resp := newResponse(msgError, "ER005", "positive number expected for ID product", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}

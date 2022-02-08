@@ -105,6 +105,11 @@ func TestFindUser(t *testing.T) {
 			wantResponse: `{"message_error":{"code":"ER007","content":"user not found"}}`,
 		},
 		{
+			input:        "0",
+			wantHTTPCode: http.StatusNotFound,
+			wantResponse: `{"message_error":{"code":"ER007","content":"user not found"}}`,
+		},
+		{
 			input:        "-1",
 			wantHTTPCode: http.StatusBadRequest,
 			wantResponse: `{"message_error":{"code":"ER005","content":"positive number expected for ID user"}}`,
