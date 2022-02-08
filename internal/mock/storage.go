@@ -9,6 +9,7 @@ func (StorageOk) ProvideRepository() (*storage.Repository, error) {
 		User:    &UserRepositoryOk{},
 		Login:   &LoginRepositoryOk{},
 		Product: &ProductRepositoryOk{},
+		Invoice: &InvoiceRepositoryOk{},
 	}, nil
 }
 
@@ -19,5 +20,6 @@ func (StorageError) ProvideRepository() (*storage.Repository, error) {
 		User:    &UserRepositoryError{},
 		Login:   &LoginRepositoryError{},
 		Product: &ProductRepositoryError{},
+		Invoice: &InvoiceRepositoryError{},
 	}, nil
 }
