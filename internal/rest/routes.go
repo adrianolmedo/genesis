@@ -26,4 +26,6 @@ func Routes(e *echo.Echo, s service.Service) {
 	p.GET("/:id", findProduct(s))
 	p.PUT("/:id", updateProduct(s))
 	p.DELETE("/:id", deleteProduct(s))
+
+	e.POST("/v1/invoices", generateInvoice(s))
 }
