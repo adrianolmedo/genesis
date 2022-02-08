@@ -35,10 +35,12 @@ func (s storage) ProvideRepository() (*Repository, error) {
 		}
 
 		return &Repository{
-			User:          mysql.NewUserRepository(db),
-			Login:         mysql.NewLoginRepository(db),
-			Product:       mysql.NewProductRepository(db),
-			InvoiceHeader: mysql.NewInvoiceHeaderRepository(db),
+			User:    mysql.NewUserRepository(db),
+			Login:   mysql.NewLoginRepository(db),
+			Product: mysql.NewProductRepository(db),
+			Invoice: mysql.NewInvoiceRepository(db,
+				mysql.NewInvoiceHeaderRepository(db),
+				mysql.NewInvoiceItemRepository(db)),
 		}, nil
 
 	case "postgres":
@@ -48,10 +50,12 @@ func (s storage) ProvideRepository() (*Repository, error) {
 		}
 
 		return &Repository{
-			User:          postgres.NewUserRepository(db),
-			Login:         postgres.NewLoginRepository(db),
-			Product:       postgres.NewProductRepository(db),
-			InvoiceHeader: postgres.NewInvoiceHeaderRepository(db),
+			User:    postgres.NewUserRepository(db),
+			Login:   postgres.NewLoginRepository(db),
+			Product: postgres.NewProductRepository(db),
+			Invoice: postgres.NewInvoiceRepository(db,
+				postgres.NewInvoiceHeaderRepository(db),
+				postgres.NewInvoiceItemRepository(db)),
 		}, nil
 
 	default:
@@ -60,12 +64,10 @@ func (s storage) ProvideRepository() (*Repository, error) {
 }
 
 type Repository struct {
-	User          UserRepository
-	Login         LoginRepository
-	Product       ProductRepository
-	InvoiceHeader InvoiceHeaderRepository
-	InvoiceItem   InvoiceItemRepository
-	Invoice       InvoiceRepository
+	User    UserRepository
+	Login   LoginRepository
+	Product ProductRepository
+	Invoice InvoiceRepository
 }
 
 // UserRepository to uncouple persistence `repository` package
