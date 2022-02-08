@@ -12,7 +12,7 @@ import (
 func TestCreateProduct(t *testing.T) {
 	db := openDB(t)
 	defer closeDB(t, db)
-	p := mysql.NewProductRepository(db)
+	pr := mysql.NewProductRepository(db)
 
 	input := &domain.Product{
 		Name:         "Coca-Cola",
@@ -20,11 +20,11 @@ func TestCreateProduct(t *testing.T) {
 		Price:        3,
 	}
 
-	if err := p.Create(input); err != nil {
+	if err := pr.Create(input); err != nil {
 		t.Fatal(err)
 	}
 
-	product, err := p.ByID(input.ID)
+	product, err := pr.ByID(input.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -69,9 +69,7 @@ func TestProductByID(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		p := mysql.NewProductRepository(db)
-
-		got, err := p.ByID(tc.input)
+		got, err := mysql.NewProductRepository(db).ByID(tc.input)
 		if (err != nil) != tc.errExpected {
 			t.Fatalf("%s: ByID(%d): unexpected error status: %v", tc.name, tc.input, err)
 		}
@@ -90,9 +88,9 @@ func TestProductByID(t *testing.T) {
 }
 
 func insertProductsData(t *testing.T, db *sql.DB) {
-	p := mysql.NewProductRepository(db)
+	pr := mysql.NewProductRepository(db)
 
-	if err := p.Create(&domain.Product{
+	if err := pr.Create(&domain.Product{
 		Name:         "Coca-Cola",
 		Observations: "",
 		Price:        3,
@@ -100,7 +98,7 @@ func insertProductsData(t *testing.T, db *sql.DB) {
 		t.Fatal(err)
 	}
 
-	if err := p.Create(&domain.Product{
+	if err := pr.Create(&domain.Product{
 		Name:         "Big-Cola",
 		Observations: "Made in Venezuela",
 		Price:        2,
@@ -110,13 +108,13 @@ func insertProductsData(t *testing.T, db *sql.DB) {
 }
 
 func cleanProductsData(t *testing.T, db *sql.DB, productID int64) {
-	p := mysql.NewProductRepository(db)
+	pr := mysql.NewProductRepository(db)
 
-	if err := p.Delete(productID); err != nil {
+	if err := pr.Delete(productID); err != nil {
 		t.Fatal(err)
 	}
 
-	if err := p.Reset(); err != nil {
+	if err := pr.Reset(); err != nil {
 		t.Fatal(err)
 	}
 }

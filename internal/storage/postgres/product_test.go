@@ -16,7 +16,7 @@ func TestCreateProduct(t *testing.T) {
 
 	db := openDB(t)
 	defer closeDB(t, db)
-	r := postgres.NewProductRepository(db)
+	p := postgres.NewProductRepository(db)
 
 	input := &domain.Product{
 		Name:         "Coca-Cola",
@@ -24,11 +24,11 @@ func TestCreateProduct(t *testing.T) {
 		Price:        3,
 	}
 
-	if err := r.Create(input); err != nil {
+	if err := p.Create(input); err != nil {
 		t.Fatal(err)
 	}
 
-	product, err := r.ByID(input.ID)
+	product, err := p.ByID(input.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -106,13 +106,13 @@ func TestUpdateProduct(t *testing.T) {
 		Price:        3,
 	}
 
-	r := postgres.NewProductRepository(db)
+	pr := postgres.NewProductRepository(db)
 
-	if err := r.Update(input); err != nil {
+	if err := pr.Update(input); err != nil {
 		t.Fatal(err)
 	}
 
-	product, err := r.ByID(input.ID)
+	product, err := pr.ByID(input.ID)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -17,12 +17,11 @@ func TestCreateTxInvoiceHeader(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	ih := mysql.NewInvoiceHeaderRepository(db)
-
 	input := &domain.InvoiceHeader{
 		ClientID: 1,
 	}
 
+	ih := mysql.NewInvoiceHeaderRepository(db)
 	if err := ih.CreateTx(tx, input); err != nil {
 		tx.Rollback()
 		t.Fatal(err)
