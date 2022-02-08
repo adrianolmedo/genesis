@@ -30,6 +30,10 @@ func (ss storeService) Add(product *domain.Product) error {
 }
 
 func (ss storeService) Find(id int64) (*domain.Product, error) {
+	if id == 0 {
+		return &domain.Product{}, domain.ErrProductNotFound
+	}
+
 	return ss.repo.ByID(id)
 }
 
@@ -46,5 +50,9 @@ func (ss storeService) List() ([]*domain.Product, error) {
 }
 
 func (ss storeService) Remove(id int64) error {
+	if id == 0 {
+		return domain.ErrProductNotFound
+	}
+
 	return ss.repo.Delete(id)
 }
