@@ -79,14 +79,14 @@ func TestLoginUser(t *testing.T) {
 	}
 
 	got := w.Body.String()
+
 	gotResponse := response{messageOK: &messageOK{}, messageError: &messageError{}}
 	err = json.NewDecoder(w.Body).Decode(&gotResponse)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	wantResponse := newResponse(msgOK, "OK004", "logged", gotResponse.Data)
-	want, err := json.Marshal(wantResponse)
+	want, err := json.Marshal(newResponse(msgOK, "OK004", "logged", gotResponse.Data))
 	if err != nil {
 		t.Fatal(err)
 	}
