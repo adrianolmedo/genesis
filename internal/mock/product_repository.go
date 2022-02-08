@@ -25,6 +25,17 @@ func (ProductRepositoryOk) ByID(id int64) (*domain.Product, error) {
 		}, nil
 	}
 
+	if id == 2 {
+		return &domain.Product{
+			ID:           2,
+			Name:         "Big Cola",
+			Observations: "Made in Venezuela",
+			Price:        2,
+			CreatedAt:    time.Now(),
+			UpdatedAt:    time.Time{},
+		}, nil
+	}
+
 	return &domain.Product{}, domain.ErrProductNotFound
 }
 
