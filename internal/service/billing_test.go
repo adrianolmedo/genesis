@@ -33,34 +33,6 @@ func TestGenerate(t *testing.T) {
 			wantErrContain: "",
 		},
 		{
-			name: "product-with-id-zero",
-			input: &domain.Invoice{
-				Header: &domain.InvoiceHeader{
-					ClientID: 1,
-				},
-				Items: domain.ItemList{
-					&domain.InvoiceItem{ProductID: 0},
-				},
-			},
-			mock:           mock.InvoiceRepositoryOk{},
-			errExpected:    true,
-			wantErrContain: "product not found with id 0",
-		},
-		{
-			name: "not-products",
-			input: &domain.Invoice{
-				Header: &domain.InvoiceHeader{
-					ClientID: 1,
-				},
-				Items: domain.ItemList{
-					&domain.InvoiceItem{},
-				},
-			},
-			mock:           mock.InvoiceRepositoryOk{},
-			errExpected:    true,
-			wantErrContain: "product not found with id 0",
-		},
-		{
 			name: "empty-item-list",
 			input: &domain.Invoice{
 				Header: &domain.InvoiceHeader{
