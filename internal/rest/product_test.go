@@ -161,10 +161,4 @@ func TestListProducts(t *testing.T) {
 	if http.StatusOK != w.Code {
 		t.Errorf("http code: want %d, got %d", http.StatusOK, w.Code)
 	}
-
-	t.Logf("response body: %v", w.Body.String())
-
-	/*if wantResponse != strings.TrimRight(w.Body.String(), "\n") {
-		t.Errorf("wrong response body: want %s, got %s", wantResponse, w.Body.String())
-	}*/
 }
