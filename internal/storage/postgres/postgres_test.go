@@ -1,22 +1,26 @@
+//go:build integration
+// +build integration
+
 package postgres_test
 
 import (
 	"database/sql"
+	"flag"
 	"testing"
 
 	"github.com/adrianolmedo/go-restapi/config"
 	"github.com/adrianolmedo/go-restapi/internal/storage/postgres"
 )
 
-// dbcfg credentials for Postgres testing database connection.
-var dbcfg = config.Database{
-	Engine:   "postgres",
-	Host:     "127.0.0.1",
-	Port:     "5432",
-	User:     "postgres",
-	Password: "1234567@",
-	Name:     "go_testing_restapi",
-}
+// $ go test -v -tags integration -args -dbengine postgres -dbhost 127.0.0.1 -dbport 5432 -dbuser username -dbname foodb -dbpass 12345
+var (
+	dbhost   = flag.String("dbhost", "", "Database host.")
+	dbengine = flag.String("dbengine", "", "Database engine, choose mysql or postgres.")
+	dbport   = flag.String("dbport", "", "Database port.")
+	dbuser   = flag.String("dbuser", "", "Database user.")
+	dbpass   = flag.String("dbpass", "", "Database password.")
+	dbname   = flag.String("dbname", "", "Database name.")
+)
 
 // TestDB can open & close.
 func TestDB(t *testing.T) {
@@ -25,6 +29,15 @@ func TestDB(t *testing.T) {
 }
 
 func openDB(t *testing.T) *sql.DB {
+	dbcfg := config.Database{
+		Engine:   *dbengine,
+		Host:     *dbhost,
+		Port:     *dbport,
+		User:     *dbuser,
+		Password: *dbpass,
+		Name:     *dbname,
+	}
+
 	db, err := postgres.New(dbcfg)
 	if err != nil {
 		t.Fatal(err)

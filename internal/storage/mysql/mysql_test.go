@@ -1,22 +1,26 @@
+//go:build integration
+// +build integration
+
 package mysql_test
 
 import (
 	"database/sql"
+	"flag"
 	"testing"
 
 	"github.com/adrianolmedo/go-restapi/config"
 	"github.com/adrianolmedo/go-restapi/internal/storage/mysql"
 )
 
-// dbcfg credentials for Postgres testing database connection.
-var dbcfg = config.Database{
-	Engine:   "mysql",
-	Host:     "127.0.0.1",
-	Port:     "3306",
-	User:     "pmadrian",
-	Password: "3eD5gfiqjSYO@x%k",
-	Name:     "go_testing_restapi",
-}
+// $ go test -v -tags integration -args -dbengine mysql -dbhost 127.0.0.1 -dbport 3306 -dbuser username -dbname foodb -dbpass 12345
+var (
+	dbhost   = flag.String("dbhost", "", "Database host.")
+	dbengine = flag.String("dbengine", "", "Database engine, choose mysql or postgres.")
+	dbport   = flag.String("dbport", "", "Database port.")
+	dbuser   = flag.String("dbuser", "", "Database user.")
+	dbpass   = flag.String("dbpass", "", "Database password.")
+	dbname   = flag.String("dbname", "", "Database name.")
+)
 
 func TestDB(t *testing.T) {
 	db := openDB(t)
@@ -24,6 +28,15 @@ func TestDB(t *testing.T) {
 }
 
 func openDB(t *testing.T) *sql.DB {
+	dbcfg := config.Database{
+		Engine:   *dbengine,
+		Host:     *dbhost,
+		Port:     *dbport,
+		User:     *dbuser,
+		Password: *dbpass,
+		Name:     *dbname,
+	}
+
 	db, err := mysql.New(dbcfg)
 	if err != nil {
 		t.Fatal(err)
