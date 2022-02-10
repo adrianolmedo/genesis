@@ -19,13 +19,15 @@ func Routes(e *echo.Echo, s service.Service) {
 	u.PUT("/:id", updateUser(s))
 	u.DELETE("/:id", deleteUser(s))
 
+	e.GET("/v1/products", listProducts(s))
+	e.GET("/v1/products/:id", findProduct(s))
+
 	p := e.Group("/v1/products")
 	p.Use(middleware.Auth)
 	p.POST("", addProduct(s))
-	p.GET("", listProducts(s))
-	p.GET("/:id", findProduct(s))
 	p.PUT("/:id", updateProduct(s))
 	p.DELETE("/:id", deleteProduct(s))
 
-	e.POST("/v1/invoices", generateInvoice(s))
+	i := e.Group("/v1/invoices")
+	i.POST("", generateInvoice(s))
 }
