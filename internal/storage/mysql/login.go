@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"database/sql"
+	"errors"
 
 	"github.com/adrianolmedo/go-restapi/internal/domain"
 )
@@ -26,12 +27,12 @@ func (r LoginRepository) UserByLogin(email, password string) error {
 	var id int64
 
 	err = stmt.QueryRow(email, password).Scan(&id)
-	if err != nil {
-		return err
+	if errors.Is(err, sql.ErrNoRows) {
+		return domain.ErrUserNotFound
 	}
 
-	if id <= 0 {
-		return domain.ErrUserNotFound
+	if err != nil {
+		return err
 	}
 
 	return nil

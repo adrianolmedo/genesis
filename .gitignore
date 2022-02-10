@@ -3,4 +3,5 @@ app.sra
 app.sra.pub
 connect-to-mysql.sh
 connect-to-postgres.sh
-rest
+internal/storage/mysql/run-tests.sh
+internal/storage/postgres/run-tests.sh

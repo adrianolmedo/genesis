@@ -81,7 +81,7 @@ func TestSignUp(t *testing.T) {
 }
 
 func TestUserList(t *testing.T) {
-	want := domain.UsersList{
+	want := domain.UserList{
 		{
 			ID:        1,
 			FirstName: "John",
@@ -102,7 +102,7 @@ func TestUserList(t *testing.T) {
 		t.Fatalf("unexpected error value %v", err)
 	}
 
-	got := make(domain.UsersList, 0, len(users))
+	got := make(domain.UserList, 0, len(users))
 
 	assemble := func(u *domain.User) domain.UserProfileDTO {
 		return domain.UserProfileDTO{

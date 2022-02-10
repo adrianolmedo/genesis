@@ -40,6 +40,10 @@ func (us userService) SignUp(user *domain.User) error {
 
 // Find a User by its ID.
 func (us userService) Find(id int64) (*domain.User, error) {
+	if id == 0 {
+		return &domain.User{}, domain.ErrUserNotFound
+	}
+
 	return us.repo.ByID(id)
 }
 
@@ -65,5 +69,9 @@ func (us userService) List() ([]*domain.User, error) {
 
 // Remove delete User by its ID.
 func (us userService) Remove(id int64) error {
+	if id == 0 {
+		return domain.ErrUserNotFound
+	}
+
 	return us.repo.Delete(id)
 }

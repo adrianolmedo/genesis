@@ -18,4 +18,14 @@ func Routes(e *echo.Echo, s service.Service) {
 	u.GET("", listUsers(s)) // E.g.: GET /v1/users
 	u.PUT("/:id", updateUser(s))
 	u.DELETE("/:id", deleteUser(s))
+
+	p := e.Group("/v1/products")
+	p.Use(middleware.Auth)
+	p.POST("", addProduct(s))
+	p.GET("", listProducts(s))
+	p.GET("/:id", findProduct(s))
+	p.PUT("/:id", updateProduct(s))
+	p.DELETE("/:id", deleteProduct(s))
+
+	e.POST("/v1/invoices", generateInvoice(s))
 }

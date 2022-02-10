@@ -25,7 +25,6 @@ type User struct {
 }
 
 // CheckEmptyFields return error if FirstName, Email or Password there are empty.
-// TO-DO: Change to boolean function.
 func (u User) CheckEmptyFields() error {
 	if u.FirstName == "" || u.Email == "" || u.Password == "" {
 		return errors.New("first name, email or password can't be empty")
@@ -68,4 +67,4 @@ type UserProfileDTO struct {
 	Email     string `json:"email"`
 }
 
-type UsersList []UserProfileDTO
+type UserList []UserProfileDTO

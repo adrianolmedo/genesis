@@ -35,8 +35,12 @@ func (s storage) ProvideRepository() (*Repository, error) {
 		}
 
 		return &Repository{
-			User:  mysql.NewUserRepository(db),
-			Login: mysql.NewLoginRepository(db),
+			User:    mysql.NewUserRepository(db),
+			Login:   mysql.NewLoginRepository(db),
+			Product: mysql.NewProductRepository(db),
+			Invoice: mysql.NewInvoiceRepository(db,
+				mysql.NewInvoiceHeaderRepository(db),
+				mysql.NewInvoiceItemRepository(db)),
 		}, nil
 
 	case "postgres":
@@ -46,8 +50,12 @@ func (s storage) ProvideRepository() (*Repository, error) {
 		}
 
 		return &Repository{
-			User:  postgres.NewUserRepository(db),
-			Login: postgres.NewLoginRepository(db),
+			User:    postgres.NewUserRepository(db),
+			Login:   postgres.NewLoginRepository(db),
+			Product: postgres.NewProductRepository(db),
+			Invoice: postgres.NewInvoiceRepository(db,
+				postgres.NewInvoiceHeaderRepository(db),
+				postgres.NewInvoiceItemRepository(db)),
 		}, nil
 
 	default:
@@ -56,8 +64,10 @@ func (s storage) ProvideRepository() (*Repository, error) {
 }
 
 type Repository struct {
-	User  UserRepository
-	Login LoginRepository
+	User    UserRepository
+	Login   LoginRepository
+	Product ProductRepository
+	Invoice InvoiceRepository
 }
 
 // UserRepository to uncouple persistence `repository` package
@@ -72,4 +82,24 @@ type UserRepository interface {
 
 type LoginRepository interface {
 	UserByLogin(email, password string) error
+}
+
+type ProductRepository interface {
+	Create(*domain.Product) error
+	ByID(id int64) (*domain.Product, error)
+	Update(domain.Product) error
+	All() ([]*domain.Product, error)
+	Delete(id int64) error
+}
+
+type InvoiceHeaderRepository interface {
+	CreateTx(*sql.Tx, *domain.InvoiceHeader) error
+}
+
+type InvoiceItemRepository interface {
+	CreateTx(*sql.Tx, int64, domain.ItemList) error
+}
+
+type InvoiceRepository interface {
+	Create(m *domain.Invoice) error
 }

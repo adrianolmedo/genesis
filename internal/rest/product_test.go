@@ -13,12 +13,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// TestSignUpUser from evaluate Body JSON form, for more info visit:
-//
-// - https://bit.ly/3tgI8Gm
-//
-// - https://bit.ly/3tb39lP
-func TestSignUpUser(t *testing.T) {
+func TestAddProduct(t *testing.T) {
 	tt := []struct {
 		name         string
 		inputForm    []byte
@@ -28,10 +23,9 @@ func TestSignUpUser(t *testing.T) {
 		{
 			name: "wrong-body-json",
 			inputForm: []byte(`{
-				"first_name": Don,
-				"last_name": "Mondongo",
-				"email": "don_mondongo@hotmail.com",
-				"password": "123456"
+				"name": Coca-Cola,
+				"observations": "",
+				"price": 3
 			}`),
 			wantResponse: `{"message_error":{"code":"ER002","content":"the JSON structure is not correct"}}`,
 			wantHTTPCode: http.StatusBadRequest,
@@ -39,18 +33,17 @@ func TestSignUpUser(t *testing.T) {
 		{
 			name:         "empty-body-json",
 			inputForm:    []byte(``),
-			wantResponse: `{"message_error":{"code":"ER004","content":"first name, email or password can't be empty"}}`,
+			wantResponse: `{"message_error":{"code":"ER004","content":"the product has no name"}}`,
 			wantHTTPCode: http.StatusInternalServerError,
 		},
 		{
 			name: "right-body-json",
 			inputForm: []byte(`{
-				"first_name": "Don",
-				"last_name": "Mondongo",
-				"email": "don_mondongo@hotmail.com",
-				"password": "1234567"
+				"name": "Coca-Cola",
+				"price": 3,
+				"observations": ""
 			}`),
-			wantResponse: `{"message_ok":{"code":"OK002","content":"user created"},"data":{"first_name":"Don","last_name":"Mondongo","email":"don_mondongo@hotmail.com"}}`,
+			wantResponse: `{"message_ok":{"code":"OK002","content":"product added"},"data":{"name":"Coca-Cola","observations":"","price":3}}`,
 			wantHTTPCode: http.StatusCreated,
 		},
 	}
@@ -67,7 +60,7 @@ func TestSignUpUser(t *testing.T) {
 		w := httptest.NewRecorder()
 		c := e.NewContext(r, w)
 
-		err = reqMeth(c, signUpUser(*s))
+		err = reqMeth(c, addProduct(*s))
 		if err != nil {
 			t.Fatalf("%s: %v", tc.name, err)
 		}
@@ -88,7 +81,7 @@ func TestSignUpUser(t *testing.T) {
 	}
 }
 
-func TestFindUser(t *testing.T) {
+func TestFindProduct(t *testing.T) {
 	tt := []struct {
 		input        string
 		wantHTTPCode int
@@ -97,22 +90,22 @@ func TestFindUser(t *testing.T) {
 		{
 			input:        "1",
 			wantHTTPCode: http.StatusOK,
-			wantResponse: `{"message_ok":{"code":"OK002","content":""},"data":{"id":1,"first_name":"John","last_name":"Doe","email":"example@gmail.com"}}`,
+			wantResponse: `{"message_ok":{"code":"OK002","content":""},"data":{"id":1,"name":"Coca-Cola","observations":"","price":3}}`,
 		},
 		{
 			input:        "3",
 			wantHTTPCode: http.StatusNotFound,
-			wantResponse: `{"message_error":{"code":"ER007","content":"user not found"}}`,
+			wantResponse: `{"message_error":{"code":"ER007","content":"product not found"}}`,
 		},
 		{
 			input:        "0",
 			wantHTTPCode: http.StatusNotFound,
-			wantResponse: `{"message_error":{"code":"ER007","content":"user not found"}}`,
+			wantResponse: `{"message_error":{"code":"ER007","content":"product not found"}}`,
 		},
 		{
 			input:        "-1",
 			wantHTTPCode: http.StatusBadRequest,
-			wantResponse: `{"message_error":{"code":"ER005","content":"positive number expected for ID user"}}`,
+			wantResponse: `{"message_error":{"code":"ER005","content":"positive number expected for ID product"}}`,
 		},
 	}
 
@@ -131,7 +124,7 @@ func TestFindUser(t *testing.T) {
 		c.SetParamNames("id")
 		c.SetParamValues(tc.input)
 
-		err = reqMeth(c, findUser(*s))
+		err = reqMeth(c, findProduct(*s))
 		if err != nil {
 			t.Fatalf("input %s: %v", tc.input, err)
 		}
@@ -146,7 +139,7 @@ func TestFindUser(t *testing.T) {
 	}
 }
 
-func TestListUsers(t *testing.T) {
+func TestListProducts(t *testing.T) {
 	rp := mock.StorageOk{}
 	s, err := service.New(rp)
 	if err != nil {
@@ -159,7 +152,7 @@ func TestListUsers(t *testing.T) {
 	w := httptest.NewRecorder()
 	c := e.NewContext(r, w)
 
-	err = reqMeth(c, listUsers(*s))
+	err = reqMeth(c, listProducts(*s))
 	if err != nil {
 		t.Fatal(err)
 	}

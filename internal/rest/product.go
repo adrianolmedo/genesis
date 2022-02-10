@@ -12,10 +12,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// signUpUser handler POST: /users
-func signUpUser(s service.Service) echo.HandlerFunc {
+// addProduct handler POST: /products
+func addProduct(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		form := domain.UserSignUpForm{}
+		form := domain.AddProductForm{}
 
 		err := c.Bind(&form)
 		if err != nil {
@@ -23,38 +23,37 @@ func signUpUser(s service.Service) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		err = s.User.SignUp(&domain.User{
-			FirstName: form.FirstName,
-			LastName:  form.LastName,
-			Email:     form.Email,
-			Password:  form.Password,
+		err = s.Store.Add(&domain.Product{
+			Name:         form.Name,
+			Observations: form.Observations,
+			Price:        form.Price,
 		})
 		if err != nil {
 			resp := newResponse(msgError, "ER004", err.Error(), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
 
-		resp := newResponse(msgOK, "OK002", "user created", domain.UserProfileDTO{
-			FirstName: form.FirstName,
-			LastName:  form.LastName,
-			Email:     form.Email,
+		resp := newResponse(msgOK, "OK002", "product added", domain.ProductCardDTO{
+			Name:         form.Name,
+			Observations: form.Observations,
+			Price:        form.Price,
 		})
 
 		return c.JSON(http.StatusCreated, resp)
 	}
 }
 
-// findUser handler GET: /users/:id
-func findUser(s service.Service) echo.HandlerFunc {
+// findProduct handler GET: /products/:id
+func findProduct(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if id < 0 || err != nil {
-			resp := newResponse(msgError, "ER005", "positive number expected for ID user", nil)
+			resp := newResponse(msgError, "ER005", "positive number expected for ID product", nil)
 			return c.JSON(http.StatusBadRequest, resp) // 400
 		}
 
-		user, err := s.User.Find(int64(id))
-		if errors.Is(err, domain.ErrUserNotFound) {
+		product, err := s.Store.Find(int64(id))
+		if errors.Is(err, domain.ErrProductNotFound) {
 			resp := newResponse(msgError, "ER007", err.Error(), nil)
 			return c.JSON(http.StatusNotFound, resp) // 404
 		}
@@ -64,26 +63,26 @@ func findUser(s service.Service) echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		resp := newResponse(msgOK, "OK002", "", domain.UserProfileDTO{
-			ID:        user.ID,
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
-			Email:     user.Email,
+		resp := newResponse(msgOK, "OK002", "", domain.ProductCardDTO{
+			ID:           product.ID,
+			Name:         product.Name,
+			Observations: product.Observations,
+			Price:        product.Price,
 		})
 		return c.JSON(http.StatusOK, resp)
 	}
 }
 
-// updateUser handler PUT: /users/:id.
-func updateUser(s service.Service) echo.HandlerFunc {
+// updateProduct handler PUT: /products/:id
+func updateProduct(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if id < 0 || err != nil {
-			resp := newResponse(msgError, "ER005", "positive number expected for ID user", nil)
+			resp := newResponse(msgError, "ER005", "positive number expected for ID product", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		form := domain.UserUpdateForm{}
+		form := domain.UpdateProductForm{}
 		err = c.Bind(&form)
 		if err != nil {
 			resp := newResponse(msgError, "ER002", "the JSON structure is not correct", nil)
@@ -92,14 +91,13 @@ func updateUser(s service.Service) echo.HandlerFunc {
 
 		form.ID = int64(id)
 
-		err = s.User.Update(domain.User{
-			ID:        form.ID,
-			FirstName: form.FirstName,
-			LastName:  form.LastName,
-			Email:     form.Email,
-			Password:  form.Password,
+		err = s.Store.Update(domain.Product{
+			ID:           form.ID,
+			Name:         form.Name,
+			Observations: form.Observations,
+			Price:        form.Price,
 		})
-		if errors.Is(err, domain.ErrUserNotFound) {
+		if errors.Is(err, domain.ErrProductNotFound) {
 			resp := newResponse(msgError, "ER007", err.Error(), nil)
 			return c.JSON(http.StatusNoContent, resp)
 		}
@@ -109,41 +107,37 @@ func updateUser(s service.Service) echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
 
-		resp := newResponse(msgOK, "OK002", "user updated", domain.UserProfileDTO{
-			ID:        form.ID,
-			FirstName: form.FirstName,
-			LastName:  form.LastName,
-			Email:     form.Email,
-		})
+		resp := newResponse(msgOK, "OK002", "user updated", form)
 		return c.JSON(http.StatusOK, resp)
 	}
 }
 
-// listUsers handler GET: /users.
-func listUsers(s service.Service) echo.HandlerFunc {
+// listProducts handler GET: /products.
+func listProducts(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		users, err := s.User.List()
+		products, err := s.Store.List()
 		if err != nil {
 			resp := newResponse(msgError, "ER003", err.Error(), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
 
-		if len(users) == 0 {
-			resp := newResponse(msgOK, "OK002", "there are not users", nil)
+		if len(products) == 0 {
+			resp := newResponse(msgOK, "OK002", "there are not products", nil)
 			return c.JSON(http.StatusOK, resp) // maybe 204
 		}
 
-		assemble := func(u *domain.User) domain.UserProfileDTO {
-			return domain.UserProfileDTO{
-				ID:        u.ID,
-				FirstName: u.FirstName,
-				LastName:  u.LastName,
-				Email:     u.Email,
+		list := make(domain.ProductList, 0, len(products))
+
+		assemble := func(p *domain.Product) domain.ProductCardDTO {
+			return domain.ProductCardDTO{
+				ID:           p.ID,
+				Name:         p.Name,
+				Observations: p.Observations,
+				Price:        p.Price,
 			}
 		}
 
-		list := make(domain.UserList, 0, len(users))
-		for _, v := range users {
+		for _, v := range products {
 			list = append(list, assemble(v))
 		}
 
@@ -152,28 +146,28 @@ func listUsers(s service.Service) echo.HandlerFunc {
 	}
 }
 
-// deleteUser handler DELETE: /users/:id.
-func deleteUser(s service.Service) echo.HandlerFunc {
+// deleteProduct handler DELETE: /products/:id.
+func deleteProduct(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 
 		if id < 0 || err != nil {
-			resp := newResponse(msgError, "ER005", "positive number expected for ID user", nil)
+			resp := newResponse(msgError, "ER005", "positive number expected for ID product", nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
 
-		err = s.User.Remove(int64(id))
-		if errors.Is(err, domain.ErrUserNotFound) {
+		err = s.Store.Remove(int64(id))
+		if errors.Is(err, domain.ErrProductNotFound) {
 			resp := newResponse(msgError, "ER007", err.Error(), nil)
 			return c.JSON(http.StatusNoContent, resp)
 		}
 
 		if err != nil {
-			resp := newResponse(msgError, "ER006", fmt.Sprintf("could not delete user: %s", err), nil)
+			resp := newResponse(msgError, "ER006", fmt.Sprintf("could not delete product: %s", err), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
 
-		resp := newResponse(msgOK, "OK002", "user deleted", nil)
+		resp := newResponse(msgOK, "OK002", "product deleted", nil)
 		return c.JSON(http.StatusOK, resp) // maybe 204
 	}
 }
