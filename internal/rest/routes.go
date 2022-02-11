@@ -22,12 +22,11 @@ func Routes(e *echo.Echo, s service.Service) {
 	e.GET("/v1/products", listProducts(s))
 	e.GET("/v1/products/:id", findProduct(s))
 
-	p := e.Group("/v1/products")
-	p.Use(middleware.Auth)
-	p.POST("", addProduct(s))
-	p.PUT("/:id", updateProduct(s))
-	p.DELETE("/:id", deleteProduct(s))
+	e.POST("", addProduct(s), middleware.Auth)
+	e.PUT("/:id", updateProduct(s), middleware.Auth)
+	e.DELETE("/:id", deleteProduct(s), middleware.Auth)
 
 	i := e.Group("/v1/invoices")
+	i.Use(middleware.Auth)
 	i.POST("", generateInvoice(s))
 }
