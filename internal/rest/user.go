@@ -74,7 +74,7 @@ func findUser(s service.Service) echo.HandlerFunc {
 	}
 }
 
-// updateUser handler PUT: /users/:id.
+// updateUser handler PUT: /users/:id
 func updateUser(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
@@ -119,7 +119,7 @@ func updateUser(s service.Service) echo.HandlerFunc {
 	}
 }
 
-// listUsers handler GET: /users.
+// listUsers handler GET: /users
 func listUsers(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		users, err := s.User.List()
@@ -152,7 +152,7 @@ func listUsers(s service.Service) echo.HandlerFunc {
 	}
 }
 
-// deleteUser handler DELETE: /users/:id.
+// deleteUser handler DELETE: /users/:id
 func deleteUser(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
@@ -172,6 +172,8 @@ func deleteUser(s service.Service) echo.HandlerFunc {
 			resp := newResponse(msgError, "ER006", fmt.Sprintf("could not delete user: %s", err), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
+
+		c.Logger().Infof("User with ID %d deleted", id)
 
 		resp := newResponse(msgOK, "OK002", "user deleted", nil)
 		return c.JSON(http.StatusOK, resp) // maybe 204
