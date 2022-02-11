@@ -46,5 +46,6 @@ func newResponse(message, code, content string, data interface{}) response {
 			Data: data,
 		}
 	}
+
 	return resp
 }
