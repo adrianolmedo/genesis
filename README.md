@@ -5,8 +5,6 @@ My first prototype of RESTful API written in Go whit persistence to MySQL or Pos
 
 ## TO-DO
 
-[-] Add logger.
-
 [-] Add Context interface.
 
 ## Content
@@ -74,8 +72,8 @@ Body (JSON):
 {
   "first_name": "John",
   "last_name": "Doe",
-  "email": "exmaple@gmail.com",
-  "password": "1234567@"
+  "email": "jdoe@go.com",
+  "password": "1234567b"
 }
 ```
 
@@ -88,13 +86,9 @@ Reponse (201 Created):
     "content": "user created"
   },
   "data": {
-    "created_at": "2021-07-02T01:20:19.493927615-04:00",
-    "updated_at": "0001-01-01T00:00:00Z",
-    "deleted_at": "0001-01-01T00:00:00Z",
-    "id": 1,
     "first_name": "John",
     "last_name": "Doe",
-    "email": "exmaple@gmail.com"
+    "email": "jdoe@go.com"
   }
 }
 ```
@@ -116,13 +110,10 @@ Reponse (200 OK):
     "content": ""
   },
   "data": {
-    "created_at": "2021-07-02T01:20:19.493928Z",
-    "updated_at": "0001-01-01T00:00:00Z",
-    "deleted_at": "0001-01-01T00:00:00Z",
     "id": 1,
     "first_name": "John",
     "last_name": "Doe",
-    "email": "exmaple@gmail.com"
+    "email": "jdoe@go.com"
   }
 }
 ```
@@ -139,8 +130,8 @@ Body (JSON):
 
 ```json
 {
-  "email": "a@g.com",
-  "password": "1234567a"
+  "email": "jdoe@go.com",
+  "password": "1234567b"
 }
 ```
 
@@ -150,10 +141,10 @@ Reponse (201 Created):
 {
   "message_ok": {
     "code": "OK004",
-    "content": ""
+    "content": "logged"
   },
   "data": {
-    "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkcmlhbm9sbWVkb0BnbWFpbC5jb20iLCJleHAiOjE2MjUxOTUxNTQsImlzcyI6ImFkcmlhbm9sbWVkbyJ9.n-t_X3pQVHa1sz10QqNjQMH6VCtmx9RmBy6J9sjVvbl74cCtFIxFDN9r6M9j4ZjOC_HAvWNdC_mOzOhk0Idrui_18Rqp_D6BqWmthaXAZPIi8qpQ6nAPecm-jQDSxfZj0s9jl0Q32u3oWA0NnDuO3oGoJPQCYWQ_nX3qk4CTFHQ"
+    "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Impkb2VAZ28uY29tIiwiZXhwIjoxNjQ0NTc5NTA1LCJpc3MiOiJhZHJpYW5vbG1lZG8ifQ.qEYFi_ffDaI0aek01REQPS0L8dcTB6mteq09NK8PXf1fPCRp0H3EvIyjCRuJL6zddIxPsaUTi2-LERORc4-GsVwjA-qRPf0IpDwY75YroIC8LfZ_gd3icbxP1fTBy2ZQLy1cHLX11gBvxsXle-LX4dbIMmv81ulsbabkcVY_Vrw"
   }
 }
 ```
@@ -183,17 +174,13 @@ Response (200 OK):
 {
   "message_ok": {
     "code": "OK002",
-    "content": "resource updated"
+    "content": "user updated"
   },
   "data": {
-    "created_at": "0001-01-01T00:00:00Z",
-    "updated_at": "2021-07-02T03:23:15.418448805-04:00",
-    "deleted_at": "0001-01-01T00:00:00Z",
     "id": 1,
     "first_name": "John",
     "last_name": "Doe",
-    "email": "j.doe@go.com",
-    "password": "1234567a"
+    "email": "j.doe@go.com"
   }
 }
 ```
@@ -216,24 +203,16 @@ Response (200 OK):
   },
   "data": [
     {
-      "created_at": "2021-07-02T01:20:19.493928Z",
-      "updated_at": "2021-07-02T03:32:19.896399Z",
-      "deleted_at": "2021-07-02T03:32:19.896399Z",
       "id": 1,
       "first_name": "John",
       "last_name": "Doe",
-      "email": "j.doe@go.com",
-      "password": "1234567a"
+      "email": "j.doe@go.com"
     },
     {
-      "created_at": "2021-07-01T22:16:25.608667Z",
-      "updated_at": "0001-01-01T00:00:00Z",
-      "deleted_at": "0001-01-01T00:00:00Z",
-      "id": 2,
-      "first_name": "Adrián",
-      "last_name": "Olmedo",
-      "email": "adr.ve@a.com",
-      "password": "1234567@"
+      "id": 3,
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "email": "qwerty@example.com"
     }
   ]
 }
@@ -253,8 +232,7 @@ Response (200 OK):
 {
   "message_ok": {
     "code": "OK002",
-    "content": "resource deleted"
-  },
-  "data": null
+    "content": "user deleted"
+  }
 }
 ```
