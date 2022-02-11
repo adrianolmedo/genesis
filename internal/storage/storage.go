@@ -59,7 +59,7 @@ func (s storage) ProvideRepository() (*Repository, error) {
 		}, nil
 
 	default:
-		return nil, fmt.Errorf("driver not implemented: %s", s.dbcfg.Engine)
+		return nil, fmt.Errorf("database engine '%s' not implemented", s.dbcfg.Engine)
 	}
 }
 

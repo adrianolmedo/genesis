@@ -26,11 +26,15 @@ func generateInvoice(s service.Service) echo.HandlerFunc {
 
 		_, err = s.User.Find(clientID)
 		if errors.Is(err, domain.ErrUserNotFound) {
+			c.Logger().Error("User not found to generate invoice")
+
 			resp := newResponse(msgError, "ER004", err.Error(), nil)
 			return c.JSON(http.StatusNotFound, resp) // 404
 		}
 
 		if err != nil {
+			c.Logger().Error(err)
+
 			resp := newResponse(msgError, "ER009", err.Error(), nil)
 			return c.JSON(http.StatusBadRequest, resp)
 		}
@@ -47,11 +51,15 @@ func generateInvoice(s service.Service) echo.HandlerFunc {
 			_, err := s.Store.Find(item.ProductID)
 
 			if errors.Is(err, domain.ErrProductNotFound) {
+				c.Logger().Error("Product not found to add the invoice")
+
 				resp := newResponse(msgError, "ER007", fmt.Sprintf("%s with id %d", domain.ErrProductNotFound, item.ProductID), nil)
 				return c.JSON(http.StatusNotFound, resp) // 404
 			}
 
 			if err != nil {
+				c.Logger().Error(err)
+
 				resp := newResponse(msgError, "ER009", err.Error(), nil)
 				return c.JSON(http.StatusBadRequest, resp)
 			}
@@ -69,15 +77,18 @@ func generateInvoice(s service.Service) echo.HandlerFunc {
 
 		err = s.Billing.Generate(invoice)
 		if err != nil {
+			c.Logger().Error(err)
+
 			resp := newResponse(msgError, "ER004", err.Error(), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
+
+		c.Logger().Infof("Invoice ID %d generated", invoice.Header.ID)
 
 		resp := newResponse(msgOK, "OK002", "invoice generated", domain.GenerateInvoiceForm{
 			Header: form.Header,
 			Items:  form.Items,
 		})
-
 		return c.JSON(http.StatusCreated, resp)
 	}
 }

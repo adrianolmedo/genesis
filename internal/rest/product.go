@@ -29,16 +29,19 @@ func addProduct(s service.Service) echo.HandlerFunc {
 			Price:        form.Price,
 		})
 		if err != nil {
+			c.Logger().Error(err)
+
 			resp := newResponse(msgError, "ER004", err.Error(), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
+
+		c.Logger().Info("New product added")
 
 		resp := newResponse(msgOK, "OK002", "product added", domain.ProductCardDTO{
 			Name:         form.Name,
 			Observations: form.Observations,
 			Price:        form.Price,
 		})
-
 		return c.JSON(http.StatusCreated, resp)
 	}
 }
@@ -77,6 +80,9 @@ func findProduct(s service.Service) echo.HandlerFunc {
 func updateProduct(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
+
+		c.Logger().Debugf("Request to update product ID %d", id)
+
 		if id < 0 || err != nil {
 			resp := newResponse(msgError, "ER005", "positive number expected for ID product", nil)
 			return c.JSON(http.StatusBadRequest, resp)
@@ -107,7 +113,9 @@ func updateProduct(s service.Service) echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
 
-		resp := newResponse(msgOK, "OK002", "user updated", form)
+		c.Logger().Infof("Product ID %d updated", form.ID)
+
+		resp := newResponse(msgOK, "OK002", "product updated", form)
 		return c.JSON(http.StatusOK, resp)
 	}
 }
@@ -166,6 +174,8 @@ func deleteProduct(s service.Service) echo.HandlerFunc {
 			resp := newResponse(msgError, "ER006", fmt.Sprintf("could not delete product: %s", err), nil)
 			return c.JSON(http.StatusInternalServerError, resp)
 		}
+
+		c.Logger().Infof("Product with ID %d removed from DB", id)
 
 		resp := newResponse(msgOK, "OK002", "product deleted", nil)
 		return c.JSON(http.StatusOK, resp) // maybe 204
