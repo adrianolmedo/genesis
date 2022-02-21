@@ -6,7 +6,9 @@ My first prototype of RESTful API written in Go whit persistence to MySQL or Pos
 ## TO-DO
 
 [-] Add Context interface.
+
 [-] Add logger when deleting a user account.
+
 [-] Add logger when creating invoice.
 
 ## Content
