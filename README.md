@@ -11,6 +11,10 @@ My first prototype of RESTful API written in Go whit persistence to MySQL or Pos
 
 [-] Add logger when adding a product to an invoice.
 
+## Architecture
+
+![DDD style architecture](https://i.imgur.com/QPvGl0K.png)
+
 ## Content
 
 * [Run with MySQL service](#run-with-mysql-service)
