@@ -1,4 +1,4 @@
-# Postgres storage
+# postgres package
 
 ## Run integration tests
 
