@@ -14,5 +14,5 @@ It also parses `package main` which calls `flag.Parse`, so all declared and visi
 Example for run:
 
 ```bash
-$ go test -v -tags integration -args -dbengine postgres -dbhost 127.0.0.1 -dbport 5432 -dbuser username -dbname foodb -dbpass 12345
+$ go test -v -tags integration -args -dbengine postgres -dbhost 127.0.0.1 -dbport 5432 -dbuser username -dbname testdb -dbpass 12345
 ```
