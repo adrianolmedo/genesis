@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/adrianolmedo/go-restapi/config"
 	"github.com/adrianolmedo/go-restapi/internal/app"
@@ -26,13 +27,20 @@ func main() {
 	)
 	ff.Parse(fs, os.Args[1:], ff.WithEnvVarNoPrefix())
 
-	cfg, err := config.New(*port, *cors, *dbengine, *dbhost, *dbport, *dbuser, *dbpass, *dbname)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		os.Exit(1)
-	}
+	err := app.Run(&config.Config{
+		Port: *port,
+		CORS: strings.Join(strings.Fields(*cors), ""), // remove whitespaces
+		Database: config.Database{
+			Engine:   *dbengine,
+			Host:     *dbhost,
+			Port:     *dbport,
+			User:     *dbuser,
+			Password: *dbpass,
+			Name:     *dbname,
+		},
+	})
 
-	if err := app.Run(cfg); err != nil {
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
 	}

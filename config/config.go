@@ -1,7 +1,5 @@
 package config
 
-import "strings"
-
 // Config server RESTful API.
 type Config struct {
 	// Port for address server, if is empty by default will are 80.
@@ -32,21 +30,4 @@ type Database struct {
 
 	// Name of SQL database.
 	Name string
-}
-
-func New(port, cors, dbengine, dbhost, dbport, dbuser, dbpass, dbname string) (*Config, error) {
-	cfg := Config{
-		Port: port,
-		CORS: strings.Join(strings.Fields(cors), ""), // remove whitespaces
-		Database: Database{
-			Engine:   dbengine,
-			Host:     dbhost,
-			Port:     dbport,
-			User:     dbuser,
-			Password: dbpass,
-			Name:     dbname,
-		},
-	}
-
-	return &cfg, nil
 }
