@@ -38,27 +38,27 @@ $ docker-compose up -d --build app mysql
 
 ## Run with Postgres service:
 
-1- Prepare database.
+**1- Prepare database:**
 
 ```bash
 $ git clone https://github.com/adrianolmedo/go-restapi.git
 $ docker-compose up -d --build postgres
 ```
 
-2- Join to `psql` and ingress the password `1234567a`.
+**1.1- Join to `psql` and ingress the password `1234567a`:**
 
 ```bash
 $ docker exec -it postgres /bin/sh
 $ psql -U johndoe -d go_practice_restapi
 ```
 
-3- Install tables.
+**1.2- Install tables:**
 
 ```bash
 $ \i tables.sql
 ```
 
-4- Up application service.
+**2- Up application service:**
 
 ```bash
 $ openssl genrsa -out app.sra 1024
@@ -107,7 +107,7 @@ Reponse (201 Created):
 
 **GET:** `/v1/users/:id`
 
-For example to get user with ID 1 make GET request to `/v1/users/1` route. Not required JWT Authorization.
+Not required JWT Authorization.
 
 Reponse (200 OK):
 
@@ -163,7 +163,7 @@ Reponse (201 Created):
 
 **PUT:** `/v1/users/:id`
 
-For example to update user with ID 1, make PUT request to `/v1/users/1` route. Required JWT Authorization.
+Required JWT Authorization.
 
 Body (JSON):
 
@@ -232,7 +232,7 @@ Response (200 OK):
 
 **DELETE:** `v1/users/:id`
 
-For example to delete user with ID 1, make DELETE request to `/v1/users/1` route. Required JWT Authorization.
+Required JWT Authorization.
 
 Response (200 OK):
 
