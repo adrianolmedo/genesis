@@ -5,8 +5,6 @@ My first prototype of RESTful API written in Go whit persistence to MySQL or Pos
 
 ## TO-DO
 
-[-] Add Context interface.
-
 [-] Add logger when creating invoice.
 
 [-] Add logger when adding a product to an invoice.
@@ -42,6 +40,26 @@ $ docker-compose up -d --build app mysql
 
 ```bash
 $ git clone https://github.com/adrianolmedo/go-restapi.git
+$ vim .env
+```
+
+Change the following values (remember that the postgres default internal port is 5432):
+
+```
+# Accepted values: mysql - postgres
+DBENGINE=postgres
+
+# Accepted values: mysql - postgres
+DBHOST=postgres
+
+# For only internal usage in the container. Accepted values: 3306 - 5432
+DBPORT=5432
+```
+
+Then build the container:
+
+
+```
 $ docker-compose up -d --build postgres
 ```
 
@@ -56,6 +74,8 @@ $ psql -U johndoe -d go_practice_restapi
 
 ```bash
 $ \i tables.sql
+$ \q
+$ exit
 ```
 
 **2- Up application service:**
