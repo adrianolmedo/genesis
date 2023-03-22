@@ -1,0 +1,27 @@
+version: '3'
+
+networks:
+  backend:
+    driver: ${NETWORKS_DRIVER}
+
+volumes:
+  postgres:
+    driver: ${VOLUMES_DRIVER}
+
+services:
+
+  postgres:
+    image: postgres:${POSTGRES_VERSION}
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=${DBNAME}
+      - POSTGRES_USER=${DBUSER}
+      - POSTGRES_PASSWORD=${DBPASS}
+    ports:
+      - ${POSTGRES_EXTERNAL_PORT}:${DBPORT}
+    volumes:
+      - ./.docker/postgres/database.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./.docker/postgres/tables.sql:/tables.sql
+      - postgres:/var/lib/postgresql/data
+    networks:
+      - backend
