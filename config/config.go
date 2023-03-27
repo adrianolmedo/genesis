@@ -8,11 +8,12 @@ type Config struct {
 	// CORS directive. Add address separated by comma. Example, "127.0.0.1,172.17.0.1".
 	CORS string
 
-	Database
+	// Database.
+	DB
 }
 
-// Database config.
-type Database struct {
+// DB Database config.
+type DB struct {
 	// Engine eg.: "mysql" or "postgres".
 	Engine string
 

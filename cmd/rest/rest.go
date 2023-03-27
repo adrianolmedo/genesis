@@ -30,7 +30,7 @@ func main() {
 	err := app.Run(&config.Config{
 		Port: *port,
 		CORS: *cors,
-		Database: config.Database{
+		DB: config.DB{
 			Engine:   *dbengine,
 			Host:     *dbhost,
 			Port:     *dbport,
