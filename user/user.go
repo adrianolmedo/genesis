@@ -3,6 +3,8 @@ package user
 import (
 	"errors"
 	"time"
+
+	"github.com/pborman/uuid"
 )
 
 var ErrUserCantBeEmpty = errors.New("the user fields can't be empty")
@@ -10,6 +12,7 @@ var ErrUserNotFound = errors.New("user not found")
 
 type User struct {
 	ID        int64
+	UUID      UserID
 	FirstName string
 	LastName  string
 	Email     string
@@ -26,6 +29,14 @@ func (u User) CheckEmptyFields() error {
 		return errors.New("first name, email or password can't be empty")
 	}
 	return nil
+}
+
+// UserID uniquely identifies a particular user.
+type UserID string
+
+// NextUserID generates a new UUID.
+func NextUserID() UserID {
+	return UserID(uuid.New())
 }
 
 type UserProfileDTO struct {
