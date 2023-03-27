@@ -19,11 +19,12 @@ func Run(cfg *config.Config) error {
 	}
 
 	// Prepare services.
-	svc := user.NewService(db)
+	userSvc := user.NewService(db)
+	productSvc := product.NewService(db)
 
 	// Call routes.
-	user.Routes(app, *svc)
-	product.Routes(app)
+	user.Routes(app, *userSvc)
+	product.Routes(app, *productSvc)
 
 	// Up server.
 	return app.Listen(":" + cfg.Port)
