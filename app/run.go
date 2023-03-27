@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/adrianolmedo/go-restapi/config"
 	"github.com/adrianolmedo/go-restapi/product"
+	"github.com/adrianolmedo/go-restapi/storage"
 	"github.com/adrianolmedo/go-restapi/user"
 
 	"github.com/gofiber/fiber/v2"
@@ -11,14 +12,14 @@ import (
 func Run(cfg *config.Config) error {
 	app := fiber.New()
 
-	// Prepare storages.
-	userRepo, err := user.NewRepository(cfg.Database)
+	// Prepare storage.
+	db, err := storage.New(cfg.DB)
 	if err != nil {
 		return err
 	}
 
 	// Prepare services.
-	svc := user.NewService(userRepo)
+	svc := user.NewService(db)
 
 	// Call routes.
 	user.Routes(app, *svc)

@@ -1,12 +1,14 @@
 package user
 
+import "database/sql"
+
 type Service struct {
-	repo *Repository
+	repo *repository
 }
 
-func NewService(repo *Repository) *Service {
+func NewService(db *sql.DB) *Service {
 	return &Service{
-		repo: repo,
+		repo: newRepository(db),
 	}
 }
 
