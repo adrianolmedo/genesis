@@ -10,6 +10,7 @@ import (
 var ErrUserCantBeEmpty = errors.New("the user fields can't be empty")
 var ErrUserNotFound = errors.New("user not found")
 
+// User model.
 type User struct {
 	ID        int64
 	UUID      UserID

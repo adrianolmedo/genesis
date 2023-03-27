@@ -1,15 +1,22 @@
 package product
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 var ErrProductHasNoName = errors.New("the product has no name")
 var ErrProductNotFound = errors.New("product not found")
 
+// Product model.
 type Product struct {
 	ID           int64
 	Name         string
 	Observations string
 	Price        float64
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (p Product) HasName() bool {
