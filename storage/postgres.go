@@ -1,4 +1,4 @@
-package user
+package storage
 
 import (
 	"database/sql"
@@ -9,8 +9,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// NewDB return a postgres database connection.
-func NewDB(dbcfg config.Database) (db *sql.DB, err error) {
+// newPSQL return a postgres database connection.
+func newPSQL(dbcfg config.DB) (db *sql.DB, err error) {
 	// postgres://user:password@host:port/dbname?sslmode=disable
 	conn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		dbcfg.User, dbcfg.Password, dbcfg.Host, dbcfg.Port, dbcfg.Name)

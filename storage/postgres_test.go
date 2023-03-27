@@ -1,7 +1,7 @@
 //go:build integration
 // +build integration
 
-package user_test
+package storage_test
 
 import (
 	"database/sql"
@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/adrianolmedo/go-restapi/config"
-	"github.com/adrianolmedo/go-restapi/user"
+	"github.com/adrianolmedo/go-restapi/storage"
 )
 
 // $ go test -v -tags integration -args -dbengine postgres -dbhost 127.0.0.1 -dbport 5432 -dbuser username -dbname foodb -dbpass 12345
@@ -38,7 +38,7 @@ func openDB(t *testing.T) *sql.DB {
 		Name:     *dbname,
 	}
 
-	db, err := user.NewDB(dbcfg)
+	db, err := storage.NewPSQL(dbcfg)
 	if err != nil {
 		t.Fatal(err)
 	}
