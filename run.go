@@ -1,4 +1,4 @@
-package app
+package main
 
 import (
 	"github.com/adrianolmedo/go-restapi/config"
@@ -9,7 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func Run(cfg *config.Config) error {
+func run(cfg *config.Config) error {
 	app := fiber.New()
 
 	// Prepare storage.

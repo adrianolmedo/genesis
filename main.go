@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/adrianolmedo/go-restapi/app"
 	"github.com/adrianolmedo/go-restapi/config"
 
 	"github.com/peterbourgon/ff/v3"
@@ -27,7 +26,7 @@ func main() {
 	// Pass env vars to flags.
 	ff.Parse(fs, os.Args[1:], ff.WithEnvVarNoPrefix())
 
-	err := app.Run(&config.Config{
+	err := run(&config.Config{
 		Port: *port,
 		CORS: *cors,
 		DB: config.DB{
