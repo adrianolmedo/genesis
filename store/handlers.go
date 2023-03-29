@@ -3,6 +3,8 @@ package store
 import (
 	"net/http"
 
+	"github.com/adrianolmedo/go-restapi/api"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,7 +15,7 @@ func addProduct(s Service) fiber.Handler {
 
 		err := c.BodyParser(&form)
 		if err != nil {
-			resp := newResponse(msgError, "the JSON structure is not correct", nil)
+			resp := api.RespJSON(api.MsgError, "the JSON structure is not correct", nil)
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
@@ -24,11 +26,11 @@ func addProduct(s Service) fiber.Handler {
 		})
 
 		if err != nil {
-			resp := newResponse(msgError, "", err.Error())
+			resp := api.RespJSON(api.MsgError, "", err.Error())
 			return c.Status(http.StatusInternalServerError).JSON(resp)
 		}
 
-		resp := newResponse(msgOK, "product added", ProductCardDTO{
+		resp := api.RespJSON(api.MsgOK, "product added", ProductCardDTO{
 			Name:         form.Name,
 			Observations: form.Observations,
 			Price:        form.Price,
