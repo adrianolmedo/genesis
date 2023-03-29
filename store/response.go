@@ -1,4 +1,4 @@
-package product
+package store
 
 const (
 	msgOK    = "ok"
