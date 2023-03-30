@@ -11,9 +11,19 @@ func NewService(repo Repository) Service {
 }
 
 func (s Service) Add(product *Product) error {
-	if !product.HasName() {
-		return ErrProductHasNoName
+	err := addProductService(product)
+	if err != nil {
+		return err
 	}
 
 	return s.repo.Create(product)
+}
+
+// addProductService business logic for adding products to the store.
+func addProductService(p *Product) error {
+	if !p.HasName() {
+		return ErrProductHasNoName
+	}
+
+	return nil
 }
