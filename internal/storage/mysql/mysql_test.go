@@ -22,6 +22,7 @@ var (
 	dbname   = flag.String("dbname", "", "Database name.")
 )
 
+// TestDB test for open & close database.
 func TestDB(t *testing.T) {
 	db := openDB(t)
 	closeDB(t, db)
