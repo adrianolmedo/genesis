@@ -18,13 +18,17 @@ func run(cfg *config.Config) error {
 		return err
 	}
 
+	// Prepare repositories.
+	userRepo := user.NewRepository(db)
+	storeRepo := store.NewRepository(db)
+
 	// Prepare services.
-	userSvc := user.NewService(db)
-	storeSvc := store.NewService(db)
+	userSvc := user.NewService(userRepo)
+	storeSvc := store.NewService(storeRepo)
 
 	// Call routes.
-	user.Routes(app, *userSvc)
-	store.Routes(app, *storeSvc)
+	user.Routes(app, userSvc)
+	store.Routes(app, storeSvc)
 
 	// Up server.
 	return app.Listen(":" + cfg.Port)
