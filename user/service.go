@@ -45,3 +45,32 @@ func (s Service) Find(id int64) (*User, error) {
 
 	return s.repo.ByID(id)
 }
+
+// Update business logic for update a User.
+func (s Service) Update(user User) error {
+	err := user.CheckEmptyFields()
+	if err != nil {
+		return err
+	}
+
+	err = validateEmail(user.Email)
+	if err != nil {
+		return err
+	}
+
+	return s.repo.Update(user)
+}
+
+// List get list of users.
+func (s Service) List() ([]*User, error) {
+	return s.repo.All()
+}
+
+// Remove delete User by its ID.
+func (s Service) Remove(id int64) error {
+	if id == 0 {
+		return ErrUserNotFound
+	}
+
+	return s.repo.Delete(id)
+}
