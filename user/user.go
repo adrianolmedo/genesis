@@ -40,9 +40,26 @@ func NextUserID() UserID {
 	return UserID(uuid.New())
 }
 
+type UserSignUpForm struct {
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+}
+
+type UserUpdateForm struct {
+	ID        int64  `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+}
+
 type UserProfileDTO struct {
 	ID        int64  `json:"id,omitempty"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Email     string `json:"email"`
 }
+
+type UserList []UserProfileDTO
