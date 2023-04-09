@@ -16,7 +16,6 @@ import (
 func signUpUser(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		form := domain.UserSignUpForm{}
-
 		err := c.Bind(&form)
 		if err != nil {
 			resp := newResponse(msgError, "ER002", "the JSON structure is not correct", nil)
@@ -156,7 +155,6 @@ func listUsers(s service.Service) echo.HandlerFunc {
 func deleteUser(s service.Service) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
-
 		if id < 0 || err != nil {
 			resp := newResponse(msgError, "ER005", "positive number expected for ID user", nil)
 			return c.JSON(http.StatusBadRequest, resp)
