@@ -173,7 +173,7 @@ func deleteUser(s Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(resp)
 		}
 
-		// TO-DO: Averiguar como poner el logger de Fiber.
+		// TO-DO: Add logger message: "User with ID %d deleted"
 
 		resp := api.RespJSON(api.MsgOK, "user deleted", nil)
 		return c.Status(http.StatusOK).JSON(resp)
