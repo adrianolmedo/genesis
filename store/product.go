@@ -29,9 +29,18 @@ type AddProductForm struct {
 	Price        float64 `json:"price"`
 }
 
+type UpdateProductForm struct {
+	ID           int64   `json:"id"`
+	Name         string  `json:"name"`
+	Observations string  `json:"observations"`
+	Price        float64 `json:"price"`
+}
+
 type ProductCardDTO struct {
 	ID           int64   `json:"id,omitempty"`
 	Name         string  `json:"name"`
 	Observations string  `json:"observations"`
 	Price        float64 `json:"price"`
 }
+
+type ProductList []ProductCardDTO
