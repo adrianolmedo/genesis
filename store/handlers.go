@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/adrianolmedo/go-restapi/api"
+	"github.com/adrianolmedo/go-restapi/domain"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -14,14 +15,14 @@ import (
 // addProduct handler POST: /products
 func addProduct(s Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		form := AddProductForm{}
+		form := domain.AddProductForm{}
 		err := c.BodyParser(&form)
 		if err != nil {
 			resp := api.RespJSON(api.MsgError, "the JSON structure is not correct", nil)
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		err = s.Add(&Product{
+		err = s.Add(&domain.Product{
 			Name:         form.Name,
 			Observations: form.Observations,
 			Price:        form.Price,
@@ -34,7 +35,7 @@ func addProduct(s Service) fiber.Handler {
 
 		// TO-DO: Add logger message: "New product added"
 
-		resp := api.RespJSON(api.MsgOK, "product added", ProductCardDTO{
+		resp := api.RespJSON(api.MsgOK, "product added", domain.ProductCardDTO{
 			Name:         form.Name,
 			Observations: form.Observations,
 			Price:        form.Price,
@@ -58,10 +59,10 @@ func listProducts(s Service) fiber.Handler {
 			return c.Status(http.StatusOK).JSON(resp)
 		}
 
-		list := make(ProductList, 0, len(products))
+		list := make(domain.ProductList, 0, len(products))
 
-		assemble := func(p *Product) ProductCardDTO {
-			return ProductCardDTO{
+		assemble := func(p *domain.Product) domain.ProductCardDTO {
+			return domain.ProductCardDTO{
 				ID:           p.ID,
 				Name:         p.Name,
 				Observations: p.Observations,
@@ -88,7 +89,7 @@ func findProduct(s Service) fiber.Handler {
 		}
 
 		product, err := s.Find(int64(id))
-		if errors.Is(err, ErrProductNotFound) {
+		if errors.Is(err, domain.ErrProductNotFound) {
 			resp := api.RespJSON(api.MsgError, err.Error(), nil)
 			return c.Status(http.StatusNotFound).JSON(resp) // 404
 		}
@@ -98,7 +99,7 @@ func findProduct(s Service) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		resp := api.RespJSON(api.MsgOK, "", ProductCardDTO{
+		resp := api.RespJSON(api.MsgOK, "", domain.ProductCardDTO{
 			ID:           product.ID,
 			Name:         product.Name,
 			Observations: product.Observations,
@@ -120,7 +121,7 @@ func updateProduct(s Service) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		form := UpdateProductForm{}
+		form := domain.UpdateProductForm{}
 		err = c.BodyParser(&form)
 		if err != nil {
 			resp := api.RespJSON(api.MsgError, "the JSON structure is not correct", nil)
@@ -129,13 +130,13 @@ func updateProduct(s Service) fiber.Handler {
 
 		form.ID = int64(id)
 
-		err = s.Update(Product{
+		err = s.Update(domain.Product{
 			ID:           form.ID,
 			Name:         form.Name,
 			Observations: form.Observations,
 			Price:        form.Price,
 		})
-		if errors.Is(err, ErrProductNotFound) {
+		if errors.Is(err, domain.ErrProductNotFound) {
 			resp := api.RespJSON(api.MsgError, err.Error(), nil)
 			return c.Status(http.StatusNoContent).JSON(resp)
 		}
@@ -162,7 +163,7 @@ func deleteProduct(s Service) fiber.Handler {
 		}
 
 		err = s.Remove(int64(id))
-		if errors.Is(err, ErrProductNotFound) {
+		if errors.Is(err, domain.ErrProductNotFound) {
 			resp := api.RespJSON(api.MsgError, err.Error(), nil)
 			return c.Status(http.StatusNoContent).JSON(resp)
 		}

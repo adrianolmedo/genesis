@@ -19,7 +19,7 @@ func run(cfg *config.Config) error {
 	}
 
 	// Prepare repositories.
-	userRepo := user.NewRepository(db)
+	userRepo := storage.NewUserRepository(db)
 	storeRepo := store.NewRepository(db)
 
 	// Prepare services.

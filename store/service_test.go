@@ -3,18 +3,20 @@ package store
 import (
 	"strings"
 	"testing"
+
+	"github.com/adrianolmedo/go-restapi/domain"
 )
 
 func TestAddProductService(t *testing.T) {
 	tt := []struct {
 		name           string
-		input          *Product
+		input          *domain.Product
 		errExpected    bool
 		wantErrContain string
 	}{
 		{
 			name: "successful",
-			input: &Product{
+			input: &domain.Product{
 				Name:         "Coca-Cola",
 				Observations: "",
 				Price:        3,
@@ -24,7 +26,7 @@ func TestAddProductService(t *testing.T) {
 		},
 		{
 			name: "empty-field",
-			input: &Product{
+			input: &domain.Product{
 				Name:         "",
 				Observations: "Made in Venezuela",
 				Price:        2,

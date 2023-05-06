@@ -29,7 +29,7 @@ func TestDB(t *testing.T) {
 }
 
 func openDB(t *testing.T) *sql.DB {
-	dbcfg := config.Database{
+	dbcfg := config.DB{
 		Engine:   *dbengine,
 		Host:     *dbhost,
 		Port:     *dbport,

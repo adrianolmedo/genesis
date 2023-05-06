@@ -1,35 +1,44 @@
 package user
 
+import (
+	"errors"
+	"fmt"
+	"regexp"
+
+	"github.com/adrianolmedo/go-restapi/domain"
+	"github.com/adrianolmedo/go-restapi/storage"
+)
+
 type Service struct {
-	repo Repository
+	repo storage.UserRepository
 }
 
-func NewService(repo Repository) Service {
+func NewService(repo storage.UserRepository) Service {
 	return Service{
 		repo: repo,
 	}
 }
 
 // SignUp to register a User.
-func (s Service) SignUp(user *User) error {
-	err := signUpService(user)
+func (s Service) SignUp(u *domain.User) error {
+	err := signUpService(u)
 	if err != nil {
 		return err
 	}
 
-	return s.repo.Create(user)
+	return s.repo.Create(u)
 }
 
 // signUpService business logic for regitser a User. Has been split into
 // a smaller function for unit testing purposes, and it should do so for
 // the other methods of the Service.
-func signUpService(user *User) error {
-	err := user.CheckEmptyFields()
+func signUpService(u *domain.User) error {
+	err := u.CheckEmptyFields()
 	if err != nil {
 		return err
 	}
 
-	err = validateEmail(user.Email)
+	err = validateEmail(u.Email)
 	if err != nil {
 		return err
 	}
@@ -38,39 +47,54 @@ func signUpService(user *User) error {
 }
 
 // Find a User by its ID.
-func (s Service) Find(id int64) (*User, error) {
+func (s Service) Find(id int64) (*domain.User, error) {
 	if id == 0 {
-		return &User{}, ErrUserNotFound
+		return &domain.User{}, domain.ErrUserNotFound
 	}
 
 	return s.repo.ByID(id)
 }
 
 // Update business logic for update a User.
-func (s Service) Update(user User) error {
-	err := user.CheckEmptyFields()
+func (s Service) Update(u domain.User) error {
+	err := u.CheckEmptyFields()
 	if err != nil {
 		return err
 	}
 
-	err = validateEmail(user.Email)
+	err = validateEmail(u.Email)
 	if err != nil {
 		return err
 	}
 
-	return s.repo.Update(user)
+	return s.repo.Update(u)
 }
 
 // List get list of users.
-func (s Service) List() ([]*User, error) {
+func (s Service) List() ([]*domain.User, error) {
 	return s.repo.All()
 }
 
 // Remove delete User by its ID.
 func (s Service) Remove(id int64) error {
 	if id == 0 {
-		return ErrUserNotFound
+		return domain.ErrUserNotFound
 	}
 
 	return s.repo.Delete(id)
+}
+
+// helpers
+
+func validateEmail(email string) error {
+	validEmail, err := regexp.MatchString(`^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$`, email)
+	if err != nil {
+		return fmt.Errorf("email pattern: %v", err)
+	}
+
+	if !validEmail {
+		return errors.New("email not valid")
+	}
+
+	return nil
 }

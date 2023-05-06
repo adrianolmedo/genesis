@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/adrianolmedo/go-restapi/api"
+	"github.com/adrianolmedo/go-restapi/domain"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -14,14 +15,14 @@ import (
 // signUpUser handler POST: /users
 func signUpUser(s Service) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		form := UserSignUpForm{}
+		form := domain.UserSignUpForm{}
 		err := c.BodyParser(&form)
 		if err != nil {
 			resp := api.RespJSON(api.MsgError, "the JSON structure is not correct", nil)
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		err = s.SignUp(&User{
+		err = s.SignUp(&domain.User{
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
 			Email:     form.Email,
@@ -33,7 +34,7 @@ func signUpUser(s Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(resp)
 		}
 
-		resp := api.RespJSON(api.MsgOK, "user created", UserProfileDTO{
+		resp := api.RespJSON(api.MsgOK, "user created", domain.UserProfileDTO{
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
 			Email:     form.Email,
@@ -53,7 +54,7 @@ func findUser(s Service) fiber.Handler {
 		}
 
 		user, err := s.Find(int64(id))
-		if errors.Is(err, ErrUserNotFound) {
+		if errors.Is(err, domain.ErrUserNotFound) {
 			resp := api.RespJSON(api.MsgError, err.Error(), nil)
 			return c.Status(http.StatusNotFound).JSON(resp)
 		}
@@ -63,7 +64,7 @@ func findUser(s Service) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		resp := api.RespJSON(api.MsgOK, "", UserProfileDTO{
+		resp := api.RespJSON(api.MsgOK, "", domain.UserProfileDTO{
 			ID:        user.ID,
 			FirstName: user.FirstName,
 			LastName:  user.LastName,
@@ -82,7 +83,7 @@ func updateUser(s Service) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		form := UserUpdateForm{}
+		form := domain.UserUpdateForm{}
 		err = c.BodyParser(&form)
 		if err != nil {
 			resp := api.RespJSON(api.MsgError, "the JSON structure is not correct", nil)
@@ -91,7 +92,7 @@ func updateUser(s Service) fiber.Handler {
 
 		form.ID = int64(id)
 
-		err = s.Update(User{
+		err = s.Update(domain.User{
 			ID:        form.ID,
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
@@ -99,7 +100,7 @@ func updateUser(s Service) fiber.Handler {
 			Password:  form.Password,
 		})
 
-		if errors.Is(err, ErrUserNotFound) {
+		if errors.Is(err, domain.ErrUserNotFound) {
 			resp := api.RespJSON(api.MsgError, err.Error(), nil)
 			return c.Status(http.StatusNoContent).JSON(resp)
 		}
@@ -109,7 +110,7 @@ func updateUser(s Service) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(resp)
 		}
 
-		resp := api.RespJSON(api.MsgOK, "user updated", User{
+		resp := api.RespJSON(api.MsgOK, "user updated", domain.User{
 			ID:        form.ID,
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
@@ -134,8 +135,8 @@ func listUsers(s Service) fiber.Handler {
 			return c.Status(http.StatusOK).JSON(resp)
 		}
 
-		assemble := func(u *User) UserProfileDTO {
-			return UserProfileDTO{
+		assemble := func(u *domain.User) domain.UserProfileDTO {
+			return domain.UserProfileDTO{
 				ID:        u.ID,
 				FirstName: u.FirstName,
 				LastName:  u.LastName,
@@ -143,7 +144,7 @@ func listUsers(s Service) fiber.Handler {
 			}
 		}
 
-		list := make(UserList, 0, len(users))
+		list := make(domain.UserList, 0, len(users))
 		for _, v := range users {
 			list = append(list, assemble(v))
 		}
@@ -163,7 +164,7 @@ func deleteUser(s Service) fiber.Handler {
 		}
 
 		err = s.Remove(int64(id))
-		if errors.Is(err, ErrUserNotFound) {
+		if errors.Is(err, domain.ErrUserNotFound) {
 			resp := api.RespJSON(api.MsgError, err.Error(), nil)
 			return c.Status(http.StatusNoContent).JSON(resp)
 		}

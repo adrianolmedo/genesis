@@ -1,31 +1,31 @@
-package user_test
+package domain_test
 
 import (
 	"regexp"
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi/user"
+	"github.com/adrianolmedo/go-restapi/domain"
 )
 
 func TestCheckEmptyFields(t *testing.T) {
 	tt := []struct {
 		name        string
-		user        user.User
+		user        domain.User
 		errExpected bool
 	}{
 		{
 			name:        "empty-struct",
-			user:        user.User{},
+			user:        domain.User{},
 			errExpected: true,
 		},
 		{
 			name:        "empty-fields",
-			user:        user.User{FirstName: "", LastName: "", Email: "", Password: ""},
+			user:        domain.User{FirstName: "", LastName: "", Email: "", Password: ""},
 			errExpected: true,
 		},
 		{
 			name: "filled-fields",
-			user: user.User{
+			user: domain.User{
 				FirstName: "Adrián",
 				LastName:  "Olmedo",
 				Email:     "aol.ve@aol.com",
@@ -46,7 +46,7 @@ func TestCheckEmptyFields(t *testing.T) {
 
 // TestNextUserID se segura que el campo UUID tenga un valor UUID válido.
 func TestNextUserID(t *testing.T) {
-	uuid := user.NextUserID()
+	uuid := domain.NextUserID()
 
 	if !isValidUUID(string(uuid)) {
 		t.Errorf("NextUserID() generate invalid UUID: %s", uuid)

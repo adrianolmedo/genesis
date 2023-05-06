@@ -1,23 +1,25 @@
-package store
+package storage
 
 import (
 	"database/sql"
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/adrianolmedo/go-restapi/domain"
 )
 
-type Repository struct {
+type ProductRepository struct {
 	db *sql.DB
 }
 
-func NewRepository(db *sql.DB) Repository {
-	return Repository{
+func NewProductRepository(db *sql.DB) ProductRepository {
+	return ProductRepository{
 		db: db,
 	}
 }
 
-func (r Repository) Create(product *Product) error {
+func (r ProductRepository) Create(product *domain.Product) error {
 	stmt, err := r.db.Prepare("INSERT INTO products (name, observations, price, created_at) VALUES ($1, $2, $3, $4) RETURNING id")
 	if err != nil {
 		return err
@@ -34,7 +36,7 @@ func (r Repository) Create(product *Product) error {
 	return nil
 }
 
-func (r Repository) ByID(id int64) (*Product, error) {
+func (r ProductRepository) ByID(id int64) (*domain.Product, error) {
 	stmt, err := r.db.Prepare("SELECT * FROM products WHERE id = $1")
 	if err != nil {
 		return nil, err
@@ -43,17 +45,17 @@ func (r Repository) ByID(id int64) (*Product, error) {
 
 	product, err := scanRowProduct(stmt.QueryRow(id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return &Product{}, ErrProductNotFound
+		return &domain.Product{}, domain.ErrProductNotFound
 	}
 
 	if err != nil {
-		return &Product{}, err
+		return &domain.Product{}, err
 	}
 
 	return product, nil
 }
 
-func (r Repository) Update(product Product) error {
+func (r ProductRepository) Update(product domain.Product) error {
 	stmt, err := r.db.Prepare("UPDATE products SET name = $1, observations = $2, price = $3, updated_at = $4 WHERE id = $5")
 	if err != nil {
 		return err
@@ -73,13 +75,13 @@ func (r Repository) Update(product Product) error {
 	}
 
 	if rows == 0 {
-		return ErrProductNotFound
+		return domain.ErrProductNotFound
 	}
 
 	return nil
 }
 
-func (r Repository) All() ([]*Product, error) {
+func (r ProductRepository) All() ([]*domain.Product, error) {
 	stmt, err := r.db.Prepare("SELECT * FROM products")
 	if err != nil {
 		return nil, err
@@ -92,7 +94,7 @@ func (r Repository) All() ([]*Product, error) {
 	}
 	defer rows.Close()
 
-	products := make([]*Product, 0)
+	products := make([]*domain.Product, 0)
 
 	for rows.Next() {
 		p, err := scanRowProduct(rows)
@@ -108,7 +110,7 @@ func (r Repository) All() ([]*Product, error) {
 	return products, nil
 }
 
-func (r Repository) Delete(id int64) error {
+func (r ProductRepository) Delete(id int64) error {
 	stmt, err := r.db.Prepare("DELETE FROM products WHERE id = $1")
 	if err != nil {
 		return err
@@ -126,12 +128,12 @@ func (r Repository) Delete(id int64) error {
 	}
 
 	if rows == 0 {
-		return ErrProductNotFound
+		return domain.ErrProductNotFound
 	}
 	return nil
 }
 
-func (r Repository) DeleteAll() error {
+func (r ProductRepository) DeleteAll() error {
 	stmt, err := r.db.Prepare("TRUNCATE TABLE products RESTART IDENTITY CASCADE")
 	if err != nil {
 		return err
@@ -146,16 +148,10 @@ func (r Repository) DeleteAll() error {
 	return nil
 }
 
-// helpers...
-
-type scanner interface {
-	Scan(dest ...interface{}) error
-}
-
 // scanRowUser return nulled fields of User parsed.
-func scanRowProduct(s scanner) (*Product, error) {
+func scanRowProduct(s scanner) (*domain.Product, error) {
 	var updatedAtNull sql.NullTime
-	p := &Product{}
+	p := &domain.Product{}
 
 	err := s.Scan(
 		&p.ID,
@@ -166,20 +162,10 @@ func scanRowProduct(s scanner) (*Product, error) {
 		&updatedAtNull,
 	)
 	if err != nil {
-		return &Product{}, err
+		return &domain.Product{}, err
 	}
 
 	p.UpdatedAt = updatedAtNull.Time
 
 	return p, nil
-}
-
-// timeToNull helper to try empty time fields.
-func timeToNull(t time.Time) sql.NullTime {
-	null := sql.NullTime{Time: t}
-
-	if !null.Time.IsZero() {
-		null.Valid = true
-	}
-	return null
 }

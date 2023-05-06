@@ -1,33 +1,35 @@
-package user
+package storage
 
 import (
 	"database/sql"
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/adrianolmedo/go-restapi/domain"
 )
 
-type Repository struct {
+type UserRepository struct {
 	db *sql.DB
 }
 
-func NewRepository(db *sql.DB) Repository {
-	return Repository{
+func NewUserRepository(db *sql.DB) UserRepository {
+	return UserRepository{
 		db: db,
 	}
 }
 
-func (r Repository) Create(user *User) error {
+func (r UserRepository) Create(u *domain.User) error {
 	stmt, err := r.db.Prepare("INSERT INTO users (uuid, first_name, last_name, email, password, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	user.UUID = NextUserID()
-	user.CreatedAt = time.Now()
+	u.UUID = domain.NextUserID()
+	u.CreatedAt = time.Now()
 
-	err = stmt.QueryRow(user.UUID, user.FirstName, user.LastName, user.Email, user.Password, user.CreatedAt).Scan(&user.ID)
+	err = stmt.QueryRow(u.UUID, u.FirstName, u.LastName, u.Email, u.Password, u.CreatedAt).Scan(&u.ID)
 	if err != nil {
 		return err
 	}
@@ -35,35 +37,35 @@ func (r Repository) Create(user *User) error {
 	return nil
 }
 
-func (r Repository) ByID(id int64) (*User, error) {
+func (r UserRepository) ByID(id int64) (*domain.User, error) {
 	stmt, err := r.db.Prepare("SELECT * FROM users WHERE id = $1")
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 
-	user, err := scanRowUser(stmt.QueryRow(id))
+	u, err := scanRowUser(stmt.QueryRow(id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return &User{}, ErrUserNotFound
+		return &domain.User{}, domain.ErrUserNotFound
 	}
 
 	if err != nil {
-		return &User{}, err
+		return &domain.User{}, err
 	}
 
-	return user, nil
+	return u, nil
 }
 
-func (r Repository) Update(user User) error {
+func (r UserRepository) Update(u domain.User) error {
 	stmt, err := r.db.Prepare("UPDATE users SET first_name = $1, last_name = $2, email = $3, password = $4, updated_at = $5 WHERE id = $6")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	user.UpdatedAt = time.Now()
+	u.UpdatedAt = time.Now()
 
-	result, err := stmt.Exec(user.FirstName, user.LastName, user.Email, user.Password, timeToNull(user.UpdatedAt), user.ID)
+	result, err := stmt.Exec(u.FirstName, u.LastName, u.Email, u.Password, timeToNull(u.UpdatedAt), u.ID)
 	if err != nil {
 		return err
 	}
@@ -74,13 +76,13 @@ func (r Repository) Update(user User) error {
 	}
 
 	if rows == 0 {
-		return ErrUserNotFound
+		return domain.ErrUserNotFound
 	}
 
 	return nil
 }
 
-func (r Repository) All() ([]*User, error) {
+func (r UserRepository) All() ([]*domain.User, error) {
 	stmt, err := r.db.Prepare("SELECT * FROM users")
 	if err != nil {
 		return nil, err
@@ -93,7 +95,7 @@ func (r Repository) All() ([]*User, error) {
 	}
 	defer rows.Close()
 
-	users := make([]*User, 0)
+	users := make([]*domain.User, 0)
 
 	for rows.Next() {
 		u, err := scanRowUser(rows)
@@ -109,7 +111,7 @@ func (r Repository) All() ([]*User, error) {
 	return users, nil
 }
 
-func (r Repository) Delete(id int64) error {
+func (r UserRepository) Delete(id int64) error {
 	stmt, err := r.db.Prepare("DELETE FROM users WHERE id = $1")
 	if err != nil {
 		return err
@@ -127,12 +129,12 @@ func (r Repository) Delete(id int64) error {
 	}
 
 	if rows == 0 {
-		return ErrUserNotFound
+		return domain.ErrUserNotFound
 	}
 	return nil
 }
 
-func (r Repository) DeleteAll() error {
+func (r UserRepository) DeleteAll() error {
 	stmt, err := r.db.Prepare("TRUNCATE TABLE users RESTART IDENTITY")
 	if err != nil {
 		return err
@@ -152,29 +154,29 @@ type scanner interface {
 }
 
 // scanRowUser return nulled fields of User parsed.
-func scanRowUser(s scanner) (*User, error) {
+func scanRowUser(s scanner) (*domain.User, error) {
 	var updatedAtNull, deletedAtNull sql.NullTime
-	user := &User{}
+	u := &domain.User{}
 
 	err := s.Scan(
-		&user.ID,
-		&user.UUID,
-		&user.FirstName,
-		&user.LastName,
-		&user.Email,
-		&user.Password,
-		&user.CreatedAt,
+		&u.ID,
+		&u.UUID,
+		&u.FirstName,
+		&u.LastName,
+		&u.Email,
+		&u.Password,
+		&u.CreatedAt,
 		&updatedAtNull,
 		&deletedAtNull,
 	)
 	if err != nil {
-		return &User{}, err
+		return &domain.User{}, err
 	}
 
-	user.UpdatedAt = updatedAtNull.Time
-	user.DeletedAt = deletedAtNull.Time
+	u.UpdatedAt = updatedAtNull.Time
+	u.DeletedAt = deletedAtNull.Time
 
-	return user, nil
+	return u, nil
 }
 
 // timeToNull helper to try empty time fields.

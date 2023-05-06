@@ -1,26 +1,15 @@
 //go:build integration
 // +build integration
 
-package store
+package storage_test
 
 import (
 	"database/sql"
-	"flag"
 	"strings"
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi/config"
+	"github.com/adrianolmedo/go-restapi/domain"
 	"github.com/adrianolmedo/go-restapi/storage"
-)
-
-// $ go test -v -tags integration -args -dbengine postgres -dbhost 127.0.0.1 -dbport 5432 -dbuser username -dbname foodb -dbpass 12345
-var (
-	dbhost   = flag.String("dbhost", "", "Database host.")
-	dbengine = flag.String("dbengine", "", "Database engine, choose mysql or postgres.")
-	dbport   = flag.String("dbport", "", "Database port.")
-	dbuser   = flag.String("dbuser", "", "Database user.")
-	dbpass   = flag.String("dbpass", "", "Database password.")
-	dbname   = flag.String("dbname", "", "Database name.")
 )
 
 func TestCreate(t *testing.T) {
@@ -30,9 +19,9 @@ func TestCreate(t *testing.T) {
 
 	db := openDB(t)
 	defer closeDB(t, db)
-	p := NewRepository(db)
+	p := storage.NewProductRepository(db)
 
-	input := &Product{
+	input := &domain.Product{
 		Name:         "Coca-Cola",
 		Observations: "",
 		Price:        3,
@@ -89,7 +78,7 @@ func TestProductByID(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		got, err := NewRepository(db).ByID(tc.input)
+		got, err := storage.NewProductRepository(db).ByID(tc.input)
 		if (err != nil) != tc.errExpected {
 			t.Fatalf("%s: ByID(%d): unexpected error status: %v", tc.name, tc.input, err)
 		}
@@ -113,14 +102,14 @@ func TestUpdateProduct(t *testing.T) {
 	defer closeDB(t, db)
 	insertProductsData(t, db)
 
-	input := Product{
+	input := domain.Product{
 		ID:           1,
 		Name:         "Coca-Cola",
 		Observations: "",
 		Price:        3,
 	}
 
-	pr := NewRepository(db)
+	pr := storage.NewProductRepository(db)
 
 	if err := pr.Update(input); err != nil {
 		t.Fatal(err)
@@ -148,34 +137,10 @@ func TestUpdateProduct(t *testing.T) {
 	}
 }
 
-func openDB(t *testing.T) *sql.DB {
-	dbcfg := config.DB{
-		Engine:   *dbengine,
-		Host:     *dbhost,
-		Port:     *dbport,
-		User:     *dbuser,
-		Password: *dbpass,
-		Name:     *dbname,
-	}
-
-	db, err := storage.NewPSQL(dbcfg)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	return db
-}
-
-func closeDB(t *testing.T, db *sql.DB) {
-	if err := db.Close(); err != nil {
-		t.Fatal(err)
-	}
-}
-
 func insertProductsData(t *testing.T, db *sql.DB) {
-	p := NewRepository(db)
+	p := storage.NewProductRepository(db)
 
-	if err := p.Create(&Product{
+	if err := p.Create(&domain.Product{
 		Name:         "Coca-Cola",
 		Observations: "",
 		Price:        3,
@@ -183,7 +148,7 @@ func insertProductsData(t *testing.T, db *sql.DB) {
 		t.Fatal(err)
 	}
 
-	if err := p.Create(&Product{
+	if err := p.Create(&domain.Product{
 		Name:         "Big-Cola",
 		Observations: "Made in Venezuela",
 		Price:        2,
@@ -196,7 +161,7 @@ func cleanProductsData(t *testing.T) {
 	db := openDB(t)
 	defer closeDB(t, db)
 
-	err := NewRepository(db).DeleteAll()
+	err := storage.NewProductRepository(db).DeleteAll()
 	if err != nil {
 		t.Fatal(err)
 	}
