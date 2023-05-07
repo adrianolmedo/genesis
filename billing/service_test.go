@@ -51,7 +51,7 @@ func TestGenerate(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		err := generateInvoice(tc.input)
+		err := generateInvoiceService(tc.input)
 		if (err != nil) != tc.errExpected {
 			t.Fatalf("%s: unexpected error value %v", tc.name, err)
 		}

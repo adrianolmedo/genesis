@@ -16,7 +16,7 @@ func NewBillingService(repo storage.InvoiceRepository) Service {
 }
 
 func (s Service) Generate(invoice *domain.Invoice) error {
-	err := generateInvoice(invoice)
+	err := generateInvoiceService(invoice)
 	if err != nil {
 		return err
 	}
@@ -24,7 +24,7 @@ func (s Service) Generate(invoice *domain.Invoice) error {
 	return s.repo.Create(invoice)
 }
 
-func generateInvoice(invoice *domain.Invoice) error {
+func generateInvoiceService(invoice *domain.Invoice) error {
 	if invoice.Items == nil || len(invoice.Items) == 0 {
 		return domain.ErrItemListCantBeEmpty
 	}
