@@ -2,14 +2,14 @@ package store
 
 import (
 	"github.com/adrianolmedo/go-restapi/domain"
-	"github.com/adrianolmedo/go-restapi/storage"
+	"github.com/adrianolmedo/go-restapi/postgres"
 )
 
 type Service struct {
-	repo storage.ProductRepository
+	repo postgres.ProductRepository
 }
 
-func NewService(repo storage.ProductRepository) Service {
+func NewService(repo postgres.ProductRepository) Service {
 	return Service{
 		repo: repo,
 	}

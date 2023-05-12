@@ -2,14 +2,14 @@ package billing
 
 import (
 	"github.com/adrianolmedo/go-restapi/domain"
-	"github.com/adrianolmedo/go-restapi/storage"
+	"github.com/adrianolmedo/go-restapi/postgres"
 )
 
 type Service struct {
-	repo storage.InvoiceRepository
+	repo postgres.InvoiceRepository
 }
 
-func NewBillingService(repo storage.InvoiceRepository) Service {
+func NewBillingService(repo postgres.InvoiceRepository) Service {
 	return Service{
 		repo: repo,
 	}
