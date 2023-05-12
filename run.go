@@ -1,10 +1,11 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/adrianolmedo/go-restapi/config"
-	"github.com/adrianolmedo/go-restapi/storage"
-	"github.com/adrianolmedo/go-restapi/store"
-	"github.com/adrianolmedo/go-restapi/user"
+	"github.com/adrianolmedo/go-restapi/delivery"
+	"github.com/adrianolmedo/go-restapi/postgres"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -13,22 +14,12 @@ func run(cfg *config.Config) error {
 	app := fiber.New()
 
 	// Prepare storage.
-	db, err := storage.New(cfg.DB)
+	stg, err := postgres.NewStorage(cfg.DB)
 	if err != nil {
-		return err
+		return fmt.Errorf("error from storage: %v", err)
 	}
 
-	// Prepare repositories.
-	userRepo := storage.NewUserRepository(db)
-	storeRepo := storage.NewProductRepository(db)
-
-	// Prepare services.
-	userSvc := user.NewService(userRepo)
-	storeSvc := store.NewService(storeRepo)
-
-	// Call routes.
-	user.Routes(app, userSvc)
-	store.Routes(app, storeSvc)
+	delivery.Routes(app, stg)
 
 	// Up server.
 	return app.Listen(":" + cfg.Port)
