@@ -6,14 +6,14 @@ import (
 	"regexp"
 
 	"github.com/adrianolmedo/go-restapi/domain"
-	"github.com/adrianolmedo/go-restapi/storage"
+	"github.com/adrianolmedo/go-restapi/postgres"
 )
 
 type Service struct {
-	repo storage.UserRepository
+	repo postgres.UserRepository
 }
 
-func NewService(repo storage.UserRepository) Service {
+func NewService(repo postgres.UserRepository) Service {
 	return Service{
 		repo: repo,
 	}
