@@ -13,11 +13,14 @@ type InvoiceRepository struct {
 	items  InvoiceItemRepository
 }
 
-func NewInvoiceRepository(db *sql.DB, header InvoiceHeaderRepository, items InvoiceItemRepository) InvoiceRepository {
+func NewInvoiceRepository(
+	db *sql.DB,
+	header InvoiceHeaderRepository,
+	items InvoiceItemRepository) InvoiceRepository {
 	return InvoiceRepository{
 		db:     db,
-		header: NewInvoiceHeaderRepository(db),
-		items:  NewInvoiceItemRepository(db),
+		header: header,
+		items:  items,
 	}
 }
 

@@ -29,6 +29,9 @@ func NewStorage(dbcfg config.DB) (*Storage, error) {
 		return &Storage{
 			User:    NewUserRepository(db),
 			Product: NewProductRepository(db),
+			Invoice: NewInvoiceRepository(db,
+				NewInvoiceHeaderRepository(db),
+				NewInvoiceItemRepository(db)),
 		}, nil
 	}
 
