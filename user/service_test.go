@@ -7,7 +7,7 @@ import (
 	"github.com/adrianolmedo/go-restapi/domain"
 )
 
-func TestSignUpService(t *testing.T) {
+func TestSignUp(t *testing.T) {
 	tt := []struct {
 		name           string
 		input          *domain.User
@@ -50,7 +50,7 @@ func TestSignUpService(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		err := signUpService(tc.input)
+		err := signUp(tc.input)
 		if (err != nil) != tc.errExpected {
 			t.Fatalf("%s: unexpected error value %v", tc.name, err)
 		}

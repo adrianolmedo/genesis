@@ -7,7 +7,7 @@ import (
 	"github.com/adrianolmedo/go-restapi/domain"
 )
 
-func TestAddProductService(t *testing.T) {
+func TestAddProduct(t *testing.T) {
 	tt := []struct {
 		name           string
 		input          *domain.Product
@@ -37,7 +37,7 @@ func TestAddProductService(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		err := addProductService(tc.input)
+		err := addProduct(tc.input)
 		if (err != nil) != tc.errExpected {
 			t.Fatalf("%s: unexpected error value %v", tc.name, err)
 		}

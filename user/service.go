@@ -21,7 +21,7 @@ func NewService(repo postgres.User) Service {
 
 // SignUp to register a User.
 func (s Service) SignUp(u *domain.User) error {
-	err := signUpService(u)
+	err := signUp(u)
 	if err != nil {
 		return err
 	}
@@ -29,10 +29,10 @@ func (s Service) SignUp(u *domain.User) error {
 	return s.repo.Create(u)
 }
 
-// signUpService business logic for regitser a User. Has been split into
+// signUp business logic for regitser a User. Has been split into
 // a smaller function for unit testing purposes, and it should do so for
 // the other methods of the Service.
-func signUpService(u *domain.User) error {
+func signUp(u *domain.User) error {
 	err := u.CheckEmptyFields()
 	if err != nil {
 		return err

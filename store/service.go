@@ -16,7 +16,7 @@ func NewService(repo postgres.Product) Service {
 }
 
 func (s Service) Add(product *domain.Product) error {
-	err := addProductService(product)
+	err := addProduct(product)
 	if err != nil {
 		return err
 	}
@@ -24,10 +24,10 @@ func (s Service) Add(product *domain.Product) error {
 	return s.repo.Create(product)
 }
 
-// addProductService business logic for adding products to the store.
+// addProduct business logic for adding products to the store.
 // The business logic has been split into a smaller function for unit testing
 // purposes, and it should do so for the other methods of the Service.
-func addProductService(p *domain.Product) error {
+func addProduct(p *domain.Product) error {
 	if !p.HasName() {
 		return domain.ErrProductHasNoName
 	}
