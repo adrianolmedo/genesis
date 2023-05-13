@@ -7,24 +7,24 @@ import (
 	"github.com/adrianolmedo/go-restapi/domain"
 )
 
-type InvoiceRepository struct {
+type Invoice struct {
 	db     *sql.DB
-	header InvoiceHeaderRepository
-	items  InvoiceItemRepository
+	header InvoiceHeader
+	items  InvoiceItem
 }
 
-func NewInvoiceRepository(
+func NewInvoice(
 	db *sql.DB,
-	header InvoiceHeaderRepository,
-	items InvoiceItemRepository) InvoiceRepository {
-	return InvoiceRepository{
+	header InvoiceHeader,
+	items InvoiceItem) Invoice {
+	return Invoice{
 		db:     db,
 		header: header,
 		items:  items,
 	}
 }
 
-func (r InvoiceRepository) Create(invoice *domain.Invoice) error {
+func (r Invoice) Create(invoice *domain.Invoice) error {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return err

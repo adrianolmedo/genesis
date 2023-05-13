@@ -19,7 +19,7 @@ func TestCreateUser(t *testing.T) {
 	db := openDB(t)
 	defer closeDB(t, db)
 
-	r := postgres.NewUserRepository(db)
+	r := postgres.NewUser(db)
 
 	input := &domain.User{
 		FirstName: "John",
@@ -54,7 +54,7 @@ func cleanUsersData(t *testing.T) {
 	db := openDB(t)
 	defer closeDB(t, db)
 
-	err := postgres.NewUserRepository(db).DeleteAll()
+	err := postgres.NewUser(db).DeleteAll()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,7 +64,7 @@ func insertUsersData(t *testing.T, db *sql.DB) {
 	//db := openDB(t)
 	//defer closeDB(t, db)
 
-	if err := postgres.NewUserRepository(db).Create(&domain.User{
+	if err := postgres.NewUser(db).Create(&domain.User{
 		FirstName: "John",
 		LastName:  "Doe",
 		Email:     "example@gmail.com",
@@ -73,7 +73,7 @@ func insertUsersData(t *testing.T, db *sql.DB) {
 		t.Fatal(err)
 	}
 
-	if err := postgres.NewUserRepository(db).Create(&domain.User{
+	if err := postgres.NewUser(db).Create(&domain.User{
 		FirstName: "Jane",
 		LastName:  "Roe",
 		Email:     "qwerty@hotmail.com",

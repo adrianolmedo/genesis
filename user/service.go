@@ -10,10 +10,10 @@ import (
 )
 
 type Service struct {
-	repo postgres.UserRepository
+	repo postgres.User
 }
 
-func NewService(repo postgres.UserRepository) Service {
+func NewService(repo postgres.User) Service {
 	return Service{
 		repo: repo,
 	}

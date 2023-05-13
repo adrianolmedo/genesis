@@ -19,7 +19,7 @@ func TestCreate(t *testing.T) {
 
 	db := openDB(t)
 	defer closeDB(t, db)
-	p := postgres.NewProductRepository(db)
+	p := postgres.NewProduct(db)
 
 	input := &domain.Product{
 		Name:         "Coca-Cola",
@@ -78,7 +78,7 @@ func TestProductByID(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		got, err := postgres.NewProductRepository(db).ByID(tc.input)
+		got, err := postgres.NewProduct(db).ByID(tc.input)
 		if (err != nil) != tc.errExpected {
 			t.Fatalf("%s: ByID(%d): unexpected error status: %v", tc.name, tc.input, err)
 		}
@@ -109,7 +109,7 @@ func TestUpdateProduct(t *testing.T) {
 		Price:        3,
 	}
 
-	pr := postgres.NewProductRepository(db)
+	pr := postgres.NewProduct(db)
 
 	if err := pr.Update(input); err != nil {
 		t.Fatal(err)
@@ -138,7 +138,7 @@ func TestUpdateProduct(t *testing.T) {
 }
 
 func insertProductsData(t *testing.T, db *sql.DB) {
-	p := postgres.NewProductRepository(db)
+	p := postgres.NewProduct(db)
 
 	if err := p.Create(&domain.Product{
 		Name:         "Coca-Cola",
@@ -161,7 +161,7 @@ func cleanProductsData(t *testing.T) {
 	db := openDB(t)
 	defer closeDB(t, db)
 
-	err := postgres.NewProductRepository(db).DeleteAll()
+	err := postgres.NewProduct(db).DeleteAll()
 	if err != nil {
 		t.Fatal(err)
 	}

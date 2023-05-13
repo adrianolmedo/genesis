@@ -6,10 +6,10 @@ import (
 )
 
 type Service struct {
-	repo postgres.ProductRepository
+	repo postgres.Product
 }
 
-func NewService(repo postgres.ProductRepository) Service {
+func NewService(repo postgres.Product) Service {
 	return Service{
 		repo: repo,
 	}

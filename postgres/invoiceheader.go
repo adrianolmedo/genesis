@@ -7,17 +7,17 @@ import (
 	"github.com/adrianolmedo/go-restapi/domain"
 )
 
-type InvoiceHeaderRepository struct {
+type InvoiceHeader struct {
 	db *sql.DB
 }
 
-func NewInvoiceHeaderRepository(db *sql.DB) InvoiceHeaderRepository {
-	return InvoiceHeaderRepository{
+func NewInvoiceHeader(db *sql.DB) InvoiceHeader {
+	return InvoiceHeader{
 		db: db,
 	}
 }
 
-func (InvoiceHeaderRepository) CreateTx(tx *sql.Tx, header *domain.InvoiceHeader) error {
+func (InvoiceHeader) CreateTx(tx *sql.Tx, header *domain.InvoiceHeader) error {
 	stmt, err := tx.Prepare("INSERT INTO invoice_headers(client_id) VALUES ($1) RETURNING id, created_at")
 	if err != nil {
 		return err
@@ -27,7 +27,7 @@ func (InvoiceHeaderRepository) CreateTx(tx *sql.Tx, header *domain.InvoiceHeader
 	return stmt.QueryRow(header.ClientID).Scan(&header.ID, &header.CreatedAt)
 }
 
-func (r InvoiceHeaderRepository) DeleteAll() error {
+func (r InvoiceHeader) DeleteAll() error {
 	stmt, err := r.db.Prepare("TRUNCATE TABLE invoice_headers RESTART IDENTITY CASCADE")
 	if err != nil {
 		return err

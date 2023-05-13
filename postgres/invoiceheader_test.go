@@ -27,7 +27,7 @@ func TestCreateTxInvoiceHeader(t *testing.T) {
 		ClientID: 1,
 	}
 
-	ih := postgres.NewInvoiceHeaderRepository(db)
+	ih := postgres.NewInvoiceHeader(db)
 	if err := ih.CreateTx(tx, input); err != nil {
 		tx.Rollback()
 		t.Fatal(err)

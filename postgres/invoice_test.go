@@ -21,9 +21,9 @@ func TestCreateInvoice(t *testing.T) {
 	defer closeDB(t, db)
 	insertProductsData(t, db)
 
-	ih := postgres.NewInvoiceHeaderRepository(db)
-	ii := postgres.NewInvoiceItemRepository(db)
-	invoice := postgres.NewInvoiceRepository(db, ih, ii)
+	ih := postgres.NewInvoiceHeader(db)
+	ii := postgres.NewInvoiceItem(db)
+	invoice := postgres.NewInvoice(db, ih, ii)
 
 	input := &domain.Invoice{
 		Header: &domain.InvoiceHeader{
@@ -49,7 +49,7 @@ func cleanInvoiceHeadersData(t *testing.T) {
 	db := openDB(t)
 	defer closeDB(t, db)
 
-	err := postgres.NewInvoiceHeaderRepository(db).DeleteAll()
+	err := postgres.NewInvoiceHeader(db).DeleteAll()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,7 +59,7 @@ func cleanInvoiceItemsData(t *testing.T) {
 	db := openDB(t)
 	defer closeDB(t, db)
 
-	err := postgres.NewInvoiceItemRepository(db).DeleteAll()
+	err := postgres.NewInvoiceItem(db).DeleteAll()
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -6,10 +6,10 @@ import (
 )
 
 type Service struct {
-	repo postgres.InvoiceRepository
+	repo postgres.Invoice
 }
 
-func NewBillingService(repo postgres.InvoiceRepository) Service {
+func NewBillingService(repo postgres.Invoice) Service {
 	return Service{
 		repo: repo,
 	}

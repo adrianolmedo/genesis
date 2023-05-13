@@ -9,17 +9,17 @@ import (
 	"github.com/adrianolmedo/go-restapi/domain"
 )
 
-type UserRepository struct {
+type User struct {
 	db *sql.DB
 }
 
-func NewUserRepository(db *sql.DB) UserRepository {
-	return UserRepository{
+func NewUser(db *sql.DB) User {
+	return User{
 		db: db,
 	}
 }
 
-func (r UserRepository) Create(u *domain.User) error {
+func (r User) Create(u *domain.User) error {
 	stmt, err := r.db.Prepare("INSERT INTO users (uuid, first_name, last_name, email, password, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id")
 	if err != nil {
 		return err
@@ -37,7 +37,7 @@ func (r UserRepository) Create(u *domain.User) error {
 	return nil
 }
 
-func (r UserRepository) ByID(id int64) (*domain.User, error) {
+func (r User) ByID(id int64) (*domain.User, error) {
 	stmt, err := r.db.Prepare("SELECT * FROM users WHERE id = $1")
 	if err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ func (r UserRepository) ByID(id int64) (*domain.User, error) {
 	return u, nil
 }
 
-func (r UserRepository) Update(u domain.User) error {
+func (r User) Update(u domain.User) error {
 	stmt, err := r.db.Prepare("UPDATE users SET first_name = $1, last_name = $2, email = $3, password = $4, updated_at = $5 WHERE id = $6")
 	if err != nil {
 		return err
@@ -82,7 +82,7 @@ func (r UserRepository) Update(u domain.User) error {
 	return nil
 }
 
-func (r UserRepository) All() ([]*domain.User, error) {
+func (r User) All() ([]*domain.User, error) {
 	stmt, err := r.db.Prepare("SELECT * FROM users")
 	if err != nil {
 		return nil, err
@@ -111,7 +111,7 @@ func (r UserRepository) All() ([]*domain.User, error) {
 	return users, nil
 }
 
-func (r UserRepository) Delete(id int64) error {
+func (r User) Delete(id int64) error {
 	stmt, err := r.db.Prepare("DELETE FROM users WHERE id = $1")
 	if err != nil {
 		return err
@@ -134,7 +134,7 @@ func (r UserRepository) Delete(id int64) error {
 	return nil
 }
 
-func (r UserRepository) DeleteAll() error {
+func (r User) DeleteAll() error {
 	stmt, err := r.db.Prepare("TRUNCATE TABLE users RESTART IDENTITY")
 	if err != nil {
 		return err

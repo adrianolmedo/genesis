@@ -10,9 +10,9 @@ import (
 )
 
 type Storage struct {
-	User    UserRepository
-	Product ProductRepository
-	Invoice InvoiceRepository
+	User    User
+	Product Product
+	Invoice Invoice
 }
 
 func NewStorage(dbcfg config.DB) (*Storage, error) {
@@ -27,11 +27,11 @@ func NewStorage(dbcfg config.DB) (*Storage, error) {
 		}
 
 		return &Storage{
-			User:    NewUserRepository(db),
-			Product: NewProductRepository(db),
-			Invoice: NewInvoiceRepository(db,
-				NewInvoiceHeaderRepository(db),
-				NewInvoiceItemRepository(db)),
+			User:    NewUser(db),
+			Product: NewProduct(db),
+			Invoice: NewInvoice(db,
+				NewInvoiceHeader(db),
+				NewInvoiceItem(db)),
 		}, nil
 	}
 

@@ -9,17 +9,17 @@ import (
 	"github.com/adrianolmedo/go-restapi/domain"
 )
 
-type ProductRepository struct {
+type Product struct {
 	db *sql.DB
 }
 
-func NewProductRepository(db *sql.DB) ProductRepository {
-	return ProductRepository{
+func NewProduct(db *sql.DB) Product {
+	return Product{
 		db: db,
 	}
 }
 
-func (r ProductRepository) Create(product *domain.Product) error {
+func (r Product) Create(product *domain.Product) error {
 	stmt, err := r.db.Prepare("INSERT INTO products (name, observations, price, created_at) VALUES ($1, $2, $3, $4) RETURNING id")
 	if err != nil {
 		return err
@@ -36,7 +36,7 @@ func (r ProductRepository) Create(product *domain.Product) error {
 	return nil
 }
 
-func (r ProductRepository) ByID(id int64) (*domain.Product, error) {
+func (r Product) ByID(id int64) (*domain.Product, error) {
 	stmt, err := r.db.Prepare("SELECT * FROM products WHERE id = $1")
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func (r ProductRepository) ByID(id int64) (*domain.Product, error) {
 	return product, nil
 }
 
-func (r ProductRepository) Update(product domain.Product) error {
+func (r Product) Update(product domain.Product) error {
 	stmt, err := r.db.Prepare("UPDATE products SET name = $1, observations = $2, price = $3, updated_at = $4 WHERE id = $5")
 	if err != nil {
 		return err
@@ -81,7 +81,7 @@ func (r ProductRepository) Update(product domain.Product) error {
 	return nil
 }
 
-func (r ProductRepository) All() ([]*domain.Product, error) {
+func (r Product) All() ([]*domain.Product, error) {
 	stmt, err := r.db.Prepare("SELECT * FROM products")
 	if err != nil {
 		return nil, err
@@ -110,7 +110,7 @@ func (r ProductRepository) All() ([]*domain.Product, error) {
 	return products, nil
 }
 
-func (r ProductRepository) Delete(id int64) error {
+func (r Product) Delete(id int64) error {
 	stmt, err := r.db.Prepare("DELETE FROM products WHERE id = $1")
 	if err != nil {
 		return err
@@ -133,7 +133,7 @@ func (r ProductRepository) Delete(id int64) error {
 	return nil
 }
 
-func (r ProductRepository) DeleteAll() error {
+func (r Product) DeleteAll() error {
 	stmt, err := r.db.Prepare("TRUNCATE TABLE products RESTART IDENTITY CASCADE")
 	if err != nil {
 		return err
