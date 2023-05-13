@@ -19,7 +19,7 @@ func Routes(f *fiber.App, stg *postgres.Storage) {
 	s := &services{
 		User:    user.NewService(stg.User),
 		Store:   store.NewService(stg.Product),
-		Billing: billing.NewBillingService(stg.Invoice),
+		Billing: billing.NewService(stg.Invoice),
 	}
 
 	f.Post("v1/users", signUpUser(s))

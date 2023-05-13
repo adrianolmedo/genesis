@@ -9,14 +9,14 @@ type Service struct {
 	repo postgres.Invoice
 }
 
-func NewBillingService(repo postgres.Invoice) Service {
+func NewService(repo postgres.Invoice) Service {
 	return Service{
 		repo: repo,
 	}
 }
 
 func (s Service) Generate(invoice *domain.Invoice) error {
-	err := generateInvoiceService(invoice)
+	err := generateInvoice(invoice)
 	if err != nil {
 		return err
 	}
@@ -24,7 +24,7 @@ func (s Service) Generate(invoice *domain.Invoice) error {
 	return s.repo.Create(invoice)
 }
 
-func generateInvoiceService(invoice *domain.Invoice) error {
+func generateInvoice(invoice *domain.Invoice) error {
 	if invoice.Items == nil || len(invoice.Items) == 0 {
 		return domain.ErrItemListCantBeEmpty
 	}
