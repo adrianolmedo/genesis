@@ -1,7 +1,7 @@
 //go:build integration
 // +build integration
 
-package postgres_test
+package postgres
 
 import (
 	"database/sql"
@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/adrianolmedo/go-restapi/config"
-	"github.com/adrianolmedo/go-restapi/postgres"
 )
 
 // $ go test -v -tags integration -args -dbengine postgres -dbhost 127.0.0.1 -dbport 5432 -dbuser username -dbname foodb -dbpass 12345
@@ -38,7 +37,7 @@ func openDB(t *testing.T) *sql.DB {
 		Name:     *dbname,
 	}
 
-	db, err := postgres.NewDB(dbcfg)
+	db, err := newDB(dbcfg)
 	if err != nil {
 		t.Fatal(err)
 	}

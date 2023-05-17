@@ -5,8 +5,8 @@
 The `_test.go` files it have a build tag:
 
 ```go
-go:build integration
-+build integration
+// go:build integration
+// +build integration
 ```
 
 It also parses `package main` which calls `flag.Parse`, so all declared and visible flags will be parsed and available for the tests.
