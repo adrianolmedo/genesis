@@ -6,6 +6,8 @@ import (
 	"os"
 
 	"github.com/adrianolmedo/go-restapi/config"
+	"github.com/adrianolmedo/go-restapi/postgres"
+	"github.com/adrianolmedo/go-restapi/rest"
 
 	"github.com/peterbourgon/ff/v3"
 )
@@ -43,4 +45,13 @@ func main() {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		os.Exit(1)
 	}
+}
+
+func run(cfg *config.Config) error {
+	strg, err := postgres.NewStorage(cfg.DB)
+	if err != nil {
+		return fmt.Errorf("error from storage: %v", err)
+	}
+
+	return rest.Routes(strg).Listen(":" + cfg.Port)
 }
