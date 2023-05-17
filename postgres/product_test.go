@@ -1,7 +1,7 @@
 //go:build integration
 // +build integration
 
-package postgres_test
+package postgres
 
 import (
 	"database/sql"
@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/adrianolmedo/go-restapi/domain"
-	"github.com/adrianolmedo/go-restapi/postgres"
 )
 
 func TestCreate(t *testing.T) {
@@ -19,7 +18,7 @@ func TestCreate(t *testing.T) {
 
 	db := openDB(t)
 	defer closeDB(t, db)
-	p := postgres.NewProduct(db)
+	p := Product{db: db}
 
 	input := &domain.Product{
 		Name:         "Coca-Cola",
@@ -31,16 +30,16 @@ func TestCreate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	product, err := p.ByID(input.ID)
+	model, err := p.ByID(input.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if product.CreatedAt.IsZero() {
+	if model.CreatedAt.IsZero() {
 		t.Error("expected created at")
 	}
 
-	if !product.UpdatedAt.IsZero() {
+	if !model.UpdatedAt.IsZero() {
 		t.Error("unexpected updated at")
 	}
 }
@@ -77,8 +76,10 @@ func TestProductByID(t *testing.T) {
 		},
 	}
 
+	p := Product{db: db}
+
 	for _, tc := range tt {
-		got, err := postgres.NewProduct(db).ByID(tc.input)
+		got, err := p.ByID(tc.input)
 		if (err != nil) != tc.errExpected {
 			t.Fatalf("%s: ByID(%d): unexpected error status: %v", tc.name, tc.input, err)
 		}
@@ -109,36 +110,36 @@ func TestUpdateProduct(t *testing.T) {
 		Price:        3,
 	}
 
-	pr := postgres.NewProduct(db)
+	p := Product{db: db}
 
-	if err := pr.Update(input); err != nil {
+	if err := p.Update(input); err != nil {
 		t.Fatal(err)
 	}
 
-	product, err := pr.ByID(input.ID)
+	got, err := p.ByID(input.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if product.Name != input.Name {
-		t.Errorf("Name: want %s, got %s", input.Name, product.Name)
+	if got.Name != input.Name {
+		t.Errorf("Name: want %s, got %s", input.Name, got.Name)
 	}
 
-	if product.Observations != input.Observations {
-		t.Errorf("LastName: want %s, got %s", input.Observations, product.Observations)
+	if got.Observations != input.Observations {
+		t.Errorf("LastName: want %s, got %s", input.Observations, got.Observations)
 	}
 
-	if product.CreatedAt.IsZero() {
+	if got.CreatedAt.IsZero() {
 		t.Error("expected created at")
 	}
 
-	if product.UpdatedAt.IsZero() {
+	if got.UpdatedAt.IsZero() {
 		t.Error("expected updated at")
 	}
 }
 
 func insertProductsData(t *testing.T, db *sql.DB) {
-	p := postgres.NewProduct(db)
+	p := Product{db: db}
 
 	if err := p.Create(&domain.Product{
 		Name:         "Coca-Cola",
@@ -161,7 +162,8 @@ func cleanProductsData(t *testing.T) {
 	db := openDB(t)
 	defer closeDB(t, db)
 
-	err := postgres.NewProduct(db).DeleteAll()
+	p := Product{db: db}
+	err := p.DeleteAll()
 	if err != nil {
 		t.Fatal(err)
 	}

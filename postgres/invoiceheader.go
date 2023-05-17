@@ -11,24 +11,18 @@ type InvoiceHeader struct {
 	db *sql.DB
 }
 
-func NewInvoiceHeader(db *sql.DB) InvoiceHeader {
-	return InvoiceHeader{
-		db: db,
-	}
-}
-
-func (InvoiceHeader) CreateTx(tx *sql.Tx, header *domain.InvoiceHeader) error {
+func (InvoiceHeader) Create(tx *sql.Tx, m *domain.InvoiceHeader) error {
 	stmt, err := tx.Prepare("INSERT INTO invoice_headers(client_id) VALUES ($1) RETURNING id, created_at")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	return stmt.QueryRow(header.ClientID).Scan(&header.ID, &header.CreatedAt)
+	return stmt.QueryRow(m.ClientID).Scan(&m.ID, &m.CreatedAt)
 }
 
-func (r InvoiceHeader) DeleteAll() error {
-	stmt, err := r.db.Prepare("TRUNCATE TABLE invoice_headers RESTART IDENTITY CASCADE")
+func (ih InvoiceHeader) DeleteAll() error {
+	stmt, err := ih.db.Prepare("TRUNCATE TABLE invoice_headers RESTART IDENTITY CASCADE")
 	if err != nil {
 		return err
 	}

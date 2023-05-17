@@ -1,13 +1,12 @@
 //go:build integration
 // +build integration
 
-package postgres_test
+package postgres
 
 import (
 	"testing"
 
 	"github.com/adrianolmedo/go-restapi/domain"
-	"github.com/adrianolmedo/go-restapi/postgres"
 )
 
 func TestCreateInvoice(t *testing.T) {
@@ -21,9 +20,9 @@ func TestCreateInvoice(t *testing.T) {
 	defer closeDB(t, db)
 	insertProductsData(t, db)
 
-	ih := postgres.NewInvoiceHeader(db)
-	ii := postgres.NewInvoiceItem(db)
-	invoice := postgres.NewInvoice(db, ih, ii)
+	ih := InvoiceHeader{db: db}
+	ii := InvoiceItem{db: db}
+	in := Invoice{db: db, header: ih, items: ii}
 
 	input := &domain.Invoice{
 		Header: &domain.InvoiceHeader{
@@ -34,7 +33,7 @@ func TestCreateInvoice(t *testing.T) {
 		},
 	}
 
-	if err := invoice.Create(input); err != nil {
+	if err := in.Create(input); err != nil {
 		t.Fatal(err)
 	}
 
@@ -49,7 +48,9 @@ func cleanInvoiceHeadersData(t *testing.T) {
 	db := openDB(t)
 	defer closeDB(t, db)
 
-	err := postgres.NewInvoiceHeader(db).DeleteAll()
+	ih := InvoiceHeader{db: db}
+
+	err := ih.DeleteAll()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,7 +60,9 @@ func cleanInvoiceItemsData(t *testing.T) {
 	db := openDB(t)
 	defer closeDB(t, db)
 
-	err := postgres.NewInvoiceItem(db).DeleteAll()
+	ii := InvoiceItem{db: db}
+
+	err := ii.DeleteAll()
 	if err != nil {
 		t.Fatal(err)
 	}

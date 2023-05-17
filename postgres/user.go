@@ -13,12 +13,6 @@ type User struct {
 	db *sql.DB
 }
 
-func NewUser(db *sql.DB) User {
-	return User{
-		db: db,
-	}
-}
-
 func (r User) Create(u *domain.User) error {
 	stmt, err := r.db.Prepare("INSERT INTO users (uuid, first_name, last_name, email, password, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id")
 	if err != nil {
@@ -153,19 +147,19 @@ type scanner interface {
 	Scan(dest ...interface{}) error
 }
 
-// scanRowUser return nulled fields of User parsed.
+// scanRowUser return nulled fields of the domain object User parsed.
 func scanRowUser(s scanner) (*domain.User, error) {
 	var updatedAtNull, deletedAtNull sql.NullTime
-	u := &domain.User{}
+	m := &domain.User{}
 
 	err := s.Scan(
-		&u.ID,
-		&u.UUID,
-		&u.FirstName,
-		&u.LastName,
-		&u.Email,
-		&u.Password,
-		&u.CreatedAt,
+		&m.ID,
+		&m.UUID,
+		&m.FirstName,
+		&m.LastName,
+		&m.Email,
+		&m.Password,
+		&m.CreatedAt,
 		&updatedAtNull,
 		&deletedAtNull,
 	)
@@ -173,10 +167,10 @@ func scanRowUser(s scanner) (*domain.User, error) {
 		return &domain.User{}, err
 	}
 
-	u.UpdatedAt = updatedAtNull.Time
-	u.DeletedAt = deletedAtNull.Time
+	m.UpdatedAt = updatedAtNull.Time
+	m.DeletedAt = deletedAtNull.Time
 
-	return u, nil
+	return m, nil
 }
 
 // timeToNull helper to try empty time fields.

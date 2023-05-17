@@ -11,13 +11,7 @@ type InvoiceItem struct {
 	db *sql.DB
 }
 
-func NewInvoiceItem(db *sql.DB) InvoiceItem {
-	return InvoiceItem{
-		db: db,
-	}
-}
-
-func (InvoiceItem) CreateTx(tx *sql.Tx, headerID int64, items domain.ItemList) error {
+func (InvoiceItem) Create(tx *sql.Tx, headerID int64, items domain.ItemList) error {
 	stmt, err := tx.Prepare("INSERT INTO invoice_items (invoice_header_id, product_id) VALUES ($1, $2) RETURNING id, created_at")
 	if err != nil {
 		return err
@@ -34,8 +28,8 @@ func (InvoiceItem) CreateTx(tx *sql.Tx, headerID int64, items domain.ItemList) e
 	return nil
 }
 
-func (r InvoiceItem) DeleteAll() error {
-	stmt, err := r.db.Prepare("TRUNCATE TABLE invoice_items RESTART IDENTITY CASCADE")
+func (ii InvoiceItem) DeleteAll() error {
+	stmt, err := ii.db.Prepare("TRUNCATE TABLE invoice_items RESTART IDENTITY CASCADE")
 	if err != nil {
 		return err
 	}

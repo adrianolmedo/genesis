@@ -13,30 +13,19 @@ type Invoice struct {
 	items  InvoiceItem
 }
 
-func NewInvoice(
-	db *sql.DB,
-	header InvoiceHeader,
-	items InvoiceItem) Invoice {
-	return Invoice{
-		db:     db,
-		header: header,
-		items:  items,
-	}
-}
-
-func (r Invoice) Create(invoice *domain.Invoice) error {
-	tx, err := r.db.Begin()
+func (i Invoice) Create(invoice *domain.Invoice) error {
+	tx, err := i.db.Begin()
 	if err != nil {
 		return err
 	}
 
-	if err := r.header.CreateTx(tx, invoice.Header); err != nil {
+	if err := i.header.Create(tx, invoice.Header); err != nil {
 		tx.Rollback()
 		return fmt.Errorf("invoice header: %w", err)
 	}
 	//fmt.Printf("invoice created with id %d\n", invoice.Header.ID)
 
-	if err := r.items.CreateTx(tx, invoice.Header.ID, invoice.Items); err != nil {
+	if err := i.items.Create(tx, invoice.Header.ID, invoice.Items); err != nil {
 		tx.Rollback()
 		return fmt.Errorf("invoice items: %w", err)
 	}

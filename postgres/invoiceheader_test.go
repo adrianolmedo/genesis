@@ -1,13 +1,12 @@
 //go:build integration
 // +build integration
 
-package postgres_test
+package postgres
 
 import (
 	"testing"
 
 	"github.com/adrianolmedo/go-restapi/domain"
-	"github.com/adrianolmedo/go-restapi/postgres"
 )
 
 func TestCreateTxInvoiceHeader(t *testing.T) {
@@ -27,8 +26,8 @@ func TestCreateTxInvoiceHeader(t *testing.T) {
 		ClientID: 1,
 	}
 
-	ih := postgres.NewInvoiceHeader(db)
-	if err := ih.CreateTx(tx, input); err != nil {
+	ih := InvoiceHeader{db: db}
+	if err := ih.Create(tx, input); err != nil {
 		tx.Rollback()
 		t.Fatal(err)
 	}

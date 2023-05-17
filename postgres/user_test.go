@@ -1,14 +1,13 @@
 //go:build integration
 // +build integration
 
-package postgres_test
+package postgres
 
 import (
 	"database/sql"
 	"testing"
 
 	"github.com/adrianolmedo/go-restapi/domain"
-	"github.com/adrianolmedo/go-restapi/postgres"
 )
 
 func TestCreateUser(t *testing.T) {
@@ -19,7 +18,7 @@ func TestCreateUser(t *testing.T) {
 	db := openDB(t)
 	defer closeDB(t, db)
 
-	r := postgres.NewUser(db)
+	u := User{db: db}
 
 	input := &domain.User{
 		FirstName: "John",
@@ -28,24 +27,73 @@ func TestCreateUser(t *testing.T) {
 		Password:  "1234567a",
 	}
 
-	if err := r.Create(input); err != nil {
+	if err := u.Create(input); err != nil {
 		t.Fatal(err)
 	}
 
-	user, err := r.ByID(1)
+	got, err := u.ByID(1)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if user.CreatedAt.IsZero() {
+	if got.CreatedAt.IsZero() {
 		t.Error("expected created at")
 	}
 
-	if !user.UpdatedAt.IsZero() {
+	if !got.UpdatedAt.IsZero() {
 		t.Error("unexpected updated at")
 	}
 
-	if !user.DeletedAt.IsZero() {
+	if !got.DeletedAt.IsZero() {
+		t.Error("unexpected deleted at")
+	}
+}
+
+func TestUpdateUser(t *testing.T) {
+	t.Cleanup(func() {
+		cleanUsersData(t)
+	})
+
+	db := openDB(t)
+	defer closeDB(t, db)
+	insertUsersData(t, db)
+
+	input := domain.User{
+		ID:        1,
+		FirstName: "Adrián",
+		LastName:  "Olmedo",
+		Email:     "example@gmail.com",
+		Password:  "1234567a",
+	}
+
+	u := User{db: db}
+
+	if err := u.Update(input); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := u.ByID(input.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if got.FirstName != input.FirstName {
+		t.Errorf("FirstName: want %s, got %s", input.FirstName, got.FirstName)
+	}
+
+	if got.LastName != input.LastName {
+		t.Errorf("LastName: want %s, got %s", input.LastName, got.LastName)
+	}
+
+	if got.CreatedAt.IsZero() {
+		t.Error("expected created at")
+	}
+
+	if got.UpdatedAt.IsZero() {
+		t.Error("expected updated at")
+	}
+
+	if !got.DeletedAt.IsZero() {
 		t.Error("unexpected deleted at")
 	}
 }
@@ -54,7 +102,8 @@ func cleanUsersData(t *testing.T) {
 	db := openDB(t)
 	defer closeDB(t, db)
 
-	err := postgres.NewUser(db).DeleteAll()
+	u := User{db}
+	err := u.DeleteAll()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,7 +113,9 @@ func insertUsersData(t *testing.T, db *sql.DB) {
 	//db := openDB(t)
 	//defer closeDB(t, db)
 
-	if err := postgres.NewUser(db).Create(&domain.User{
+	u := User{db: db}
+
+	if err := u.Create(&domain.User{
 		FirstName: "John",
 		LastName:  "Doe",
 		Email:     "example@gmail.com",
@@ -73,7 +124,7 @@ func insertUsersData(t *testing.T, db *sql.DB) {
 		t.Fatal(err)
 	}
 
-	if err := postgres.NewUser(db).Create(&domain.User{
+	if err := u.Create(&domain.User{
 		FirstName: "Jane",
 		LastName:  "Roe",
 		Email:     "qwerty@hotmail.com",
