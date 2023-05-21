@@ -16,50 +16,50 @@ var (
 	once      sync.Once
 )
 
-// JWTClaims is for JSON struct of JWT.
-type JWTClaims struct {
+// Claims is for JSON struct of JWT.
+type Claims struct {
 	Email string `json:"email"`
 	jwt.StandardClaims
 }
 
 // Generate signed token from email user.
 func Generate(userEmail string) (string, error) {
-	claims := JWTClaims{
+	claims := Claims{
 		Email: userEmail,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 2).Unix(),
-			Issuer:    "adrianolmedo",
+			Issuer:    "go-restapi",
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-
-	signedToken, err := token.SignedString(signKey)
+	t := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	signedToken, err := t.SignedString(signKey)
 	if err != nil {
 		return "", err
 	}
+
 	return signedToken, nil
 }
 
 // Verify signed token.
-func Verify(strToken string) (JWTClaims, error) {
-	token, err := jwt.ParseWithClaims(strToken, &JWTClaims{}, verify)
+func Verify(token string) (Claims, error) {
+	t, err := jwt.ParseWithClaims(token, &Claims{}, verify)
 	if err != nil {
-		return JWTClaims{}, err
+		return Claims{}, err
 	}
 
-	if !token.Valid {
-		return JWTClaims{}, errors.New("invalid token")
+	if !t.Valid {
+		return Claims{}, errors.New("invalid token")
 	}
 
-	claims, ok := token.Claims.(*JWTClaims)
+	claims, ok := t.Claims.(*Claims)
 	if !ok {
-		return JWTClaims{}, errors.New("the claims could not be obtained")
+		return Claims{}, errors.New("the claims could not be obtained")
 	}
 	return *claims, nil
 }
 
-func verify(token *jwt.Token) (interface{}, error) {
+func verify(t *jwt.Token) (interface{}, error) {
 	return verifiKey, nil
 }
 
