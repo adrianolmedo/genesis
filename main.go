@@ -8,6 +8,7 @@ import (
 	"github.com/adrianolmedo/go-restapi/config"
 	"github.com/adrianolmedo/go-restapi/postgres"
 	"github.com/adrianolmedo/go-restapi/rest"
+	"github.com/adrianolmedo/go-restapi/rest/jwt"
 
 	"github.com/peterbourgon/ff/v3"
 )
@@ -48,6 +49,12 @@ func main() {
 }
 
 func run(cfg *config.Config) error {
+	// Load authentication credentials.
+	err := jwt.LoadFiles("app.sra", "app.sra.pub")
+	if err != nil {
+		return fmt.Errorf("certificates could not be loaded: %v", err)
+	}
+
 	strg, err := postgres.NewStorage(cfg.DB)
 	if err != nil {
 		return fmt.Errorf("error from storage: %v", err)
