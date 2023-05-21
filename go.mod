@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/gofiber/fiber/v2 v2.42.0
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/lib/pq v1.10.7
 	github.com/pborman/uuid v1.2.1
 	github.com/peterbourgon/ff/v3 v3.3.0
@@ -11,7 +12,6 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
-	github.com/golang-jwt/jwt/v5 v5.0.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/klauspost/compress v1.15.9 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
