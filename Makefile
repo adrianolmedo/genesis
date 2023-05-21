@@ -1,5 +1,5 @@
 build:
-	go build -o rest .
+	go build -o main .
 
 test:
 	go test ./...
