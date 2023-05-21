@@ -50,7 +50,7 @@ func main() {
 
 func run(cfg *config.Config) error {
 	// Load authentication credentials.
-	err := jwt.LoadFiles("app.sra", "app.sra.pub")
+	err := jwt.LoadFiles("app.rsa", "app.rsa.pub")
 	if err != nil {
 		return fmt.Errorf("certificates could not be loaded: %v", err)
 	}
