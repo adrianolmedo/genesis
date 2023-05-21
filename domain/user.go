@@ -47,6 +47,11 @@ type UserSignUpForm struct {
 	Password  string `json:"password"`
 }
 
+type UserLoginForm struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 type UserUpdateForm struct {
 	ID        int64  `json:"id"`
 	FirstName string `json:"first_name"`

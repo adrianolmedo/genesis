@@ -19,6 +19,14 @@ func NewService(repo postgres.User) Service {
 	}
 }
 
+func (s Service) Login(email, password string) error {
+	if err := validateEmail(email); err != nil {
+		return err
+	}
+
+	return s.repo.ByLogin(email, password)
+}
+
 // SignUp to register a User.
 func (s Service) SignUp(u *domain.User) error {
 	err := signUp(u)

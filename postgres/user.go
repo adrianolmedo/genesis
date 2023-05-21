@@ -31,6 +31,30 @@ func (r User) Create(u *domain.User) error {
 	return nil
 }
 
+func (r User) ByLogin(email, password string) error {
+	stmt, err := r.db.Prepare("SELECT id FROM users WHERE email = $1 AND password = $2")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(email, password)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return domain.ErrUserNotFound
+	}
+
+	return nil
+}
+
 func (r User) ByID(id int64) (*domain.User, error) {
 	stmt, err := r.db.Prepare("SELECT * FROM users WHERE id = $1")
 	if err != nil {

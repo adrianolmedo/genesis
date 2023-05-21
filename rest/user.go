@@ -7,9 +7,43 @@ import (
 	"strconv"
 
 	"github.com/adrianolmedo/go-restapi/domain"
+	"github.com/adrianolmedo/go-restapi/rest/jwt"
 
 	"github.com/gofiber/fiber/v2"
 )
+
+// loginUser handler POST: /login
+func loginUser(s *services) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		form := domain.UserLoginForm{}
+		err := c.BodyParser(&form)
+		if err != nil {
+			resp := respJSON(msgError, "the JSON structure is not correct", nil)
+			return c.Status(http.StatusBadRequest).JSON(resp)
+		}
+
+		err = s.User.Login(form.Email, form.Password)
+		if errors.Is(err, domain.ErrUserNotFound) {
+			resp := respJSON(msgError, err.Error(), nil)
+			return c.Status(http.StatusUnauthorized).JSON(resp)
+		}
+
+		if err != nil {
+			resp := respJSON(msgError, err.Error(), nil)
+			return c.Status(http.StatusBadRequest).JSON(resp)
+		}
+
+		token, err := jwt.Generate(form.Email)
+		if err != nil {
+			resp := respJSON(msgError, "the token could not be generated", nil)
+			return c.Status(http.StatusInternalServerError).JSON(resp)
+		}
+
+		dataToken := map[string]string{"token": token}
+		resp := respJSON(msgOK, "logged", dataToken)
+		return c.Status(http.StatusCreated).JSON(resp)
+	}
+}
 
 // signUpUser handler POST: /users
 func signUpUser(s *services) fiber.Handler {
