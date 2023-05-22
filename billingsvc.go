@@ -1,21 +1,15 @@
-package billing
+package gorestapi
 
 import (
 	"github.com/adrianolmedo/go-restapi/domain"
 	"github.com/adrianolmedo/go-restapi/postgres"
 )
 
-type Service struct {
+type BillingService struct {
 	repo postgres.Invoice
 }
 
-func NewService(repo postgres.Invoice) Service {
-	return Service{
-		repo: repo,
-	}
-}
-
-func (s Service) Generate(invoice *domain.Invoice) error {
+func (s BillingService) Generate(invoice *domain.Invoice) error {
 	err := generateInvoice(invoice)
 	if err != nil {
 		return err

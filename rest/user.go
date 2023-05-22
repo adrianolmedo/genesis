@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	app "github.com/adrianolmedo/go-restapi"
 	"github.com/adrianolmedo/go-restapi/domain"
 	"github.com/adrianolmedo/go-restapi/rest/jwt"
 
@@ -13,7 +14,7 @@ import (
 )
 
 // loginUser handler POST: /login
-func loginUser(s *services) fiber.Handler {
+func loginUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		form := domain.UserLoginForm{}
 		err := c.BodyParser(&form)
@@ -46,7 +47,7 @@ func loginUser(s *services) fiber.Handler {
 }
 
 // signUpUser handler POST: /users
-func signUpUser(s *services) fiber.Handler {
+func signUpUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		form := domain.UserSignUpForm{}
 		err := c.BodyParser(&form)
@@ -78,7 +79,7 @@ func signUpUser(s *services) fiber.Handler {
 }
 
 // findUser handler GET: /users/:id
-func findUser(s *services) fiber.Handler {
+func findUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
@@ -108,7 +109,7 @@ func findUser(s *services) fiber.Handler {
 }
 
 // updateUser handler PUT: /users/:id
-func updateUser(s *services) fiber.Handler {
+func updateUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
@@ -155,7 +156,7 @@ func updateUser(s *services) fiber.Handler {
 }
 
 // listUsers handler GET: /users
-func listUsers(s *services) fiber.Handler {
+func listUsers(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		users, err := s.User.List()
 		if err != nil {
@@ -188,7 +189,7 @@ func listUsers(s *services) fiber.Handler {
 }
 
 // deleteUser handler DELETE: /users/:id
-func deleteUser(s *services) fiber.Handler {
+func deleteUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {

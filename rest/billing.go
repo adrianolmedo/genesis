@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"net/http"
 
+	app "github.com/adrianolmedo/go-restapi"
 	"github.com/adrianolmedo/go-restapi/domain"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func generateInvoice(s *services) fiber.Handler {
+func generateInvoice(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		form := domain.GenerateInvoiceForm{}
 

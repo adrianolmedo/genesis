@@ -6,13 +6,14 @@ import (
 	"net/http"
 	"strconv"
 
+	app "github.com/adrianolmedo/go-restapi"
 	"github.com/adrianolmedo/go-restapi/domain"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 // addProduct handler POST: /products
-func addProduct(s *services) fiber.Handler {
+func addProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		form := domain.AddProductForm{}
 		err := c.BodyParser(&form)
@@ -45,7 +46,7 @@ func addProduct(s *services) fiber.Handler {
 }
 
 // listProducts handler GET: /products
-func listProducts(s *services) fiber.Handler {
+func listProducts(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		products, err := s.Store.List()
 		if err != nil {
@@ -79,7 +80,7 @@ func listProducts(s *services) fiber.Handler {
 }
 
 // findProduct handler GET: /products/:id
-func findProduct(s *services) fiber.Handler {
+func findProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
@@ -109,7 +110,7 @@ func findProduct(s *services) fiber.Handler {
 }
 
 // updateProduct handler PUT: /products/:id
-func updateProduct(s *services) fiber.Handler {
+func updateProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
 
@@ -153,7 +154,7 @@ func updateProduct(s *services) fiber.Handler {
 }
 
 // deleteProduct handler DELETE: /products/:id
-func deleteProduct(s *services) fiber.Handler {
+func deleteProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {

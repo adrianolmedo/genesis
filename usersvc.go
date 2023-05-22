@@ -1,4 +1,4 @@
-package user
+package gorestapi
 
 import (
 	"errors"
@@ -9,17 +9,11 @@ import (
 	"github.com/adrianolmedo/go-restapi/postgres"
 )
 
-type Service struct {
+type UserService struct {
 	repo postgres.User
 }
 
-func NewService(repo postgres.User) Service {
-	return Service{
-		repo: repo,
-	}
-}
-
-func (s Service) Login(email, password string) error {
+func (s UserService) Login(email, password string) error {
 	if err := validateEmail(email); err != nil {
 		return err
 	}
@@ -28,7 +22,7 @@ func (s Service) Login(email, password string) error {
 }
 
 // SignUp to register a User.
-func (s Service) SignUp(u *domain.User) error {
+func (s UserService) SignUp(u *domain.User) error {
 	err := signUp(u)
 	if err != nil {
 		return err
@@ -55,7 +49,7 @@ func signUp(u *domain.User) error {
 }
 
 // Find a User by its ID.
-func (s Service) Find(id int64) (*domain.User, error) {
+func (s UserService) Find(id int64) (*domain.User, error) {
 	if id == 0 {
 		return &domain.User{}, domain.ErrUserNotFound
 	}
@@ -64,7 +58,7 @@ func (s Service) Find(id int64) (*domain.User, error) {
 }
 
 // Update business logic for update a User.
-func (s Service) Update(u domain.User) error {
+func (s UserService) Update(u domain.User) error {
 	err := u.CheckEmptyFields()
 	if err != nil {
 		return err
@@ -79,12 +73,12 @@ func (s Service) Update(u domain.User) error {
 }
 
 // List get list of users.
-func (s Service) List() ([]*domain.User, error) {
+func (s UserService) List() ([]*domain.User, error) {
 	return s.repo.All()
 }
 
 // Remove delete User by its ID.
-func (s Service) Remove(id int64) error {
+func (s UserService) Remove(id int64) error {
 	if id == 0 {
 		return domain.ErrUserNotFound
 	}
