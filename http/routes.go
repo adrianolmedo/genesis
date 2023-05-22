@@ -1,9 +1,9 @@
-package rest
+package http
 
 import (
 	app "github.com/adrianolmedo/go-restapi"
+	"github.com/adrianolmedo/go-restapi/http/middleware"
 	"github.com/adrianolmedo/go-restapi/postgres"
-	"github.com/adrianolmedo/go-restapi/rest/middleware"
 
 	"github.com/gofiber/fiber/v2"
 )

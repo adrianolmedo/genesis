@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/adrianolmedo/go-restapi/rest/jwt"
+	"github.com/adrianolmedo/go-restapi/http/jwt"
 
 	"github.com/gofiber/fiber/v2"
 )

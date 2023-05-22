@@ -6,9 +6,9 @@ import (
 	"os"
 
 	"github.com/adrianolmedo/go-restapi/config"
+	"github.com/adrianolmedo/go-restapi/http"
+	"github.com/adrianolmedo/go-restapi/http/jwt"
 	"github.com/adrianolmedo/go-restapi/postgres"
-	"github.com/adrianolmedo/go-restapi/rest"
-	"github.com/adrianolmedo/go-restapi/rest/jwt"
 
 	"github.com/peterbourgon/ff/v3"
 )
@@ -60,5 +60,5 @@ func run(cfg *config.Config) error {
 		return fmt.Errorf("error from storage: %v", err)
 	}
 
-	return rest.Routes(strg).Listen(":" + cfg.Port)
+	return http.Routes(strg).Listen(":" + cfg.Port)
 }

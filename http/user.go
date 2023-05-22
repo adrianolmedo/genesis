@@ -1,4 +1,4 @@
-package rest
+package http
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 
 	app "github.com/adrianolmedo/go-restapi"
 	"github.com/adrianolmedo/go-restapi/domain"
-	"github.com/adrianolmedo/go-restapi/rest/jwt"
+	"github.com/adrianolmedo/go-restapi/http/jwt"
 
 	"github.com/gofiber/fiber/v2"
 )

@@ -1,4 +1,4 @@
-package rest
+package http
 
 const (
 	msgOK    = "ok"
