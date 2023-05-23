@@ -5,7 +5,7 @@ const (
 	msgError = "error"
 )
 
-// response it's a struct for JSON response.
+// response struct for JSON response.
 type response struct {
 	*messageOK    `json:"message_ok,omitempty"`
 	*messageError `json:"message_error,omitempty"`

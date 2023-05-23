@@ -21,7 +21,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// Generate signed token from email user.
+// Generate signed token from user's email.
 func Generate(userEmail string) (string, error) {
 	claims := Claims{
 		Email: userEmail,
@@ -73,8 +73,8 @@ func LoadFiles(privateFile, publicFile string) error {
 }
 
 func loadFiles(private, public string) error {
-	// Con ioutil.ReadFile(s) solo lees el contenido
-	// y no tienes que procuparte por cerrar el recurso con defer.
+	// With ioutil.ReadFile(s) only reads the content
+	// and you don't worry to close the resource with defer.
 	privateBytes, err := ioutil.ReadFile(private)
 	if err != nil {
 		return err
