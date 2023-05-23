@@ -9,11 +9,11 @@ import (
 	"github.com/adrianolmedo/go-restapi/postgres"
 )
 
-type UserService struct {
+type userService struct {
 	repo postgres.User
 }
 
-func (s UserService) Login(email, password string) error {
+func (s userService) Login(email, password string) error {
 	if err := validateEmail(email); err != nil {
 		return err
 	}
@@ -22,7 +22,7 @@ func (s UserService) Login(email, password string) error {
 }
 
 // SignUp to register a User.
-func (s UserService) SignUp(u *domain.User) error {
+func (s userService) SignUp(u *domain.User) error {
 	err := signUp(u)
 	if err != nil {
 		return err
@@ -49,7 +49,7 @@ func signUp(u *domain.User) error {
 }
 
 // Find a User by its ID.
-func (s UserService) Find(id int64) (*domain.User, error) {
+func (s userService) Find(id int64) (*domain.User, error) {
 	if id == 0 {
 		return &domain.User{}, domain.ErrUserNotFound
 	}
@@ -58,7 +58,7 @@ func (s UserService) Find(id int64) (*domain.User, error) {
 }
 
 // Update business logic for update a User.
-func (s UserService) Update(u domain.User) error {
+func (s userService) Update(u domain.User) error {
 	err := u.CheckEmptyFields()
 	if err != nil {
 		return err
@@ -73,12 +73,12 @@ func (s UserService) Update(u domain.User) error {
 }
 
 // List get list of users.
-func (s UserService) List() ([]*domain.User, error) {
+func (s userService) List() ([]*domain.User, error) {
 	return s.repo.All()
 }
 
 // Remove delete User by its ID.
-func (s UserService) Remove(id int64) error {
+func (s userService) Remove(id int64) error {
 	if id == 0 {
 		return domain.ErrUserNotFound
 	}

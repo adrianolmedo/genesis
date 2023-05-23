@@ -5,11 +5,11 @@ import (
 	"github.com/adrianolmedo/go-restapi/postgres"
 )
 
-type BillingService struct {
+type billingService struct {
 	repo postgres.Invoice
 }
 
-func (s BillingService) Generate(invoice *domain.Invoice) error {
+func (s billingService) Generate(invoice *domain.Invoice) error {
 	err := generateInvoice(invoice)
 	if err != nil {
 		return err

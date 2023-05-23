@@ -3,15 +3,15 @@ package gorestapi
 import "github.com/adrianolmedo/go-restapi/postgres"
 
 type Services struct {
-	User    UserService
-	Store   StoreService
-	Billing BillingService
+	User    userService
+	Store   storeService
+	Billing billingService
 }
 
 func NewServices(strg *postgres.Storage) *Services {
 	return &Services{
-		User:    UserService{repo: strg.User},
-		Store:   StoreService{repo: strg.Product},
-		Billing: BillingService{repo: strg.Invoice},
+		User:    userService{repo: strg.User},
+		Store:   storeService{repo: strg.Product},
+		Billing: billingService{repo: strg.Invoice},
 	}
 }

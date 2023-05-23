@@ -5,11 +5,11 @@ import (
 	"github.com/adrianolmedo/go-restapi/postgres"
 )
 
-type StoreService struct {
+type storeService struct {
 	repo postgres.Product
 }
 
-func (s StoreService) Add(product *domain.Product) error {
+func (s storeService) Add(product *domain.Product) error {
 	err := addProduct(product)
 	if err != nil {
 		return err
@@ -29,7 +29,7 @@ func addProduct(p *domain.Product) error {
 	return nil
 }
 
-func (s StoreService) Find(id int64) (*domain.Product, error) {
+func (s storeService) Find(id int64) (*domain.Product, error) {
 	if id == 0 {
 		return &domain.Product{}, domain.ErrProductNotFound
 	}
@@ -37,7 +37,7 @@ func (s StoreService) Find(id int64) (*domain.Product, error) {
 	return s.repo.ByID(id)
 }
 
-func (s StoreService) Update(product domain.Product) error {
+func (s storeService) Update(product domain.Product) error {
 	if !product.HasName() {
 		return domain.ErrProductHasNoName
 	}
@@ -45,11 +45,11 @@ func (s StoreService) Update(product domain.Product) error {
 	return s.repo.Update(product)
 }
 
-func (s StoreService) List() ([]*domain.Product, error) {
+func (s storeService) List() ([]*domain.Product, error) {
 	return s.repo.All()
 }
 
-func (s StoreService) Remove(id int64) error {
+func (s storeService) Remove(id int64) error {
 	if id == 0 {
 		return domain.ErrProductNotFound
 	}
