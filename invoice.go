@@ -1,4 +1,4 @@
-package domain
+package gorestapi
 
 import (
 	"errors"
