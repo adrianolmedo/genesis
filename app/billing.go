@@ -1,7 +1,7 @@
-package gorestapi
+package app
 
 import (
-	"github.com/adrianolmedo/go-restapi/domain"
+	domain "github.com/adrianolmedo/go-restapi"
 	"github.com/adrianolmedo/go-restapi/postgres"
 )
 

@@ -1,10 +1,10 @@
-package gorestapi
+package app
 
 import (
 	"strings"
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi/domain"
+	domain "github.com/adrianolmedo/go-restapi"
 )
 
 func TestSignUp(t *testing.T) {

@@ -1,11 +1,11 @@
-package gorestapi
+package app
 
 import (
 	"errors"
 	"fmt"
 	"regexp"
 
-	"github.com/adrianolmedo/go-restapi/domain"
+	domain "github.com/adrianolmedo/go-restapi"
 	"github.com/adrianolmedo/go-restapi/postgres"
 )
 
@@ -31,7 +31,7 @@ func (s userService) SignUp(u *domain.User) error {
 	return s.repo.Create(u)
 }
 
-// signUp business logic for regitser a User. Has been split into
+// signUp applicaction logic for regitser a User. Has been split into
 // a smaller function for unit testing purposes, and it should do so for
 // the other methods of the Service.
 func signUp(u *domain.User) error {
@@ -57,7 +57,7 @@ func (s userService) Find(id int64) (*domain.User, error) {
 	return s.repo.ByID(id)
 }
 
-// Update business logic for update a User.
+// Update application logic for update a User.
 func (s userService) Update(u domain.User) error {
 	err := u.CheckEmptyFields()
 	if err != nil {

@@ -1,4 +1,4 @@
-package gorestapi
+package app
 
 import "github.com/adrianolmedo/go-restapi/postgres"
 

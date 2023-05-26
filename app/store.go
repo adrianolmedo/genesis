@@ -1,7 +1,7 @@
-package gorestapi
+package app
 
 import (
-	"github.com/adrianolmedo/go-restapi/domain"
+	domain "github.com/adrianolmedo/go-restapi"
 	"github.com/adrianolmedo/go-restapi/postgres"
 )
 
@@ -18,8 +18,8 @@ func (s storeService) Add(product *domain.Product) error {
 	return s.repo.Create(product)
 }
 
-// addProduct business logic for adding products to the store.
-// The business logic has been split into a smaller function for unit testing
+// addProduct application logic for adding products to the store.
+// The application logic has been split into a smaller function for unit testing
 // purposes, and it should do so for the other methods of the Service.
 func addProduct(p *domain.Product) error {
 	if !p.HasName() {
