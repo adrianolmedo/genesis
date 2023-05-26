@@ -1,8 +1,10 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/adrianolmedo/go-restapi/app"
-	"github.com/adrianolmedo/go-restapi/http/middleware"
+	"github.com/adrianolmedo/go-restapi/http/jwt"
 	"github.com/adrianolmedo/go-restapi/postgres"
 
 	"github.com/gofiber/fiber/v2"
@@ -14,7 +16,7 @@ func Routes(strg *postgres.Storage) *fiber.App {
 	f := fiber.New()
 
 	g := f.Group("/v1/users")
-	g.Use(middleware.Auth)
+	g.Use(authMiddleware)
 	g.Get("", listUsers(s))
 	g.Put("/:id", updateUser(s))
 	g.Delete("/:id", deleteUser(s))
@@ -26,10 +28,20 @@ func Routes(strg *postgres.Storage) *fiber.App {
 	f.Get("/v1/products", listProducts(s))
 	f.Get("/v1/products/:id", findProduct(s))
 
-	f.Post("/v1/products", addProduct(s), middleware.Auth)
-	f.Put("/v1/products/:id", updateProduct(s), middleware.Auth)
-	f.Delete("/v1/products/:id", deleteProduct(s), middleware.Auth)
+	f.Post("/v1/products", addProduct(s), authMiddleware)
+	f.Put("/v1/products/:id", updateProduct(s), authMiddleware)
+	f.Delete("/v1/products/:id", deleteProduct(s), authMiddleware)
 
-	f.Post("v1/invoices", generateInvoice(s), middleware.Auth)
+	f.Post("v1/invoices", generateInvoice(s), authMiddleware)
 	return f
+}
+
+// authMiddleware for handlers that require user login.
+func authMiddleware(c *fiber.Ctx) error {
+	token := c.Request().Header.Peek("Authorization")
+	_, err := jwt.Verify(string(token))
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(map[string]string{"message_error": "you don't have authorization"})
+	}
+	return c.Next()
 }
