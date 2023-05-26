@@ -1,4 +1,4 @@
-package config
+package gorestapi
 
 // Config server RESTful API.
 type Config struct {
