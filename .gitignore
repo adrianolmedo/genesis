@@ -1,4 +1,5 @@
 .vscode
+rest
 app.sra
 app.sra.pub
 connect-to-mysql.sh
