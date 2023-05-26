@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi/domain"
+	domain "github.com/adrianolmedo/go-restapi"
 )
 
 func TestCreate(t *testing.T) {

@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	app "github.com/adrianolmedo/go-restapi"
-	"github.com/adrianolmedo/go-restapi/domain"
+	domain "github.com/adrianolmedo/go-restapi"
+	"github.com/adrianolmedo/go-restapi/app"
 	"github.com/adrianolmedo/go-restapi/http/jwt"
 
 	"github.com/gofiber/fiber/v2"

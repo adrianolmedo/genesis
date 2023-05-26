@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/adrianolmedo/go-restapi/domain"
+	domain "github.com/adrianolmedo/go-restapi"
 )
 
 type User struct {

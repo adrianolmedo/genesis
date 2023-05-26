@@ -6,7 +6,7 @@ package postgres
 import (
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi/domain"
+	domain "github.com/adrianolmedo/go-restapi"
 )
 
 func TestCreateTxInvoiceHeader(t *testing.T) {

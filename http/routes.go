@@ -1,7 +1,7 @@
 package http
 
 import (
-	app "github.com/adrianolmedo/go-restapi"
+	"github.com/adrianolmedo/go-restapi/app"
 	"github.com/adrianolmedo/go-restapi/http/middleware"
 	"github.com/adrianolmedo/go-restapi/postgres"
 
