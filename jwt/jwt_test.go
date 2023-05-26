@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	publicSRA = `
+	pubRSA = `
 -----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC81YoM084MeqWmv8FLev1T84SG
 l0wsz1fLXmZxhgnCEW+dfMTnqfDGYMTup1ca0QtgNpGl2VM3M50SWCXnAUGQ7n6D
@@ -16,7 +16,7 @@ RAj9cFFEQ1WNTWJBkQIDAQAB
 -----END PUBLIC KEY-----
 `
 
-	privateSRA = `
+	priRSA = `
 -----BEGIN RSA PRIVATE KEY-----
 MIICXgIBAAKBgQC81YoM084MeqWmv8FLev1T84SGl0wsz1fLXmZxhgnCEW+dfMTn
 qfDGYMTup1ca0QtgNpGl2VM3M50SWCXnAUGQ7n6DkGirT+BDKKHB7gMreyIZEafU
@@ -45,7 +45,7 @@ func TestJWTClaims(t *testing.T) {
 
 // loadKeys read mocked credentials.
 func loadKeys(t *testing.T) {
-	err := jwt.ParseRSA(privateSRA, publicSRA)
+	err := jwt.ParseRSA(priRSA, pubRSA)
 	if err != nil {
 		t.Fatal(err)
 	}

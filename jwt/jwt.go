@@ -11,18 +11,17 @@ import (
 )
 
 var (
-	signKey   *rsa.PrivateKey
-	verifiKey *rsa.PublicKey
-	once      sync.Once
+	privateKey *rsa.PrivateKey
+	publicKey  *rsa.PublicKey
+	once       sync.Once
 )
 
-// Claims is for JSON struct of JWT.
 type Claims struct {
 	Email string `json:"email"`
 	jwt.StandardClaims
 }
 
-// Generate signed token from email user.
+// Generate signed token from user's email.
 func Generate(userEmail string) (string, error) {
 	claims := Claims{
 		Email: userEmail,
@@ -33,7 +32,7 @@ func Generate(userEmail string) (string, error) {
 	}
 
 	t := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
-	signedToken, err := t.SignedString(signKey)
+	signedToken, err := t.SignedString(privateKey)
 	if err != nil {
 		return "", err
 	}
@@ -60,10 +59,10 @@ func Verify(token string) (Claims, error) {
 }
 
 func verify(t *jwt.Token) (interface{}, error) {
-	return verifiKey, nil
+	return publicKey, nil
 }
 
-// LoadFiles read SRA files. Se asegura poderse ejecutar una única vez.
+// LoadFiles read RSA files. Se asegura poderse ejecutar una única vez.
 func LoadFiles(privateFile, publicFile string) error {
 	var err error
 
@@ -96,12 +95,12 @@ func ParseRSA(privateRSA, publicRSA string) error {
 func parseRSA(privateBytes, publicBytes []byte) error {
 	var err error
 
-	signKey, err = jwt.ParseRSAPrivateKeyFromPEM(privateBytes)
+	privateKey, err = jwt.ParseRSAPrivateKeyFromPEM(privateBytes)
 	if err != nil {
 		return err
 	}
 
-	verifiKey, err = jwt.ParseRSAPublicKeyFromPEM(publicBytes)
+	publicKey, err = jwt.ParseRSAPublicKeyFromPEM(publicBytes)
 	if err != nil {
 		return err
 	}
