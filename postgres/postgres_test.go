@@ -8,7 +8,7 @@ import (
 	"flag"
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi/config"
+	config "github.com/adrianolmedo/go-restapi"
 )
 
 // $ go test -v -tags integration -args -dbengine postgres -dbhost 127.0.0.1 -dbport 5432 -dbuser username -dbname foodb -dbpass 12345

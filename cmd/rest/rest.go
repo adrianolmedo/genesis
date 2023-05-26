@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/adrianolmedo/go-restapi/config"
+	config "github.com/adrianolmedo/go-restapi"
 	"github.com/adrianolmedo/go-restapi/http"
 	"github.com/adrianolmedo/go-restapi/http/jwt"
 	"github.com/adrianolmedo/go-restapi/postgres"

@@ -3,7 +3,7 @@ package postgres
 import (
 	"fmt"
 
-	"github.com/adrianolmedo/go-restapi/config"
+	config "github.com/adrianolmedo/go-restapi"
 )
 
 type Storage struct {
