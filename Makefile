@@ -1,5 +1,5 @@
 build:
-	go build -o main .
+	go build -o rest .
 
 genrsa:
 	openssl genrsa -out app.rsa 1024
@@ -12,4 +12,4 @@ debug:
 	go build -gcflags "-N -l" -o rest .
 
 clean:
-	if [ -f main ] ; then rm main ; fi
+	if [ -f rest ] ; then rm rest ; fi
