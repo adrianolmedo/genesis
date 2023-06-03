@@ -3,7 +3,7 @@ package jwt_test
 import (
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi/http/jwt"
+	"github.com/adrianolmedo/genesis/http/jwt"
 )
 
 const (

@@ -1,4 +1,4 @@
-package gorestapi
+package genesis
 
 import (
 	"errors"

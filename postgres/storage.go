@@ -3,7 +3,7 @@ package postgres
 import (
 	"fmt"
 
-	config "github.com/adrianolmedo/go-restapi"
+	config "github.com/adrianolmedo/genesis"
 )
 
 type Storage struct {

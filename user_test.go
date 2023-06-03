@@ -1,10 +1,10 @@
-package gorestapi_test
+package genesis_test
 
 import (
 	"regexp"
 	"testing"
 
-	domain "github.com/adrianolmedo/go-restapi"
+	domain "github.com/adrianolmedo/genesis"
 )
 
 func TestCheckEmptyFields(t *testing.T) {

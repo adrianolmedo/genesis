@@ -1,8 +1,8 @@
 package app
 
 import (
-	domain "github.com/adrianolmedo/go-restapi"
-	"github.com/adrianolmedo/go-restapi/postgres"
+	domain "github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis/postgres"
 )
 
 type storeService struct {

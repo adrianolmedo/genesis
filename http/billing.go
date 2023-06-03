@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	domain "github.com/adrianolmedo/go-restapi"
-	"github.com/adrianolmedo/go-restapi/app"
+	domain "github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis/app"
 
 	"github.com/gofiber/fiber/v2"
 )

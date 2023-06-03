@@ -7,7 +7,7 @@ import (
 	"database/sql"
 	"testing"
 
-	domain "github.com/adrianolmedo/go-restapi"
+	domain "github.com/adrianolmedo/genesis"
 )
 
 func TestCreateUser(t *testing.T) {

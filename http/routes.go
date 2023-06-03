@@ -3,9 +3,9 @@ package http
 import (
 	"net/http"
 
-	"github.com/adrianolmedo/go-restapi/app"
-	"github.com/adrianolmedo/go-restapi/http/jwt"
-	"github.com/adrianolmedo/go-restapi/postgres"
+	"github.com/adrianolmedo/genesis/app"
+	"github.com/adrianolmedo/genesis/http/jwt"
+	"github.com/adrianolmedo/genesis/postgres"
 
 	"github.com/gofiber/fiber/v2"
 )

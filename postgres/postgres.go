@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	config "github.com/adrianolmedo/go-restapi"
+	config "github.com/adrianolmedo/genesis"
 
 	_ "github.com/lib/pq"
 )

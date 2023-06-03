@@ -1,6 +1,6 @@
 package app
 
-import "github.com/adrianolmedo/go-restapi/postgres"
+import "github.com/adrianolmedo/genesis/postgres"
 
 type Services struct {
 	User    userService

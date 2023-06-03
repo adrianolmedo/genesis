@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	domain "github.com/adrianolmedo/go-restapi"
+	domain "github.com/adrianolmedo/genesis"
 )
 
 type InvoiceHeader struct {

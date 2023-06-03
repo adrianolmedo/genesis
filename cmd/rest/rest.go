@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"os"
 
-	config "github.com/adrianolmedo/go-restapi"
-	"github.com/adrianolmedo/go-restapi/http"
-	"github.com/adrianolmedo/go-restapi/http/jwt"
-	"github.com/adrianolmedo/go-restapi/postgres"
+	config "github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis/http"
+	"github.com/adrianolmedo/genesis/http/jwt"
+	"github.com/adrianolmedo/genesis/postgres"
 
 	"github.com/peterbourgon/ff/v3"
 )
