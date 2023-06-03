@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/adrianolmedo/go-restapi/internal/domain"
-	"github.com/adrianolmedo/go-restapi/internal/storage"
+	"github.com/adrianolmedo/genesis/internal/domain"
+	"github.com/adrianolmedo/genesis/internal/storage"
 )
 
 type BillingService interface {

@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi/internal/domain"
+	"github.com/adrianolmedo/genesis/internal/domain"
 )
 
 func TestCheckEmptyFields(t *testing.T) {

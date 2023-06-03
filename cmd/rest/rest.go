@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/adrianolmedo/go-restapi/config"
-	"github.com/adrianolmedo/go-restapi/internal/app"
+	"github.com/adrianolmedo/genesis/config"
+	"github.com/adrianolmedo/genesis/internal/app"
 
 	"github.com/peterbourgon/ff/v3"
 )

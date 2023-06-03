@@ -7,8 +7,8 @@ import (
 	"database/sql"
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi/internal/domain"
-	"github.com/adrianolmedo/go-restapi/internal/storage/mysql"
+	"github.com/adrianolmedo/genesis/internal/domain"
+	"github.com/adrianolmedo/genesis/internal/storage/mysql"
 )
 
 func TestCreateInvoice(t *testing.T) {

@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 
-	"github.com/adrianolmedo/go-restapi/internal/storage"
+	"github.com/adrianolmedo/genesis/internal/storage"
 )
 
 type Service struct {

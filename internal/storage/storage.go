@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/adrianolmedo/go-restapi/config"
-	"github.com/adrianolmedo/go-restapi/internal/domain"
-	"github.com/adrianolmedo/go-restapi/internal/storage/mysql"
-	"github.com/adrianolmedo/go-restapi/internal/storage/postgres"
+	"github.com/adrianolmedo/genesis/config"
+	"github.com/adrianolmedo/genesis/internal/domain"
+	"github.com/adrianolmedo/genesis/internal/storage/mysql"
+	"github.com/adrianolmedo/genesis/internal/storage/postgres"
 )
 
 type Storage interface {

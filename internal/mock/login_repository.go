@@ -1,7 +1,7 @@
 package mock
 
 import (
-	"github.com/adrianolmedo/go-restapi/internal/domain"
+	"github.com/adrianolmedo/genesis/internal/domain"
 )
 
 type LoginRepositoryOk struct{}

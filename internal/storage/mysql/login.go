@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/adrianolmedo/go-restapi/internal/domain"
+	"github.com/adrianolmedo/genesis/internal/domain"
 )
 
 type LoginRepository struct {

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/adrianolmedo/go-restapi/internal/domain"
+	"github.com/adrianolmedo/genesis/internal/domain"
 )
 
 type ProductRepository struct {

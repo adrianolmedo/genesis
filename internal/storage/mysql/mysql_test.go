@@ -8,8 +8,8 @@ import (
 	"flag"
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi/config"
-	"github.com/adrianolmedo/go-restapi/internal/storage/mysql"
+	"github.com/adrianolmedo/genesis/config"
+	"github.com/adrianolmedo/genesis/internal/storage/mysql"
 )
 
 // $ go test -v -tags integration -args -dbengine mysql -dbhost 127.0.0.1 -dbport 3306 -dbuser username -dbname foodb -dbpass 12345

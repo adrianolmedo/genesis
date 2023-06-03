@@ -1,4 +1,4 @@
-module github.com/adrianolmedo/go-restapi
+module github.com/adrianolmedo/genesis
 
 go 1.15
 

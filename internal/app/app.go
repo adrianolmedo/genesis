@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/adrianolmedo/go-restapi/config"
-	"github.com/adrianolmedo/go-restapi/internal/rest"
-	"github.com/adrianolmedo/go-restapi/internal/service"
-	"github.com/adrianolmedo/go-restapi/internal/storage"
-	"github.com/adrianolmedo/go-restapi/jwt"
+	"github.com/adrianolmedo/genesis/config"
+	"github.com/adrianolmedo/genesis/internal/rest"
+	"github.com/adrianolmedo/genesis/internal/service"
+	"github.com/adrianolmedo/genesis/internal/storage"
+	"github.com/adrianolmedo/genesis/jwt"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

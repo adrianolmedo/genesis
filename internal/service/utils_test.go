@@ -3,7 +3,7 @@ package service
 import (
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi/internal/domain"
+	"github.com/adrianolmedo/genesis/internal/domain"
 )
 
 func TestValidateEmail(t *testing.T) {

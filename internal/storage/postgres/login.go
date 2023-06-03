@@ -3,7 +3,7 @@ package postgres
 import (
 	"database/sql"
 
-	"github.com/adrianolmedo/go-restapi/internal/domain"
+	"github.com/adrianolmedo/genesis/internal/domain"
 )
 
 type LoginRepository struct {

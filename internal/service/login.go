@@ -1,6 +1,6 @@
 package service
 
-import "github.com/adrianolmedo/go-restapi/internal/storage"
+import "github.com/adrianolmedo/genesis/internal/storage"
 
 type LoginService interface {
 	Execute(email, password string) error

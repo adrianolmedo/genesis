@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi/internal/domain"
-	"github.com/adrianolmedo/go-restapi/internal/storage/postgres"
+	"github.com/adrianolmedo/genesis/internal/domain"
+	"github.com/adrianolmedo/genesis/internal/storage/postgres"
 )
 
 func TestCreateUser(t *testing.T) {

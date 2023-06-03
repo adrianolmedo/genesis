@@ -28,7 +28,7 @@ My first prototype of RESTful API written in Go whit persistence to MySQL or Pos
 ## Run with MySQL service:
 
 ```bash
-$ git clone https://github.com/adrianolmedo/go-restapi.git
+$ git clone https://github.com/adrianolmedo/genesis.git
 $ openssl genrsa -out app.rsa 1024
 $ openssl rsa -in app.rsa -pubout > app.rsa.pub
 $ docker-compose up -d --build app mysql
@@ -39,7 +39,7 @@ $ docker-compose up -d --build app mysql
 **1- Prepare database:**
 
 ```bash
-$ git clone https://github.com/adrianolmedo/go-restapi.git
+$ git clone https://github.com/adrianolmedo/genesis.git
 $ vim .env
 ```
 

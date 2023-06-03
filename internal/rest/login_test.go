@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/adrianolmedo/go-restapi/internal/mock"
-	"github.com/adrianolmedo/go-restapi/internal/service"
-	"github.com/adrianolmedo/go-restapi/jwt"
+	"github.com/adrianolmedo/genesis/internal/mock"
+	"github.com/adrianolmedo/genesis/internal/service"
+	"github.com/adrianolmedo/genesis/jwt"
 
 	"github.com/labstack/echo/v4"
 )
