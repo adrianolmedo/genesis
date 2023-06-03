@@ -1,5 +1,5 @@
 build:
-	go build -o rest .
+	go build cmd/rest/*.go
 
 genrsa:
 	openssl genrsa -out app.rsa 1024
