@@ -1,5 +1,5 @@
 build:
-	go build cmd/rest/*.go
+	go build -o cligosrv cmd/rest/*.go
 
 genrsa:
 	openssl genrsa -out app.rsa 1024
@@ -9,7 +9,7 @@ test:
 	go test ./...
 
 debug:
-	go build -gcflags "-N -l" -o rest .
+	go build -gcflags "-N -l" -o cligosrv .
 
 clean:
-	if [ -f rest ] ; then rm rest ; fi
+	if [ -f cligosrv ] ; then rm cligosrv ; fi
