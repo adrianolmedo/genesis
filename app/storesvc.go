@@ -6,7 +6,8 @@ import (
 )
 
 type storeService struct {
-	repo postgres.Product
+	repoProduct  postgres.Product
+	repoCustomer postgres.Customer
 }
 
 func (s storeService) Add(product *domain.Product) error {
@@ -15,15 +16,15 @@ func (s storeService) Add(product *domain.Product) error {
 		return err
 	}
 
-	return s.repo.Create(product)
+	return s.repoProduct.Create(product)
 }
 
 // addProduct application logic for adding products to the store.
 // The application logic has been split into a smaller function for unit testing
 // purposes, and it should do so for the other methods of the Service.
 func addProduct(p *domain.Product) error {
-	if !p.HasName() {
-		return domain.ErrProductHasNoName
+	if err := p.Validate(); err != nil {
+		return err
 	}
 
 	return nil
@@ -34,19 +35,27 @@ func (s storeService) Find(id int64) (*domain.Product, error) {
 		return &domain.Product{}, domain.ErrProductNotFound
 	}
 
-	return s.repo.ByID(id)
+	return s.repoProduct.ByID(id)
 }
 
-func (s storeService) Update(product domain.Product) error {
-	if !product.HasName() {
-		return domain.ErrProductHasNoName
+func (s storeService) Update(p domain.Product) error {
+	if err := p.Validate(); err != nil {
+		return err
 	}
 
-	return s.repo.Update(product)
+	return s.repoProduct.Update(p)
 }
 
 func (s storeService) List() ([]*domain.Product, error) {
-	return s.repo.All()
+	return s.repoProduct.All()
+}
+
+func (s storeService) AddCustomer(c *domain.Customer) error {
+	return s.repoCustomer.Create(c)
+}
+
+func (s storeService) ListCustomers(filter domain.Filter) (domain.Customers, error) {
+	return s.repoCustomer.All(filter)
 }
 
 func (s storeService) Remove(id int64) error {
@@ -54,5 +63,5 @@ func (s storeService) Remove(id int64) error {
 		return domain.ErrProductNotFound
 	}
 
-	return s.repo.Delete(id)
+	return s.repoProduct.Delete(id)
 }

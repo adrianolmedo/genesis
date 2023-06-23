@@ -35,7 +35,7 @@ func (s userService) SignUp(u *domain.User) error {
 // a smaller function for unit testing purposes, and it should do so for
 // the other methods of the Service.
 func signUp(u *domain.User) error {
-	err := u.CheckEmptyFields()
+	err := u.Validate()
 	if err != nil {
 		return err
 	}
@@ -59,7 +59,7 @@ func (s userService) Find(id int64) (*domain.User, error) {
 
 // Update application logic for update a User.
 func (s userService) Update(u domain.User) error {
-	err := u.CheckEmptyFields()
+	err := u.Validate()
 	if err != nil {
 		return err
 	}
@@ -86,8 +86,7 @@ func (s userService) Remove(id int64) error {
 	return s.repo.Delete(id)
 }
 
-// helpers
-
+// validateEmail helper to check email pattern.
 func validateEmail(email string) error {
 	validEmail, err := regexp.MatchString(`^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$`, email)
 	if err != nil {
@@ -95,7 +94,7 @@ func validateEmail(email string) error {
 	}
 
 	if !validEmail {
-		return errors.New("email not valid")
+		return errors.New("invalid email")
 	}
 
 	return nil
