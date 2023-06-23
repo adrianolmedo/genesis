@@ -6,12 +6,16 @@ import (
 	config "github.com/adrianolmedo/genesis"
 )
 
+// Storage represents all repositories.
 type Storage struct {
-	User    User
-	Product Product
-	Invoice Invoice
+	User     User
+	Product  Product
+	Customer Customer
+	Invoice  Invoice
 }
 
+// NewStorage init postgres database conecton, build the Storage and return
+// it its pointer.
 func NewStorage(dbcfg config.DB) (*Storage, error) {
 	if dbcfg.Engine == "" {
 		return nil, fmt.Errorf("database engine not selected")
@@ -24,8 +28,9 @@ func NewStorage(dbcfg config.DB) (*Storage, error) {
 		}
 
 		return &Storage{
-			User:    User{db: db},
-			Product: Product{db: db},
+			User:     User{db: db},
+			Product:  Product{db: db},
+			Customer: Customer{db: db},
 			Invoice: Invoice{
 				db:     db,
 				header: InvoiceHeader{db: db},

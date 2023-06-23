@@ -13,7 +13,7 @@ var ErrUserNotFound = errors.New("user not found")
 // User model.
 type User struct {
 	ID        int64
-	UUID      UserID
+	UUID      string
 	FirstName string
 	LastName  string
 	Email     string
@@ -24,22 +24,20 @@ type User struct {
 	DeletedAt time.Time
 }
 
-// CheckEmptyFields return error if FirstName, Email or Password there are empty.
-func (u User) CheckEmptyFields() error {
+// Validate return error if certain fields there are empty.
+func (u User) Validate() error {
 	if u.FirstName == "" || u.Email == "" || u.Password == "" {
 		return errors.New("first name, email or password can't be empty")
 	}
 	return nil
 }
 
-// UserID uniquely identifies a particular user.
-type UserID string
-
-// NextUserID generates a new UUID.
-func NextUserID() UserID {
-	return UserID(uuid.New())
+// NextUUID generates a new UUID.
+func NextUUID() string {
+	return string(uuid.New())
 }
 
+// UserSignUpForm subset of User fields to create account.
 type UserSignUpForm struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -47,11 +45,13 @@ type UserSignUpForm struct {
 	Password  string `json:"password"`
 }
 
+// UserLoginForm subset of user fields to request login.
 type UserLoginForm struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
+// UserUpdateForm subset of fields to request to update a User.
 type UserUpdateForm struct {
 	ID        int64  `json:"id"`
 	FirstName string `json:"first_name"`
@@ -60,6 +60,7 @@ type UserUpdateForm struct {
 	Password  string `json:"password"`
 }
 
+// UserProfileDTO subset of User fields .
 type UserProfileDTO struct {
 	ID        int64  `json:"id,omitempty"`
 	FirstName string `json:"first_name"`
@@ -67,4 +68,5 @@ type UserProfileDTO struct {
 	Email     string `json:"email"`
 }
 
+// UserList collection of User presentation.
 type UserList []UserProfileDTO

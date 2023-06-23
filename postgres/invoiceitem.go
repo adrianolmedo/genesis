@@ -7,10 +7,12 @@ import (
 	domain "github.com/adrianolmedo/genesis"
 )
 
+// InvoiceItem repository.
 type InvoiceItem struct {
 	db *sql.DB
 }
 
+// Create create item asociated to a header and product for the invoice.
 func (InvoiceItem) Create(tx *sql.Tx, headerID int64, items domain.ItemList) error {
 	stmt, err := tx.Prepare("INSERT INTO invoice_items (invoice_header_id, product_id) VALUES ($1, $2) RETURNING id, created_at")
 	if err != nil {
@@ -28,6 +30,7 @@ func (InvoiceItem) Create(tx *sql.Tx, headerID int64, items domain.ItemList) err
 	return nil
 }
 
+// DeleteAll delete all invoice items.
 func (ii InvoiceItem) DeleteAll() error {
 	stmt, err := ii.db.Prepare("TRUNCATE TABLE invoice_items RESTART IDENTITY CASCADE")
 	if err != nil {

@@ -9,10 +9,12 @@ import (
 	domain "github.com/adrianolmedo/genesis"
 )
 
+// Product repository.
 type Product struct {
 	db *sql.DB
 }
 
+// Create create one product.
 func (p Product) Create(product *domain.Product) error {
 	stmt, err := p.db.Prepare("INSERT INTO products (name, observations, price, created_at) VALUES ($1, $2, $3, $4) RETURNING id")
 	if err != nil {
@@ -30,6 +32,7 @@ func (p Product) Create(product *domain.Product) error {
 	return nil
 }
 
+// ByID get one product by its id.
 func (p Product) ByID(id int64) (*domain.Product, error) {
 	stmt, err := p.db.Prepare("SELECT * FROM products WHERE id = $1")
 	if err != nil {
@@ -49,6 +52,7 @@ func (p Product) ByID(id int64) (*domain.Product, error) {
 	return product, nil
 }
 
+// Update product.
 func (p Product) Update(product domain.Product) error {
 	stmt, err := p.db.Prepare("UPDATE products SET name = $1, observations = $2, price = $3, updated_at = $4 WHERE id = $5")
 	if err != nil {
@@ -75,6 +79,7 @@ func (p Product) Update(product domain.Product) error {
 	return nil
 }
 
+// All get a collection of all prodycts.
 func (p Product) All() ([]*domain.Product, error) {
 	stmt, err := p.db.Prepare("SELECT * FROM products")
 	if err != nil {
@@ -104,6 +109,7 @@ func (p Product) All() ([]*domain.Product, error) {
 	return products, nil
 }
 
+// Delete product by its id.
 func (p Product) Delete(id int64) error {
 	stmt, err := p.db.Prepare("DELETE FROM products WHERE id = $1")
 	if err != nil {
@@ -127,6 +133,7 @@ func (p Product) Delete(id int64) error {
 	return nil
 }
 
+// DeleteAll delete all products.
 func (p Product) DeleteAll() error {
 	stmt, err := p.db.Prepare("TRUNCATE TABLE products RESTART IDENTITY CASCADE")
 	if err != nil {

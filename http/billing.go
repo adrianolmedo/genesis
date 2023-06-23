@@ -40,7 +40,7 @@ func generateInvoice(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		assemble := func(i *domain.InvoiceItemForm) *domain.InvoiceItem {
+		assemble := func(i domain.InvoiceItemForm) *domain.InvoiceItem {
 			return &domain.InvoiceItem{
 				ProductID: i.ProductID,
 			}

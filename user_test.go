@@ -35,7 +35,7 @@ func TestCheckEmptyFields(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		err := tc.user.CheckEmptyFields()
+		err := tc.user.Validate()
 		errReceived := err != nil
 
 		if errReceived != tc.errExpected {
@@ -44,12 +44,12 @@ func TestCheckEmptyFields(t *testing.T) {
 	}
 }
 
-// TestNextUserID se segura que el campo UUID tenga un valor UUID válido.
-func TestNextUserID(t *testing.T) {
-	uuid := domain.NextUserID()
+// TestNextUUID se segura que el campo UUID tenga un valor UUID válido.
+func TestNextUUID(t *testing.T) {
+	uuid := domain.NextUUID()
 
-	if !isValidUUID(string(uuid)) {
-		t.Errorf("NextUserID() generate invalid UUID: %s", uuid)
+	if !isValidUUID(uuid) {
+		t.Errorf("NextUUID() generate invalid UUID: %s", uuid)
 	} else {
 		t.Logf("%s: valid! ", uuid)
 	}

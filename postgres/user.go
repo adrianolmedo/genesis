@@ -9,10 +9,12 @@ import (
 	domain "github.com/adrianolmedo/genesis"
 )
 
+// User repository.
 type User struct {
 	db *sql.DB
 }
 
+// Create a User to the storage.
 func (r User) Create(u *domain.User) error {
 	stmt, err := r.db.Prepare("INSERT INTO users (uuid, first_name, last_name, email, password, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id")
 	if err != nil {
@@ -20,7 +22,7 @@ func (r User) Create(u *domain.User) error {
 	}
 	defer stmt.Close()
 
-	u.UUID = domain.NextUserID()
+	u.UUID = domain.NextUUID()
 	u.CreatedAt = time.Now()
 
 	err = stmt.QueryRow(u.UUID, u.FirstName, u.LastName, u.Email, u.Password, u.CreatedAt).Scan(&u.ID)
@@ -31,6 +33,7 @@ func (r User) Create(u *domain.User) error {
 	return nil
 }
 
+// ByLogin get a User from its login data.
 func (r User) ByLogin(email, password string) error {
 	stmt, err := r.db.Prepare("SELECT id FROM users WHERE email = $1 AND password = $2")
 	if err != nil {
@@ -55,6 +58,7 @@ func (r User) ByLogin(email, password string) error {
 	return nil
 }
 
+// ByID get a User from its id.
 func (r User) ByID(id int64) (*domain.User, error) {
 	stmt, err := r.db.Prepare("SELECT * FROM users WHERE id = $1")
 	if err != nil {
@@ -74,6 +78,7 @@ func (r User) ByID(id int64) (*domain.User, error) {
 	return u, nil
 }
 
+// Update update User.
 func (r User) Update(u domain.User) error {
 	stmt, err := r.db.Prepare("UPDATE users SET first_name = $1, last_name = $2, email = $3, password = $4, updated_at = $5 WHERE id = $6")
 	if err != nil {
@@ -100,6 +105,7 @@ func (r User) Update(u domain.User) error {
 	return nil
 }
 
+// All get User collection.
 func (r User) All() ([]*domain.User, error) {
 	stmt, err := r.db.Prepare("SELECT * FROM users")
 	if err != nil {
@@ -129,6 +135,7 @@ func (r User) All() ([]*domain.User, error) {
 	return users, nil
 }
 
+// Delete delete user from its is.
 func (r User) Delete(id int64) error {
 	stmt, err := r.db.Prepare("DELETE FROM users WHERE id = $1")
 	if err != nil {
@@ -152,6 +159,7 @@ func (r User) Delete(id int64) error {
 	return nil
 }
 
+// DeleteAll delete all users.
 func (r User) DeleteAll() error {
 	stmt, err := r.db.Prepare("TRUNCATE TABLE users RESTART IDENTITY")
 	if err != nil {
@@ -195,14 +203,4 @@ func scanRowUser(s scanner) (*domain.User, error) {
 	m.DeletedAt = deletedAtNull.Time
 
 	return m, nil
-}
-
-// timeToNull helper to try empty time fields.
-func timeToNull(t time.Time) sql.NullTime {
-	null := sql.NullTime{Time: t}
-
-	if !null.Time.IsZero() {
-		null.Valid = true
-	}
-	return null
 }

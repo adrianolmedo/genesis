@@ -7,12 +7,14 @@ import (
 	domain "github.com/adrianolmedo/genesis"
 )
 
+// Invoice repository.
 type Invoice struct {
 	db     *sql.DB
 	header InvoiceHeader
 	items  InvoiceItem
 }
 
+// Create generate a full Invoice.
 func (i Invoice) Create(invoice *domain.Invoice) error {
 	tx, err := i.db.Begin()
 	if err != nil {

@@ -16,6 +16,7 @@ var (
 	once       sync.Once
 )
 
+// Claims based on user email as token value.
 type Claims struct {
 	Email string `json:"email"`
 	jwt.RegisteredClaims
@@ -88,6 +89,7 @@ func loadFiles(private, public string) error {
 	return parseRSA(privateBytes, publicBytes)
 }
 
+// ParseRSA parse RSA by its keys.
 func ParseRSA(private, public string) error {
 	return parseRSA([]byte(private), []byte(public))
 }
