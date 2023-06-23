@@ -60,5 +60,5 @@ func run(cfg *config.Config) error {
 		return fmt.Errorf("error from storage: %v", err)
 	}
 
-	return http.Routes(strg).Listen(":" + cfg.Port)
+	return http.Router(strg).Listen(":" + cfg.Port)
 }
