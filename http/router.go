@@ -10,8 +10,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// Routes call all routes with its handlers.
-func Routes(strg *postgres.Storage) *fiber.App {
+// Router call all routes with its handlers.
+func Router(strg *postgres.Storage) *fiber.App {
 	s := app.NewServices(strg)
 	f := fiber.New()
 
@@ -24,6 +24,9 @@ func Routes(strg *postgres.Storage) *fiber.App {
 	f.Post("v1/login", loginUser(s))
 	f.Post("v1/users", signUpUser(s))
 	f.Get("/v1/users/:id", findUser(s))
+
+	f.Post("/v1/customers", createCustomer(s))
+	f.Get("/v1/customers", listCustomers(s))
 
 	f.Get("/v1/products", listProducts(s))
 	f.Get("/v1/products/:id", findProduct(s))
