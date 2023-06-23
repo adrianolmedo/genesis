@@ -79,6 +79,76 @@ func listProducts(s *app.Services) fiber.Handler {
 	}
 }
 
+// createCustomer handler POST: /customer
+func createCustomer(s *app.Services) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		form := domain.CreateCustomerForm{}
+		err := c.BodyParser(&form)
+		if err != nil {
+			resp := respJSON(msgError, "the JSON structure is not correct", nil)
+			return c.Status(http.StatusBadRequest).JSON(resp)
+		}
+
+		err = s.Store.AddCustomer(&domain.Customer{
+			FirstName: form.FirstName,
+			LastName:  form.LastName,
+			Email:     form.Email,
+		})
+
+		if err != nil {
+			resp := respJSON(msgError, err.Error(), nil)
+			return c.Status(http.StatusInternalServerError).JSON(resp)
+		}
+
+		resp := respJSON(msgOK, "customer created", domain.CustomerProfileDTO{
+			FirstName: form.FirstName,
+			LastName:  form.LastName,
+			Email:     form.Email,
+		})
+
+		return c.Status(http.StatusCreated).JSON(resp)
+	}
+}
+
+// listCustomers handler GET: /customers
+func listCustomers(s *app.Services) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		filter, err := getFilter(c)
+		if err != nil {
+			resp := respJSON(msgError, err.Error(), nil)
+			return c.Status(http.StatusBadRequest).JSON(resp) // 400
+		}
+
+		customers, err := s.Store.ListCustomers(filter)
+		if err != nil {
+			resp := respJSON(msgError, err.Error(), nil)
+			return c.Status(http.StatusInternalServerError).JSON(resp)
+		}
+
+		if len(customers) == 0 {
+			resp := respJSON(msgOK, "there are not customers", nil)
+			return c.Status(http.StatusOK).JSON(resp)
+		}
+
+		list := make(domain.CustomerList, 0, len(customers))
+
+		assemble := func(c domain.Customer) domain.CustomerProfileDTO {
+			return domain.CustomerProfileDTO{
+				FirstName: c.FirstName,
+				LastName:  c.LastName,
+				Email:     c.Email,
+			}
+		}
+
+		for _, v := range customers {
+			list = append(list, assemble(v))
+		}
+
+		resp := respJSON(msgOK, "", list)
+		return c.Status(http.StatusOK).JSON(resp)
+	}
+}
+
 // findProduct handler GET: /products/:id
 func findProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
