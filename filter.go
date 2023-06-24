@@ -1,6 +1,19 @@
 package genesis
 
-// TODO: Direction enum.
+// Direction enum.
+type Direction int
+
+const (
+	// ASC filter results ascending.
+	ASC Direction = iota
+
+	// DESC filter results descending.
+	DESC
+)
+
+func (d Direction) String() string {
+	return [2]string{"ASC", "DESC"}[d]
+}
 
 // Filter for filtering results.
 type Filter struct {
@@ -18,5 +31,8 @@ type Filter struct {
 
 	// Direction to display the results in ASC or DESC order based on the
 	// Sort value.
-	Direction string
+	Direction Direction
+
+	// MaxLimit for the pagination.
+	MaxLimit int
 }
