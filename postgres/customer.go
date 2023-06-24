@@ -66,26 +66,26 @@ func (r Customer) All(filter domain.Filter) (domain.Customers, error) {
 }
 
 // scanRowUser return nulled fields of the domain object User parsed.
-func scanRowCustomer(s scanner) (domain.Customer, error) {
+func scanRowCustomer(s scanner) (*domain.Customer, error) {
 	var updatedAtNull, deletedAtNull sql.NullTime
-	c := domain.Customer{}
+	cx := &domain.Customer{}
 
 	err := s.Scan(
-		&c.ID,
-		&c.UUID,
-		&c.FirstName,
-		&c.LastName,
-		&c.Email,
-		&c.CreatedAt,
+		&cx.ID,
+		&cx.UUID,
+		&cx.FirstName,
+		&cx.LastName,
+		&cx.Email,
+		&cx.CreatedAt,
 		&updatedAtNull,
 		&deletedAtNull,
 	)
 	if err != nil {
-		return domain.Customer{}, err
+		return nil, err
 	}
 
-	c.UpdatedAt = updatedAtNull.Time
-	c.DeletedAt = deletedAtNull.Time
+	cx.UpdatedAt = updatedAtNull.Time
+	cx.DeletedAt = deletedAtNull.Time
 
-	return c, nil
+	return cx, nil
 }

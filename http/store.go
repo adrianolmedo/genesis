@@ -132,7 +132,7 @@ func listCustomers(s *app.Services) fiber.Handler {
 
 		list := make([]domain.CustomerProfileDTO, 0, len(customers))
 
-		assemble := func(cx domain.Customer) domain.CustomerProfileDTO {
+		assemble := func(cx *domain.Customer) domain.CustomerProfileDTO {
 			return domain.CustomerProfileDTO{
 				FirstName: cx.FirstName,
 				LastName:  cx.LastName,
