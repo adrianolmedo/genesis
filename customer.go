@@ -47,6 +47,3 @@ type CustomerProfileDTO struct {
 	LastName  string `json:"last_name"`
 	Email     string `json:"email"`
 }
-
-// CustomerList collection of Customer presentation.
-type CustomerList []CustomerProfileDTO

@@ -178,7 +178,7 @@ func listUsers(s *app.Services) fiber.Handler {
 			}
 		}
 
-		list := make(domain.UserList, 0, len(users))
+		list := make([]domain.UserProfileDTO, 0, len(users))
 		for _, v := range users {
 			list = append(list, assemble(v))
 		}

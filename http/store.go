@@ -59,7 +59,7 @@ func listProducts(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusOK).JSON(resp)
 		}
 
-		list := make(domain.ProductList, 0, len(products))
+		list := make([]domain.ProductCardDTO, 0, len(products))
 
 		assemble := func(p *domain.Product) domain.ProductCardDTO {
 			return domain.ProductCardDTO{
@@ -130,7 +130,7 @@ func listCustomers(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusOK).JSON(resp)
 		}
 
-		list := make(domain.CustomerList, 0, len(customers))
+		list := make([]domain.CustomerProfileDTO, 0, len(customers))
 
 		assemble := func(cx domain.Customer) domain.CustomerProfileDTO {
 			return domain.CustomerProfileDTO{

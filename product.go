@@ -57,6 +57,3 @@ type ProductCardDTO struct {
 	Observations string  `json:"observations"`
 	Price        float64 `json:"price"`
 }
-
-// ProductList collection of Product presentation.
-type ProductList []ProductCardDTO
