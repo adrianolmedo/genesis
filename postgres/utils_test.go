@@ -18,6 +18,15 @@ func TestLimitOffset(t *testing.T) {
 			want:  "",
 		},
 		{
+			name: "page-1",
+			input: domain.Filter{
+				Page:     0,
+				Limit:    5,
+				MaxLimit: 0,
+			},
+			want: "LIMIT 5 OFFSET 0",
+		},
+		{
 			name: "page-2",
 			input: domain.Filter{
 				Page:     2,
