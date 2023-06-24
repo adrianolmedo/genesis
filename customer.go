@@ -29,6 +29,11 @@ func (c Customer) Validate() error {
 // Customers collection of Customer.
 type Customers []Customer
 
+// IsEmpty return true if is empty.
+func (cs Customers) IsEmpty() bool {
+	return len(cs) == 0
+}
+
 // CreateCustomerForm subset of fields to request to create a Customer.
 type CreateCustomerForm struct {
 	FirstName string `json:"first_name"`

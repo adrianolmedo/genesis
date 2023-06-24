@@ -49,7 +49,7 @@ func (r Customer) All(filter domain.Filter) (domain.Customers, error) {
 	}
 	defer rows.Close()
 
-	customers := make([]domain.Customer, 0)
+	customers := make(domain.Customers, 0)
 
 	for rows.Next() {
 		c, err := scanRowCustomer(rows)
