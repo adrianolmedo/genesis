@@ -14,33 +14,31 @@ func orderBy(f domain.Filter) string {
 		f.Sort = "created_at"
 	}
 
-	// TODO: Direction enum.
-	//if f.Direction == "" {
-	//	f.Direction = "ASC"
-	//}
-
 	return fmt.Sprintf("ORDER BY %s %s", f.Sort, f.Direction)
 }
 
-// limitOffset the max limit by default is 10.
-func limitOffset(p domain.Filter) string {
-	if p.Limit == 0 && p.Page == 0 {
+// limitOffset returns a SQL string for a given limit & offset. The max limit
+// by defalut is 10.
+func limitOffset(f domain.Filter) string {
+	if f.Limit == 0 && f.Page == 0 {
 		return ""
 	}
 
-	maxLimit := 10
-
-	if p.Limit == 0 || p.Limit > maxLimit {
-		p.Limit = maxLimit
+	if f.MaxLimit == 0 {
+		f.MaxLimit = 10
 	}
 
-	if p.Page == 0 {
-		p.Page = 1
+	if f.Limit == 0 || f.Limit > f.MaxLimit {
+		f.Limit = f.MaxLimit
 	}
 
-	offset := p.Page*p.Limit - p.Limit
+	if f.Page == 0 {
+		f.Page = 1
+	}
 
-	return fmt.Sprintf("LIMIT %d OFFSET %d", p.Limit, offset)
+	offset := f.Page*f.Limit - f.Limit
+
+	return fmt.Sprintf("LIMIT %d OFFSET %d", f.Limit, offset)
 }
 
 // timeToNull helper to try empty time fields.
