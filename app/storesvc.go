@@ -46,16 +46,16 @@ func (s storeService) Update(p domain.Product) error {
 	return s.repoProduct.Update(p)
 }
 
-func (s storeService) List() ([]*domain.Product, error) {
+func (s storeService) List() (domain.Products, error) {
 	return s.repoProduct.All()
 }
 
-func (s storeService) AddCustomer(c *domain.Customer) error {
-	return s.repoCustomer.Create(c)
+func (s storeService) AddCustomer(cx *domain.Customer) error {
+	return s.repoCustomer.Create(cx)
 }
 
-func (s storeService) ListCustomers(filter domain.Filter) (domain.Customers, error) {
-	return s.repoCustomer.All(filter)
+func (s storeService) ListCustomers(f domain.Filter) (domain.Customers, error) {
+	return s.repoCustomer.All(f)
 }
 
 func (s storeService) Remove(id int64) error {

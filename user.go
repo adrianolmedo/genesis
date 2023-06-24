@@ -32,9 +32,17 @@ func (u User) Validate() error {
 	return nil
 }
 
+// Users a collection of User.
+type Users []*User
+
+// IsEmpty return true if is empty.
+func (us Users) IsEmpty() bool {
+	return len(us) == 0
+}
+
 // NextUUID generates a new UUID.
 func NextUUID() string {
-	return string(uuid.New())
+	return uuid.New()
 }
 
 // UserSignUpForm subset of User fields to create account.

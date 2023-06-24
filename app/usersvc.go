@@ -73,7 +73,7 @@ func (s userService) Update(u domain.User) error {
 }
 
 // List get list of users.
-func (s userService) List() ([]*domain.User, error) {
+func (s userService) List() (domain.Users, error) {
 	return s.repo.All()
 }
 

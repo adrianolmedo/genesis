@@ -42,6 +42,11 @@ type InvoiceItem struct {
 // ItemList collection of invoice items.
 type ItemList []*InvoiceItem
 
+// IsEmpty return true if is empty.
+func (il ItemList) IsEmpty() bool {
+	return len(il) == 0
+}
+
 // InvoiceItemForm represents a form to generate invoice item as product.
 type InvoiceItemForm struct {
 	ProductID int64 `json:"product_id"`

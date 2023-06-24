@@ -30,6 +30,11 @@ func (p Product) Validate() error {
 // Products collection of Product.
 type Products []*Product
 
+// IsEmpty return true if is empty.
+func (ps Products) IsEmpty() bool {
+	return len(ps) == 0
+}
+
 // AddProductForm represents a subset of fields to create a Product.
 type AddProductForm struct {
 	Name         string  `json:"name"`

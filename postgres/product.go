@@ -80,7 +80,7 @@ func (p Product) Update(product domain.Product) error {
 }
 
 // All get a collection of all prodycts.
-func (p Product) All() ([]*domain.Product, error) {
+func (p Product) All() (domain.Products, error) {
 	stmt, err := p.db.Prepare("SELECT * FROM products")
 	if err != nil {
 		return nil, err
@@ -93,7 +93,7 @@ func (p Product) All() ([]*domain.Product, error) {
 	}
 	defer rows.Close()
 
-	products := make([]*domain.Product, 0)
+	products := make(domain.Products, 0)
 
 	for rows.Next() {
 		p, err := scanRowProduct(rows)

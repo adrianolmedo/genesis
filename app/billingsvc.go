@@ -9,17 +9,17 @@ type billingService struct {
 	repo postgres.Invoice
 }
 
-func (s billingService) Generate(invoice *domain.Invoice) error {
-	err := generateInvoice(invoice)
+func (s billingService) Generate(inv *domain.Invoice) error {
+	err := generateInvoice(inv)
 	if err != nil {
 		return err
 	}
 
-	return s.repo.Create(invoice)
+	return s.repo.Create(inv)
 }
 
-func generateInvoice(invoice *domain.Invoice) error {
-	if invoice.Items == nil || len(invoice.Items) == 0 {
+func generateInvoice(inv *domain.Invoice) error {
+	if inv.Items == nil || inv.Items.IsEmpty() {
 		return domain.ErrItemListCantBeEmpty
 	}
 

@@ -164,7 +164,7 @@ func listUsers(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(resp)
 		}
 
-		if len(users) == 0 {
+		if users.IsEmpty() {
 			resp := respJSON(msgOK, "there are not users", nil)
 			return c.Status(http.StatusOK).JSON(resp)
 		}

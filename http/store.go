@@ -54,7 +54,7 @@ func listProducts(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(resp)
 		}
 
-		if len(products) == 0 {
+		if products.IsEmpty() {
 			resp := respJSON(msgOK, "there are not products", nil)
 			return c.Status(http.StatusOK).JSON(resp)
 		}
@@ -125,18 +125,18 @@ func listCustomers(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(resp)
 		}
 
-		if len(customers) == 0 {
+		if customers.IsEmpty() {
 			resp := respJSON(msgOK, "there are not customers", nil)
 			return c.Status(http.StatusOK).JSON(resp)
 		}
 
 		list := make(domain.CustomerList, 0, len(customers))
 
-		assemble := func(c domain.Customer) domain.CustomerProfileDTO {
+		assemble := func(cx domain.Customer) domain.CustomerProfileDTO {
 			return domain.CustomerProfileDTO{
-				FirstName: c.FirstName,
-				LastName:  c.LastName,
-				Email:     c.Email,
+				FirstName: cx.FirstName,
+				LastName:  cx.LastName,
+				Email:     cx.Email,
 			}
 		}
 
