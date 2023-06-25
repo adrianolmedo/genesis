@@ -5,7 +5,7 @@ const (
 	msgError = "error"
 )
 
-// response struct for JSON response.
+// response struct for JSON standar response.
 type response struct {
 	*messageOK    `json:"message_ok,omitempty"`
 	*messageError `json:"message_error,omitempty"`
@@ -21,7 +21,7 @@ type messageError struct {
 }
 
 // respJSON return standar response JSON.
-// Usage example: response := respJSON(msgOK, "resource has been updated", data).
+// Usage example: resp := respJSON(msgOK, "resource has been updated", data).
 func respJSON(message, content string, data interface{}) response {
 	var resp response
 
