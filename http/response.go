@@ -10,14 +10,21 @@ type response struct {
 	*messageOK    `json:"message_ok,omitempty"`
 	*messageError `json:"message_error,omitempty"`
 	Data          interface{} `json:"data,omitempty"`
+	Links         interface{} `json:"links,omitempty"`
 }
 
 type messageOK struct {
-	Content string `json:"content"`
+	Content string `json:"content,omitempty"`
 }
 
 type messageError struct {
 	Content string `json:"content"`
+}
+
+// links to set it.
+func (r response) links(i interface{}) response {
+	r.Links = i
+	return r
 }
 
 // respJSON return standar response JSON.

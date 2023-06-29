@@ -113,15 +113,56 @@ func createCustomer(s *app.Services) fiber.Handler {
 // listCustomers handler GET: /customers
 func listCustomers(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		filter, err := getFilter(c)
+		f, err := getFilter(c)
 		if err != nil {
 			resp := respJSON(msgError, err.Error(), nil)
 			return c.Status(http.StatusBadRequest).JSON(resp) // 400
 		}
 
-		customers, err := s.Store.ListCustomers(filter)
+		fr, err := s.Store.ListCustomers(f)
 		if err != nil {
 			resp := respJSON(msgError, err.Error(), nil)
+			return c.Status(http.StatusInternalServerError).JSON(resp)
+		}
+
+		var firstPage, lastPage, previousPage, nextPage string
+
+		// Set first page and last page for the pagination reponse.
+		firstPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", c.Path(), f.Limit, 0, f.Sort)
+		lastPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", c.Path(), f.Limit, fr.TotalPages, f.Sort)
+
+		// Set previous page pagination response.
+		if f.Page > 0 {
+			previousPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", c.Path(), f.Limit, f.Page-1, f.Sort)
+		}
+
+		// Set next pagination response.
+		if f.Page < fr.TotalPages {
+			nextPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", c.Path(), f.Limit, f.Page+1, f.Sort)
+		}
+
+		// Reset previous page.
+		if f.Page > fr.TotalPages {
+			previousPage = ""
+		}
+
+		links := domain.PaginationLinks{
+			Page:         f.Page,
+			Limit:        f.Limit,
+			Sort:         f.Sort,
+			TotalRows:    fr.TotalRows,
+			TotalPages:   fr.TotalPages,
+			FirstPage:    firstPage,
+			PreviousPage: previousPage,
+			NextPage:     nextPage,
+			LastPage:     lastPage,
+			FromRow:      fr.FromRow,
+			ToRow:        fr.ToRow,
+		}
+
+		customers, ok := fr.Rows.(domain.Customers)
+		if !ok {
+			resp := respJSON(msgError, "error data assertion", nil)
 			return c.Status(http.StatusInternalServerError).JSON(resp)
 		}
 
@@ -130,7 +171,7 @@ func listCustomers(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusOK).JSON(resp)
 		}
 
-		list := make([]domain.CustomerProfileDTO, 0, len(customers))
+		data := make([]domain.CustomerProfileDTO, 0, len(customers))
 
 		assemble := func(cx *domain.Customer) domain.CustomerProfileDTO {
 			return domain.CustomerProfileDTO{
@@ -141,10 +182,10 @@ func listCustomers(s *app.Services) fiber.Handler {
 		}
 
 		for _, v := range customers {
-			list = append(list, assemble(v))
+			data = append(data, assemble(v))
 		}
 
-		resp := respJSON(msgOK, "", list)
+		resp := respJSON(msgOK, "", data).links(links)
 		return c.Status(http.StatusOK).JSON(resp)
 	}
 }

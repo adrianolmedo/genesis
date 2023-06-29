@@ -17,8 +17,17 @@ func orderBy(f domain.Filter) string {
 	return fmt.Sprintf("ORDER BY %s %s", f.Sort, f.Direction)
 }
 
-// limitOffset returns a SQL string for a given limit & offset. The max limit
-// by defalut is 10.
+// groupBy if f.Sort is empty, the default field is "created_at".
+func groupBy(f domain.Filter) string {
+	if f.Sort == "" {
+		f.Sort = "created_at"
+	}
+
+	return fmt.Sprintf("GROUP BY %s", f.Sort)
+}
+
+// limitOffset returns a SQL string for a given limit & offset. If the MaxLimit
+// is 0 by defalut it will set to 10.
 func limitOffset(f domain.Filter) string {
 	if f.Limit == 0 && f.Page == 0 {
 		return ""
