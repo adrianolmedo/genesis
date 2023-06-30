@@ -49,7 +49,7 @@ func signUp(u *domain.User) error {
 }
 
 // Find a User by its ID.
-func (s userService) Find(id int64) (*domain.User, error) {
+func (s userService) Find(id int) (*domain.User, error) {
 	if id == 0 {
 		return &domain.User{}, domain.ErrUserNotFound
 	}

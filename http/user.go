@@ -87,7 +87,7 @@ func findUser(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		user, err := s.User.Find(int64(id))
+		user, err := s.User.Find(id)
 		if errors.Is(err, domain.ErrUserNotFound) {
 			resp := respJSON(msgError, err.Error(), nil)
 			return c.Status(http.StatusNotFound).JSON(resp)
@@ -124,7 +124,7 @@ func updateUser(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		form.ID = int64(id)
+		form.ID = id
 
 		err = s.User.Update(domain.User{
 			ID:        form.ID,

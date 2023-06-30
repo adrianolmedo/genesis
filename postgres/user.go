@@ -59,7 +59,7 @@ func (r User) ByLogin(email, password string) error {
 }
 
 // ByID get a User from its id.
-func (r User) ByID(id int64) (*domain.User, error) {
+func (r User) ByID(id int) (*domain.User, error) {
 	stmt, err := r.db.Prepare("SELECT * FROM users WHERE id = $1")
 	if err != nil {
 		return nil, err
