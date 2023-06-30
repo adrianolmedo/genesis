@@ -5,9 +5,11 @@ import (
 	"time"
 )
 
+var ErrCustomerNotFound = errors.New("customer not found")
+
 // Customer model.
 type Customer struct {
-	ID        int64
+	ID        int
 	UUID      string
 	FirstName string
 	LastName  string
@@ -43,6 +45,7 @@ type CreateCustomerForm struct {
 
 // CustomerProfileDTO subset of Customer fields.
 type CustomerProfileDTO struct {
+	ID        int    `json:"id,omitempty"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Email     string `json:"email"`

@@ -30,7 +30,7 @@ func addProduct(p *domain.Product) error {
 	return nil
 }
 
-func (s storeService) Find(id int64) (*domain.Product, error) {
+func (s storeService) Find(id int) (*domain.Product, error) {
 	if id == 0 {
 		return &domain.Product{}, domain.ErrProductNotFound
 	}
@@ -58,7 +58,15 @@ func (s storeService) ListCustomers(f domain.Filter) (domain.FilterResults, erro
 	return s.repoCustomer.All(f)
 }
 
-func (s storeService) Remove(id int64) error {
+func (s storeService) RemoveCustomer(id int) error {
+	if id == 0 {
+		return domain.ErrCustomerNotFound
+	}
+
+	return s.repoCustomer.Delete(id)
+}
+
+func (s storeService) Remove(id int) error {
 	if id == 0 {
 		return domain.ErrProductNotFound
 	}

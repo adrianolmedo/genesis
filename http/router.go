@@ -27,6 +27,7 @@ func Router(strg *postgres.Storage) *fiber.App {
 
 	f.Post("/v1/customers", createCustomer(s))
 	f.Get("/v1/customers", listCustomers(s))
+	f.Delete("v1/customers/:id", deleteCustomer(s))
 
 	f.Get("/v1/products", listProducts(s))
 	f.Get("/v1/products/:id", findProduct(s))

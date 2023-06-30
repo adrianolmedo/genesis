@@ -110,6 +110,33 @@ func createCustomer(s *app.Services) fiber.Handler {
 	}
 }
 
+// deleteCustomer handler DELETE: /customers/:id
+func deleteCustomer(s *app.Services) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		id, err := strconv.Atoi(c.Params("id"))
+		if id < 0 || err != nil {
+			resp := respJSON(msgError, "positive number expected for customer ID", nil)
+			return c.Status(http.StatusBadRequest).JSON(resp)
+		}
+
+		err = s.Store.RemoveCustomer(id)
+		if errors.Is(err, domain.ErrProductNotFound) {
+			resp := respJSON(msgError, err.Error(), nil)
+			return c.Status(http.StatusNoContent).JSON(resp)
+		}
+
+		if err != nil {
+			resp := respJSON(msgError, fmt.Sprintf("could not delete customer: %s", err), nil)
+			return c.Status(http.StatusInternalServerError).JSON(resp)
+		}
+
+		// TO-DO: Add logger mesaage: "Customer with ID %d removed from DB"
+
+		resp := respJSON(msgOK, "customer deleted", nil)
+		return c.Status(http.StatusOK).JSON(resp) // maybe 204
+	}
+}
+
 // listCustomers handler GET: /customers
 func listCustomers(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -175,6 +202,7 @@ func listCustomers(s *app.Services) fiber.Handler {
 
 		assemble := func(cx *domain.Customer) domain.CustomerProfileDTO {
 			return domain.CustomerProfileDTO{
+				ID:        cx.ID,
 				FirstName: cx.FirstName,
 				LastName:  cx.LastName,
 				Email:     cx.Email,
@@ -199,7 +227,7 @@ func findProduct(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(resp) // 400
 		}
 
-		product, err := s.Store.Find(int64(id))
+		product, err := s.Store.Find(id)
 		if errors.Is(err, domain.ErrProductNotFound) {
 			resp := respJSON(msgError, err.Error(), nil)
 			return c.Status(http.StatusNotFound).JSON(resp) // 404
@@ -239,7 +267,7 @@ func updateProduct(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		form.ID = int64(id)
+		form.ID = id
 
 		err = s.Store.Update(domain.Product{
 			ID:           form.ID,
@@ -273,7 +301,7 @@ func deleteProduct(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		err = s.Store.Remove(int64(id))
+		err = s.Store.Remove(id)
 		if errors.Is(err, domain.ErrProductNotFound) {
 			resp := respJSON(msgError, err.Error(), nil)
 			return c.Status(http.StatusNoContent).JSON(resp)

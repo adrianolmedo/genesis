@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"database/sql"
-	"fmt"
 	"math"
 	"time"
 
@@ -33,6 +32,7 @@ func (r Customer) Create(u *domain.Customer) error {
 	return nil
 }
 
+// countAll return total of Customers in storage.
 func (r Customer) countAll(f domain.Filter) (int, error) {
 	stmt, err := r.db.Prepare("SELECT COUNT (*) FROM customers")
 	if err != nil {
@@ -50,14 +50,15 @@ func (r Customer) countAll(f domain.Filter) (int, error) {
 }
 
 // All build with limit, offset and order the filter results and then return it
-// for the pagination or a SQL error.
+// for the pagination or return a SQL error.
 func (r Customer) All(f domain.Filter) (domain.FilterResults, error) {
-	// Get data with limit, offset & order.
+	// Get data with limit, offset and order.
 	query := "SELECT * FROM customers"
 	query += " " + orderBy(f)
-	//query += " " + limitOffset(f)
-	offset := f.Page * f.Limit
-	query += " " + fmt.Sprintf("LIMIT %d OFFSET %d", f.Limit, offset)
+	query += " " + limitOffset(f)
+	// Con ésto sucede que si no hay limit ni page no hay customers y por defecto debería haber algo.
+	//offset := f.Page * f.Limit
+	//query += " " + fmt.Sprintf("LIMIT %d OFFSET %d", f.Limit, offset)
 
 	stmt, err := r.db.Prepare(query)
 	if err != nil {
@@ -89,7 +90,8 @@ func (r Customer) All(f domain.Filter) (domain.FilterResults, error) {
 		return domain.FilterResults{}, err
 	}
 
-	totalPages := int(math.Ceil(float64(totalRows)/float64(f.Limit))) - 1
+	//totalPages := int(math.Ceil(float64(totalRows)/float64(f.Limit))) - 1
+	totalPages := int(math.Ceil(float64(totalRows) / float64(f.Limit)))
 
 	var fromRow, toRow int
 
@@ -117,6 +119,30 @@ func (r Customer) All(f domain.Filter) (domain.FilterResults, error) {
 		ToRow:      toRow,
 		Rows:       customers,
 	}, nil
+}
+
+// Delete delete Customer from its ID.
+func (r Customer) Delete(id int) error {
+	stmt, err := r.db.Prepare("DELETE FROM customers WHERE id = $1")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(id)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return domain.ErrCustomerNotFound
+	}
+	return nil
 }
 
 // scanRowUser return nulled fields of the domain object User parsed.
