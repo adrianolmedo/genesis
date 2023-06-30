@@ -9,7 +9,7 @@ var ErrProductNotFound = errors.New("product not found")
 
 // Product model.
 type Product struct {
-	ID           int64
+	ID           int
 	Name         string
 	Observations string
 	Price        float64
@@ -44,7 +44,7 @@ type AddProductForm struct {
 
 // UpdateProductForm represents a subset of fields to update a Product.
 type UpdateProductForm struct {
-	ID           int64   `json:"id"`
+	ID           int     `json:"id"`
 	Name         string  `json:"name"`
 	Observations string  `json:"observations"`
 	Price        float64 `json:"price"`
@@ -52,7 +52,7 @@ type UpdateProductForm struct {
 
 // ProductCardDTO subset of Product fields.
 type ProductCardDTO struct {
-	ID           int64   `json:"id,omitempty"`
+	ID           int     `json:"id"`
 	Name         string  `json:"name"`
 	Observations string  `json:"observations"`
 	Price        float64 `json:"price"`

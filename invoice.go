@@ -22,8 +22,8 @@ type Invoice struct {
 
 // InvoiceHeader model.
 type InvoiceHeader struct {
-	ID       int64
-	ClientID int64
+	ID       int
+	ClientID int
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -31,9 +31,9 @@ type InvoiceHeader struct {
 
 // InvoiceItem model.
 type InvoiceItem struct {
-	ID              int64
-	InvoiceHeaderID int64
-	ProductID       int64
+	ID              int
+	InvoiceHeaderID int
+	ProductID       int
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -49,7 +49,7 @@ func (il ItemList) IsEmpty() bool {
 
 // InvoiceItemForm represents a form to generate invoice item as product.
 type InvoiceItemForm struct {
-	ProductID int64 `json:"product_id"`
+	ProductID int `json:"product_id"`
 }
 
 // GenerateInvoiceForm models of fields to request to generate an invoice.
@@ -59,7 +59,7 @@ type GenerateInvoiceForm struct {
 }
 
 type invoiceHeaderForm struct {
-	ClientID int64 `json:"client_id"`
+	ClientID int `json:"client_id"`
 }
 
 // InvoiceReportDTO represent a view of a invoice.

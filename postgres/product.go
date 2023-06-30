@@ -33,7 +33,7 @@ func (p Product) Create(product *domain.Product) error {
 }
 
 // ByID get one product by its id.
-func (p Product) ByID(id int64) (*domain.Product, error) {
+func (p Product) ByID(id int) (*domain.Product, error) {
 	stmt, err := p.db.Prepare("SELECT * FROM products WHERE id = $1")
 	if err != nil {
 		return nil, err
@@ -110,7 +110,7 @@ func (p Product) All() (domain.Products, error) {
 }
 
 // Delete product by its id.
-func (p Product) Delete(id int64) error {
+func (p Product) Delete(id int) error {
 	stmt, err := p.db.Prepare("DELETE FROM products WHERE id = $1")
 	if err != nil {
 		return err
