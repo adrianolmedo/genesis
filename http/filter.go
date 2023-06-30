@@ -15,7 +15,7 @@ func getFilter(c *fiber.Ctx) (domain.Filter, error) {
 		return domain.Filter{}, fmt.Errorf("positive number expected for limit")
 	}
 
-	page := c.QueryInt("page")
+	page := c.QueryInt("page", 1)
 	if page < 0 {
 		return domain.Filter{}, fmt.Errorf("positive number expected for page")
 	}

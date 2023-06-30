@@ -47,6 +47,8 @@ func limitOffset(f domain.Filter) string {
 
 	offset := f.Page*f.Limit - f.Limit
 
+	//offset := f.Page * f.Limit
+
 	return fmt.Sprintf("LIMIT %d OFFSET %d", f.Limit, offset)
 }
 
