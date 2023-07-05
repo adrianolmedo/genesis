@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"database/sql"
-	"math"
 	"time"
 
 	domain "github.com/adrianolmedo/genesis"
@@ -33,7 +32,7 @@ func (r Customer) Create(u *domain.Customer) error {
 }
 
 // countAll return total of Customers in storage.
-func (r Customer) countAll(f domain.Filter) (int, error) {
+func (r Customer) countAll(f *domain.Filter) (int, error) {
 	stmt, err := r.db.Prepare("SELECT COUNT (*) FROM customers")
 	if err != nil {
 		return 0, err
@@ -49,26 +48,26 @@ func (r Customer) countAll(f domain.Filter) (int, error) {
 	return n, nil
 }
 
-// All build with limit, offset and order the filter results and then return it
-// for the pagination or return a SQL error.
-func (r Customer) All(f domain.Filter) (domain.FilterResults, error) {
-	// Get data with limit, offset and order.
+// All return filtered results with limit, offset and order for the pagination
+// or return a SQL error.
+func (r Customer) All(f *domain.Filter) (domain.FilteredResults, error) {
 	query := "SELECT * FROM customers"
 	query += " " + orderBy(f)
 	query += " " + limitOffset(f)
+
 	// Con ésto sucede que si no hay limit ni page no hay customers y por defecto debería haber algo.
 	//offset := f.Page * f.Limit
 	//query += " " + fmt.Sprintf("LIMIT %d OFFSET %d", f.Limit, offset)
 
 	stmt, err := r.db.Prepare(query)
 	if err != nil {
-		return domain.FilterResults{}, err
+		return domain.FilteredResults{}, err
 	}
 	defer stmt.Close()
 
 	rows, err := stmt.Query()
 	if err != nil {
-		return domain.FilterResults{}, err
+		return domain.FilteredResults{}, err
 	}
 	defer rows.Close()
 
@@ -76,49 +75,21 @@ func (r Customer) All(f domain.Filter) (domain.FilterResults, error) {
 	for rows.Next() {
 		c, err := scanRowCustomer(rows)
 		if err != nil {
-			return domain.FilterResults{}, err
+			return domain.FilteredResults{}, err
 		}
 		customers = append(customers, c)
 	}
 	if err := rows.Err(); err != nil {
-		return domain.FilterResults{}, err
+		return domain.FilteredResults{}, err
 	}
 
 	// Get total rows to calculate total pages.
 	totalRows, err := r.countAll(f)
 	if err != nil {
-		return domain.FilterResults{}, err
+		return domain.FilteredResults{}, err
 	}
 
-	//totalPages := int(math.Ceil(float64(totalRows)/float64(f.Limit))) - 1
-	totalPages := int(math.Ceil(float64(totalRows) / float64(f.Limit)))
-
-	var fromRow, toRow int
-
-	// Set fromRow and toRow on first page.
-	if f.Page == 0 {
-		fromRow = 1
-		toRow = f.Limit
-	} else {
-		if f.Page <= totalPages {
-			// Calculate fromRow and toRow.
-			fromRow = f.Page*f.Limit + 1
-			toRow = (f.Page + 1) * f.Limit
-		}
-	}
-
-	// Or set toRow with totalRows.
-	if toRow > totalRows {
-		toRow = totalRows
-	}
-
-	return domain.FilterResults{
-		TotalRows:  totalRows,
-		TotalPages: totalPages,
-		FromRow:    fromRow,
-		ToRow:      toRow,
-		Rows:       customers,
-	}, nil
+	return f.Paginate(customers, totalRows), nil
 }
 
 // Delete delete Customer from its ID.

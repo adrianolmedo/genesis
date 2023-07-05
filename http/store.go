@@ -152,44 +152,9 @@ func listCustomers(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusInternalServerError).JSON(resp)
 		}
 
-		var firstPage, lastPage, previousPage, nextPage string
-
-		// Set first page and last page for the pagination reponse.
-		firstPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", c.Path(), f.Limit, 0, f.Sort)
-		lastPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", c.Path(), f.Limit, fr.TotalPages, f.Sort)
-
-		// Set previous page pagination response.
-		if f.Page > 0 {
-			previousPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", c.Path(), f.Limit, f.Page-1, f.Sort)
-		}
-
-		// Set next pagination response.
-		if f.Page < fr.TotalPages {
-			nextPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", c.Path(), f.Limit, f.Page+1, f.Sort)
-		}
-
-		// Reset previous page.
-		if f.Page > fr.TotalPages {
-			previousPage = ""
-		}
-
-		links := domain.PaginationLinks{
-			Page:         f.Page,
-			Limit:        f.Limit,
-			Sort:         f.Sort,
-			TotalRows:    fr.TotalRows,
-			TotalPages:   fr.TotalPages,
-			FirstPage:    firstPage,
-			PreviousPage: previousPage,
-			NextPage:     nextPage,
-			LastPage:     lastPage,
-			FromRow:      fr.FromRow,
-			ToRow:        fr.ToRow,
-		}
-
 		customers, ok := fr.Rows.(domain.Customers)
 		if !ok {
-			resp := respJSON(msgError, "error data assertion", nil)
+			resp := respJSON(msgError, "error in data assertion", nil)
 			return c.Status(http.StatusInternalServerError).JSON(resp)
 		}
 
@@ -213,7 +178,8 @@ func listCustomers(s *app.Services) fiber.Handler {
 			data = append(data, assemble(v))
 		}
 
-		resp := respJSON(msgOK, "", data).links(links)
+		ls := f.GenLinksResp(c.Path(), fr.TotalPages)
+		resp := respJSON(msgOK, "", data).setLinks(ls).setMeta(fr)
 		return c.Status(http.StatusOK).JSON(resp)
 	}
 }

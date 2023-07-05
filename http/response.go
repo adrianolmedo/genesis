@@ -11,33 +11,46 @@ type response struct {
 	*messageError `json:"message_error,omitempty"`
 	Data          interface{} `json:"data,omitempty"`
 	Links         interface{} `json:"links,omitempty"`
+	Meta          interface{} `json:"meta,omitempty"`
 }
 
 type messageOK struct {
-	Content string `json:"content,omitempty"`
+	Content string `json:"content"`
 }
 
 type messageError struct {
 	Content string `json:"content"`
 }
 
-// links to set it.
-func (r response) links(i interface{}) response {
+// links set Links.
+func (r response) setLinks(i interface{}) response {
 	r.Links = i
+	return r
+}
+
+// meta set Meta.
+func (r response) setMeta(i interface{}) response {
+	r.Meta = i
 	return r
 }
 
 // respJSON return standar response JSON.
 // Usage example: resp := respJSON(msgOK, "resource has been updated", data).
-func respJSON(message, content string, data interface{}) response {
+func respJSON(msgType, content string, data interface{}) response {
 	var resp response
 
-	switch message {
+	switch msgType {
 	case msgOK:
+		mOK := &messageOK{
+			Content: content,
+		}
+
+		if content == "" {
+			mOK = nil
+		}
+
 		resp = response{
-			messageOK: &messageOK{
-				Content: content,
-			},
+			messageOK:    mOK,
 			messageError: nil,
 			Data:         data,
 		}

@@ -54,7 +54,7 @@ func (s storeService) AddCustomer(cx *domain.Customer) error {
 	return s.repoCustomer.Create(cx)
 }
 
-func (s storeService) ListCustomers(f domain.Filter) (domain.FilterResults, error) {
+func (s storeService) ListCustomers(f *domain.Filter) (domain.FilteredResults, error) {
 	return s.repoCustomer.All(f)
 }
 
