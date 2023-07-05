@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
 	domain "github.com/adrianolmedo/genesis"
@@ -48,16 +49,12 @@ func (r Customer) countAll(f *domain.Filter) (int, error) {
 	return n, nil
 }
 
-// All return filtered results with limit, offset and order for the pagination
+// All return filtered results by limit, offset and order for the pagination
 // or return a SQL error.
 func (r Customer) All(f *domain.Filter) (domain.FilteredResults, error) {
 	query := "SELECT * FROM customers"
-	query += " " + orderBy(f)
-	query += " " + limitOffset(f)
-
-	// Con ésto sucede que si no hay limit ni page no hay customers y por defecto debería haber algo.
-	//offset := f.Page * f.Limit
-	//query += " " + fmt.Sprintf("LIMIT %d OFFSET %d", f.Limit, offset)
+	query += " " + fmt.Sprintf("ORDER BY %s %s", f.Sort, f.Direction)
+	query += " " + limitOffset(f.Limit, f.Page)
 
 	stmt, err := r.db.Prepare(query)
 	if err != nil {

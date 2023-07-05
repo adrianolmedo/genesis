@@ -7,14 +7,14 @@ import (
 	"strings"
 )
 
-// Direction enum.
+// Direction enum for the Sort field of Filter.
 type Direction int
 
 const (
-	// ASC filter results ascending.
+	// ASC sort results ascending.
 	ASC Direction = iota
 
-	// DESC filter results descending.
+	// DESC sort results descending.
 	DESC
 )
 
@@ -99,40 +99,6 @@ func (f *Filter) SetDirection(direction string) {
 	f.Direction = d
 }
 
-/*// OrderBy if f.Sort is empty, the default field is "created_at".
-func (f Filter) OrderBy() string {
-	if f.Sort == "" {
-		f.Sort = "created_at"
-	}
-
-	return fmt.Sprintf("ORDER BY %s %s", f.Sort, f.Direction)
-}
-
-// LimitOffset returns a SQL string for a given limit & offset. If the MaxLimit
-// is 0 by default it will set to 10.
-func (f Filter) LimitOffset() string {
-	if f.Limit == 0 && f.Page == 0 {
-		return ""
-	}
-
-	if f.MaxLimit == 0 {
-		f.MaxLimit = 10
-	}
-
-	if f.Limit == 0 || f.Limit > f.MaxLimit {
-		f.Limit = f.MaxLimit
-	}
-
-	if f.Page == 0 {
-		f.Page = 1
-	}
-
-	offset := f.Page*f.Limit - f.Limit
-	//offset := f.Page * f.Limit
-
-	return fmt.Sprintf("LIMIT %d OFFSET %d", f.Limit, offset)
-}*/
-
 // Paginate return meta data with subset of filterd results.
 func (f *Filter) Paginate(rows interface{}, totalRows int) FilteredResults {
 	totalPages := int(math.Ceil(float64(totalRows) / float64(f.Limit)))
@@ -170,7 +136,7 @@ func (f *Filter) Paginate(rows interface{}, totalRows int) FilteredResults {
 	}
 }
 
-// FilteredResults model that provide the filtered results and its data for
+// FilteredResults that provide the filtered results and its data for
 // build the pagination.
 type FilteredResults struct {
 	Limit      int    `json:"limit"`
@@ -216,8 +182,8 @@ func (f *Filter) GenLinksResp(path string, totalPages int) LinksResp {
 	}
 }
 
-// LinksResp it's a DTO to complies with the HATEOAS principle to display
-// the information needed to create pagination.
+// LinksResp to complies with the HATEOAS principle to display the information
+// needed to create pagination.
 type LinksResp struct {
 	FirstPage    string `json:"first"`
 	PreviousPage string `json:"prev"`
