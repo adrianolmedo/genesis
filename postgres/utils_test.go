@@ -38,7 +38,8 @@ func TestLimitOffset(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		if got := limitOffset(tc.input); tc.want != got {
+		got := limitOffset(tc.input.Limit, tc.input.Page)
+		if tc.want != got {
 			t.Errorf("%s: want %q, got %q", tc.name, tc.want, got)
 		}
 	}

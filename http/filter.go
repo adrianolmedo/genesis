@@ -7,7 +7,7 @@ import (
 )
 
 func getFilter(c *fiber.Ctx) (*domain.Filter, error) {
-	f := domain.NewFilter(10)
+	f := domain.NewFilter()
 
 	err := f.SetLimit(c.QueryInt("limit"))
 	if err != nil {

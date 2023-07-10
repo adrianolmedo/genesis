@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// Direction enum for the Sort field of Filter.
+// Direction enum for the sort field of Filter.
 type Direction int
 
 const (
@@ -24,36 +24,26 @@ func (d Direction) String() string {
 
 // Filter query for filtering results.
 type Filter struct {
-	// Limit restrict to subset of results.
-	Limit int
+	// limit restrict to subset of results.
+	limit int
 
-	// MaxLimit of results per pagination.
-	MaxLimit int
+	// page indicates the page from the client.
+	page int
 
-	// Page indicates the page from the client.
-	Page int
+	// sort sort results by the value of a field, e.g.: ORDER BY created_at.
+	sort string
 
-	// Sort sort results by the value of a field, e.g.: ORDER BY created_at.
-	Sort string
-
-	// Direction to display the results in DESC or ASC order based on the
-	// Sort value.
-	Direction Direction
+	// direction to display the results in DESC or ASC order based on the
+	// sort value.
+	direction Direction
 }
 
-// NewFilter return Filter pointer with maxLimit by default value as param.
-// TODO: Functional options as param.
-func NewFilter(maxLimit int) *Filter {
-
-	if maxLimit == 0 {
-		maxLimit = 10
-	}
-
-	return &Filter{
-		MaxLimit: maxLimit,
-	}
+// NewFilter return Filter pointer.
+func NewFilter() *Filter {
+	return &Filter{}
 }
 
+// SetPage by default the firts page is 1 not 0.
 func (f *Filter) SetPage(p int) error {
 	if p < 0 {
 		return errors.New("positive number expected for page")
@@ -63,27 +53,46 @@ func (f *Filter) SetPage(p int) error {
 		p = 1
 	}
 
-	f.Page = p
+	f.page = p
 	return nil
 }
 
+// Page get page.
+func (f *Filter) Page() int {
+	return f.page
+}
+
+// SetLimit by default 10 it's the max limit.
 func (f *Filter) SetLimit(n int) error {
 	if n < 0 {
 		return errors.New("positive number expected for limit")
 	}
 
-	if n == 0 || n > f.MaxLimit {
-		n = f.MaxLimit
+	// 10 it's the max limit
+	if n == 0 || n > 10 {
+		n = 10
 	}
 
-	f.Limit = n
+	f.limit = n
 	return nil
 }
 
-func (f *Filter) SetSort(s string) {
-	f.Sort = s
+// Limit get limit.
+func (f *Filter) Limit() int {
+	return f.limit
 }
 
+// SetSort you must choose the default value.
+func (f *Filter) SetSort(s string) {
+	f.sort = s
+}
+
+// Sort get sort.
+func (f *Filter) Sort() string {
+	return f.sort
+}
+
+// SetDirection "asc" or "desc", by default will be asc.
 func (f *Filter) SetDirection(direction string) {
 	var d Direction
 	direction = strings.ToLower(direction)
@@ -96,13 +105,18 @@ func (f *Filter) SetDirection(direction string) {
 		d = DESC
 	}
 
-	f.Direction = d
+	f.direction = d
+}
+
+// Direction get direction.
+func (f *Filter) Direction() Direction {
+	return f.direction
 }
 
 // Paginate return meta data with subset of filterd results.
 func (f *Filter) Paginate(rows interface{}, totalRows int) FilteredResults {
-	totalPages := int(math.Ceil(float64(totalRows) / float64(f.Limit)))
-	//totalPages := int(math.Ceil(float64(totalRows)/float64(f.Limit))) - 1
+	totalPages := int(math.Ceil(float64(totalRows) / float64(f.limit)))
+	//totalPages := int(math.Ceil(float64(totalRows)/float64(f.limit))) - 1
 	if totalPages < 0 {
 		totalPages = 0
 	}
@@ -110,13 +124,13 @@ func (f *Filter) Paginate(rows interface{}, totalRows int) FilteredResults {
 	var fromRow, toRow int
 
 	// Set fromRow and toRow on first page.
-	if f.Page == 0 {
+	if f.page == 0 {
 		fromRow = 1
-		toRow = f.Limit
-	} else if f.Page <= totalPages {
+		toRow = f.limit
+	} else if f.Page() <= totalPages {
 		// Calculate fromRow and toRow.
-		fromRow = f.Page*f.Limit + 1
-		toRow = (f.Page + 1) * f.Limit
+		fromRow = f.page*f.limit + 1
+		toRow = (f.page + 1) * f.limit
 	}
 
 	// Or set toRow with totalRows.
@@ -125,9 +139,9 @@ func (f *Filter) Paginate(rows interface{}, totalRows int) FilteredResults {
 	}
 
 	return FilteredResults{
-		Page:       f.Page,
-		Limit:      f.Limit,
-		Sort:       f.Sort,
+		Page:       f.page,
+		Limit:      f.limit,
+		Sort:       f.sort,
 		TotalRows:  totalRows,
 		TotalPages: totalPages,
 		FromRow:    fromRow,
@@ -156,21 +170,21 @@ func (f *Filter) GenLinksResp(path string, totalPages int) LinksResp {
 	var firstPage, lastPage, previousPage, nextPage string
 
 	// Set first page and last page for the pagination reponse.
-	firstPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, f.Limit, 1, f.Sort)
-	lastPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, f.Limit, totalPages, f.Sort)
+	firstPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, f.limit, 1, f.sort)
+	lastPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, f.limit, totalPages, f.sort)
 
 	// Set previous page pagination response.
-	if f.Page > 1 {
-		previousPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, f.Limit, f.Page-1, f.Sort)
+	if f.page > 1 {
+		previousPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, f.limit, f.page-1, f.sort)
 	}
 
 	// Set next pagination response.
-	if f.Page < totalPages {
-		nextPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, f.Limit, f.Page+1, f.Sort)
+	if f.page < totalPages {
+		nextPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, f.limit, f.page+1, f.sort)
 	}
 
 	// Reset previous page.
-	if f.Page > totalPages {
+	if f.page > totalPages {
 		previousPage = ""
 	}
 

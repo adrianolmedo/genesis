@@ -53,8 +53,8 @@ func (r Customer) countAll(f *domain.Filter) (int, error) {
 // or return a SQL error.
 func (r Customer) All(f *domain.Filter) (domain.FilteredResults, error) {
 	query := "SELECT * FROM customers"
-	query += " " + fmt.Sprintf("ORDER BY %s %s", f.Sort, f.Direction)
-	query += " " + limitOffset(f.Limit, f.Page)
+	query += " " + fmt.Sprintf("ORDER BY %s %s", f.Sort(), f.Direction())
+	query += " " + limitOffset(f.Limit(), f.Page())
 
 	stmt, err := r.db.Prepare(query)
 	if err != nil {
