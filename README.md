@@ -14,7 +14,7 @@ $ docker-compose up -d --build postgres
 
 ```bash
 $ docker exec -it postgres /bin/sh
-$ psql -U johndoe -d go_practice_restapi
+$ psql -U johndoe -d genesis
 ```
 
 **Install tables:**

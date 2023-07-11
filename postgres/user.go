@@ -16,7 +16,7 @@ type User struct {
 
 // Create a User to the storage.
 func (r User) Create(u *domain.User) error {
-	stmt, err := r.db.Prepare("INSERT INTO users (uuid, first_name, last_name, email, password, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id")
+	stmt, err := r.db.Prepare("INSERT INTO user (uuid, first_name, last_name, email, password, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id")
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func (r User) Create(u *domain.User) error {
 
 // ByLogin get a User from its login data.
 func (r User) ByLogin(email, password string) error {
-	stmt, err := r.db.Prepare("SELECT id FROM users WHERE email = $1 AND password = $2")
+	stmt, err := r.db.Prepare("SELECT id FROM user WHERE email = $1 AND password = $2")
 	if err != nil {
 		return err
 	}
@@ -60,7 +60,7 @@ func (r User) ByLogin(email, password string) error {
 
 // ByID get a User from its id.
 func (r User) ByID(id int) (*domain.User, error) {
-	stmt, err := r.db.Prepare("SELECT * FROM users WHERE id = $1")
+	stmt, err := r.db.Prepare("SELECT * FROM user WHERE id = $1")
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (r User) ByID(id int) (*domain.User, error) {
 
 // Update update User.
 func (r User) Update(u domain.User) error {
-	stmt, err := r.db.Prepare("UPDATE users SET first_name = $1, last_name = $2, email = $3, password = $4, updated_at = $5 WHERE id = $6")
+	stmt, err := r.db.Prepare("UPDATE user SET first_name = $1, last_name = $2, email = $3, password = $4, updated_at = $5 WHERE id = $6")
 	if err != nil {
 		return err
 	}
@@ -107,7 +107,7 @@ func (r User) Update(u domain.User) error {
 
 // All get User collection.
 func (r User) All() ([]*domain.User, error) {
-	stmt, err := r.db.Prepare("SELECT * FROM users")
+	stmt, err := r.db.Prepare("SELECT * FROM user")
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +137,7 @@ func (r User) All() ([]*domain.User, error) {
 
 // Delete delete user from its is.
 func (r User) Delete(id int64) error {
-	stmt, err := r.db.Prepare("DELETE FROM users WHERE id = $1")
+	stmt, err := r.db.Prepare("DELETE FROM user WHERE id = $1")
 	if err != nil {
 		return err
 	}
@@ -161,7 +161,7 @@ func (r User) Delete(id int64) error {
 
 // DeleteAll delete all users.
 func (r User) DeleteAll() error {
-	stmt, err := r.db.Prepare("TRUNCATE TABLE users RESTART IDENTITY")
+	stmt, err := r.db.Prepare("TRUNCATE TABLE user RESTART IDENTITY")
 	if err != nil {
 		return err
 	}

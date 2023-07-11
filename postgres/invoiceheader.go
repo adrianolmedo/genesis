@@ -14,7 +14,7 @@ type InvoiceHeader struct {
 
 // Create insert the header invoice.
 func (InvoiceHeader) Create(tx *sql.Tx, m *domain.InvoiceHeader) error {
-	stmt, err := tx.Prepare("INSERT INTO invoice_headers(client_id) VALUES ($1) RETURNING id, created_at")
+	stmt, err := tx.Prepare("INSERT INTO invoice_header(client_id) VALUES ($1) RETURNING id, created_at")
 	if err != nil {
 		return err
 	}
@@ -25,7 +25,7 @@ func (InvoiceHeader) Create(tx *sql.Tx, m *domain.InvoiceHeader) error {
 
 // DeleteAll delete all invoice header.
 func (ih InvoiceHeader) DeleteAll() error {
-	stmt, err := ih.db.Prepare("TRUNCATE TABLE invoice_headers RESTART IDENTITY CASCADE")
+	stmt, err := ih.db.Prepare("TRUNCATE TABLE invoice_header RESTART IDENTITY CASCADE")
 	if err != nil {
 		return err
 	}

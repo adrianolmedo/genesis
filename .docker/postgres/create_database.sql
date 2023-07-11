@@ -1,0 +1,4 @@
+CREATE DATABASE genesis;
+CREATE DATABASE genesis_test;
+GRANT ALL PRIVILEGES ON DATABASE genesis TO johndoe;
+GRANT ALL PRIVILEGES ON DATABASE genesis_test TO johndoe;
