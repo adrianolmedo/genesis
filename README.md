@@ -10,19 +10,10 @@ $ cp .env.example .env
 $ docker-compose up -d --build postgres
 ```
 
-**Join to `psql` and ingress the password `1234567a`:**
+**Run migrations**
 
 ```bash
-$ docker exec -it postgres /bin/sh
-$ psql -U johndoe -d genesis
-```
-
-**Install tables:**
-
-```bash
-$ \i tables.sql
-$ \q
-$ exit
+./migrations.sh
 ```
 
 **Up application service:**
