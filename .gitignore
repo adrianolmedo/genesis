@@ -1,7 +1,7 @@
 .vscode
 rest
-app.sra
-app.sra.pub
+app.rsa
+app.rsa.pub
 connect-to-mysql.sh
 connect-to-postgres.sh
 internal/storage/mysql/run-tests.sh
