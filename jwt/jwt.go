@@ -3,7 +3,7 @@ package jwt
 import (
 	"crypto/rsa"
 	"errors"
-	"io/ioutil"
+	"os"
 	"sync"
 	"time"
 
@@ -75,12 +75,12 @@ func LoadFiles(privateFile, publicFile string) error {
 func loadFiles(privateFile, publicFile string) error {
 	// Con ioutil.ReadFile(s) solo lees el contenido
 	// y no tienes que procuparte por cerrar el recurso con defer.
-	privateBytes, err := ioutil.ReadFile(privateFile)
+	privateBytes, err := os.ReadFile(privateFile)
 	if err != nil {
 		return err
 	}
 
-	publicBytes, err := ioutil.ReadFile(publicFile)
+	publicBytes, err := os.ReadFile(publicFile)
 	if err != nil {
 		return err
 	}
