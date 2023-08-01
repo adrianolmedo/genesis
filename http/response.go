@@ -7,8 +7,8 @@ const (
 
 // response struct for JSON standar response.
 type response struct {
-	*messageOK    `json:"message_ok,omitempty"`
-	*messageError `json:"message_error,omitempty"`
+	*messageOK    `json:"messageOk,omitempty"`
+	*messageError `json:"messageError,omitempty"`
 	Data          interface{} `json:"data,omitempty"`
 	Links         interface{} `json:"links,omitempty"`
 	Meta          interface{} `json:"meta,omitempty"`
