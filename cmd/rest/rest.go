@@ -13,7 +13,6 @@ import (
 	"github.com/peterbourgon/ff/v3"
 )
 
-//go:generate swag init -g http/router.go
 func main() {
 	fs := flag.NewFlagSet("rest", flag.ExitOnError)
 	var (

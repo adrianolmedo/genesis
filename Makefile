@@ -1,6 +1,11 @@
 # Binary file name.
 BINARY = goclisrv
 
+# Generate docs package for Swagger files with swag.
+# More info visit: https://github.com/swaggo/swag#getting-started
+swagger:
+	swag init -g http/router.go
+
 # Run the Go build command to compile and generate the binary in the root.
 build:
 	go build -o $(BINARY) cmd/rest/*.go
