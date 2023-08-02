@@ -5,7 +5,7 @@ definitions:
       content:
         type: string
     type: object
-host: localhost
+host: localhost:3000
 info:
   contact:
     email: adrianolmedo.ve@gmail.com
