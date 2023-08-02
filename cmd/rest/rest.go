@@ -13,17 +13,17 @@ import (
 	"github.com/peterbourgon/ff/v3"
 )
 
+//go:generate swag init -g http/router.go
 func main() {
 	fs := flag.NewFlagSet("rest", flag.ExitOnError)
 	var (
-		port     = fs.String("port", "80", "Internal container port.")
-		cors     = fs.String("cors", "", "CORS directive, write address separated by comma.")
-		dbhost   = fs.String("dbhost", "", "Database host.")
-		dbengine = fs.String("dbengine", "", "Database engine, choose mysql or postgres.")
-		dbport   = fs.String("dbport", "", "Database port.")
-		dbuser   = fs.String("dbuser", "", "Database user.")
-		dbpass   = fs.String("dbpass", "", "Database password.")
-		dbname   = fs.String("dbname", "", "Database name.")
+		port   = fs.String("port", "80", "Internal container port.")
+		cors   = fs.String("cors", "", "CORS directive, write address separated by comma.")
+		dbhost = fs.String("dbhost", "", "Database host.")
+		dbport = fs.String("dbport", "", "Database port.")
+		dbuser = fs.String("dbuser", "", "Database user.")
+		dbpass = fs.String("dbpass", "", "Database password.")
+		dbname = fs.String("dbname", "", "Database name.")
 	)
 
 	// Pass env vars to flags.
@@ -33,7 +33,7 @@ func main() {
 		Port: *port,
 		CORS: *cors,
 		DB: config.DB{
-			Engine:   *dbengine,
+			Engine:   "postgres",
 			Host:     *dbhost,
 			Port:     *dbport,
 			User:     *dbuser,
