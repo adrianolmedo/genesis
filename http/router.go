@@ -7,10 +7,26 @@ import (
 	"github.com/adrianolmedo/genesis/http/jwt"
 	"github.com/adrianolmedo/genesis/postgres"
 
+	_ "github.com/adrianolmedo/genesis/docs"
+
 	"github.com/gofiber/fiber/v2"
+	fiberSwagger "github.com/swaggo/fiber-swagger"
 )
 
-// Router call all routes with its handlers.
+// @title Genesis REST API
+// @version 1.0
+// @description This is a sample server.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name Adrián Olmedo
+// @contact.url https://twitter.com/adrianolmedo
+// @contact.email adrianolmedo.ve@gmail.com
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host localhost:3000
+// @BasePath /
 func Router(strg *postgres.Storage) *fiber.App {
 	s := app.NewServices(strg)
 	f := fiber.New()
@@ -37,6 +53,9 @@ func Router(strg *postgres.Storage) *fiber.App {
 	f.Delete("/v1/products/:id", deleteProduct(s), authMiddleware)
 
 	f.Post("v1/invoices", generateInvoice(s), authMiddleware)
+
+	f.Get("/swagger/*", fiberSwagger.WrapHandler)
+
 	return f
 }
 

@@ -46,7 +46,12 @@ func loginUser(s *app.Services) fiber.Handler {
 	}
 }
 
-// signUpUser handler POST: /users
+// @Summary SignUp User
+// @Description Register a user by its data
+// @Accept  json
+// @Produce  json
+// @Success 201 {object} messageOK
+// @Router /users [post]
 func signUpUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		form := domain.UserSignUpForm{}

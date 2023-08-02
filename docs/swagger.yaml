@@ -1,0 +1,35 @@
+basePath: /
+definitions:
+  http.messageOK:
+    properties:
+      content:
+        type: string
+    type: object
+host: localhost
+info:
+  contact:
+    email: adrianolmedo.ve@gmail.com
+    name: Adrián Olmedo
+    url: https://twitter.com/adrianolmedo
+  description: This is a sample server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Genesis REST API
+  version: "1.0"
+paths:
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Register a user by its data
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/http.messageOK'
+      summary: SignUp User
+swagger: "2.0"
