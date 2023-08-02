@@ -4,13 +4,12 @@ import (
 	"net/http"
 
 	"github.com/adrianolmedo/genesis/app"
+	_ "github.com/adrianolmedo/genesis/docs"
 	"github.com/adrianolmedo/genesis/http/jwt"
 	"github.com/adrianolmedo/genesis/postgres"
 
-	_ "github.com/adrianolmedo/genesis/docs"
-
 	"github.com/gofiber/fiber/v2"
-	fiberSwagger "github.com/swaggo/fiber-swagger"
+	swagger "github.com/swaggo/fiber-swagger"
 )
 
 // @title Genesis REST API
@@ -54,7 +53,7 @@ func Router(strg *postgres.Storage) *fiber.App {
 
 	f.Post("v1/invoices", generateInvoice(s), authMiddleware)
 
-	f.Get("/swagger/*", fiberSwagger.WrapHandler)
+	f.Get("/swagger/*", swagger.WrapHandler)
 
 	return f
 }
