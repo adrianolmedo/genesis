@@ -27,9 +27,13 @@ func main() {
 	)
 
 	// Pass env vars to flags.
-	ff.Parse(fs, os.Args[1:], ff.WithEnvVarNoPrefix())
+	err := ff.Parse(fs, os.Args[1:], ff.WithEnvVarNoPrefix())
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		os.Exit(1)
+	}
 
-	err := run(&config.Config{
+	err = run(&config.Config{
 		Port: *port,
 		CORS: *cors,
 		DB: config.DB{
