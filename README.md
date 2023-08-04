@@ -29,8 +29,7 @@ My first prototype of RESTful API written in Go whit persistence to MySQL or Pos
 
 ```bash
 $ git clone https://github.com/adrianolmedo/genesis.git
-$ openssl genrsa -out app.rsa 1024
-$ openssl rsa -in app.rsa -pubout > app.rsa.pub
+$ make genrsa
 $ docker-compose up -d --build app mysql
 ```
 
@@ -67,7 +66,7 @@ $ docker-compose up -d --build postgres
 
 ```bash
 $ docker exec -it postgres /bin/sh
-$ psql -U johndoe -d go_practice_restapi
+$ psql -U johndoe -d genesis
 ```
 
 **1.2- Install tables:**
