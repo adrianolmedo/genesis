@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS go_practice_restapi;
+CREATE DATABASE IF NOT EXISTS genesis;
 
-USE go_practice_restapi;
+USE genesis;
 
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT,

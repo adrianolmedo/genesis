@@ -1,2 +1,2 @@
-CREATE DATABASE go_practice_restapi;
-GRANT ALL PRIVILEGES ON DATABASE go_practice_restapi TO johndoe;
+CREATE DATABASE genesis;
+GRANT ALL PRIVILEGES ON DATABASE genesis TO johndoe;
