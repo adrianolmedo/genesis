@@ -62,7 +62,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:3000",
-	BasePath:         "/",
+	BasePath:         "v1/",
 	Schemes:          []string{},
 	Title:            "Genesis REST API",
 	Description:      "This is a sample server.",

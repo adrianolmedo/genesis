@@ -25,7 +25,7 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 // @host localhost:3000
-// @BasePath /
+// @BasePath /v1/
 func Router(strg *postgres.Storage) *fiber.App {
 	s := app.NewServices(strg)
 	f := fiber.New()
