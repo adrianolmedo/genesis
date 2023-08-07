@@ -20,7 +20,7 @@ debug:
 	go build -gcflags "-N -l" -o $(BINARY) .
 
 # Run the Go build command to compile and generate the binary in the root.
-build:
+build: swagger
 	go build -o $(BINARY) cmd/rest/*.go
 
 # Run rm command to delete binary file.
