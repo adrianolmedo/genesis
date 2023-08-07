@@ -46,11 +46,15 @@ func loginUser(s *app.Services) fiber.Handler {
 	}
 }
 
+// signUpUser godoc
 // @Summary SignUp User
 // @Description Register a user by its data
-// @Accept  json
-// @Produce  json
+// @Accept json
+// @Produce json
+// @Failure 400  {object} messageError
+// @Failure 500  {object} messageError
 // @Success 201 {object} messageOK
+// @Param UserSignUpForm body genesis.UserSignUpForm true "application/json"
 // @Router /users [post]
 func signUpUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
