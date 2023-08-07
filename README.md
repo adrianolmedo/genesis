@@ -1,6 +1,6 @@
-## Content
+# Genesis
 
-* [Run with Postgres service](#run-with-postgres-service)
+REST API of CRM, its architecture is inspired (not based) on Hexagonal Architecture.
 
 ## Run with Postgres service:
 
@@ -20,5 +20,6 @@ $ docker-compose up -d --build postgres
 
 ```bash
 $ make genrsa
+$ make swagger
 $ docker-compose up -d --build app
 ```
