@@ -37,16 +37,18 @@ func (cs Customers) IsEmpty() bool {
 }
 
 // CreateCustomerForm subset of fields to request to create a Customer.
+// TODO: Pass DTO to http/ package.
 type CreateCustomerForm struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 }
 
 // CustomerProfileDTO subset of Customer fields.
+// TODO: Pass DTO to http/ package.
 type CustomerProfileDTO struct {
 	ID        int    `json:"id,omitempty"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 }

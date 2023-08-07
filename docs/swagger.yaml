@@ -1,5 +1,25 @@
-basePath: v1/
+basePath: /v1/
 definitions:
+  genesis.UserSignUpForm:
+    properties:
+      email:
+        example: johndoe@aol.com
+        type: string
+      firstName:
+        example: John
+        type: string
+      lastName:
+        example: Doe
+        type: string
+      password:
+        example: 1234567b
+        type: string
+    type: object
+  http.messageError:
+    properties:
+      content:
+        type: string
+    type: object
   http.messageOK:
     properties:
       content:
@@ -24,6 +44,13 @@ paths:
       consumes:
       - application/json
       description: Register a user by its data
+      parameters:
+      - description: application/json
+        in: body
+        name: UserSignUpForm
+        required: true
+        schema:
+          $ref: '#/definitions/genesis.UserSignUpForm'
       produces:
       - application/json
       responses:
@@ -31,5 +58,13 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/http.messageOK'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.messageError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.messageError'
       summary: SignUp User
 swagger: "2.0"

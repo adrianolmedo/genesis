@@ -35,11 +35,34 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "SignUp User",
+                "parameters": [
+                    {
+                        "description": "application/json",
+                        "name": "UserSignUpForm",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/genesis.UserSignUpForm"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/http.messageOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.messageError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.messageError"
                         }
                     }
                 }
@@ -47,6 +70,35 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "genesis.UserSignUpForm": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "johndoe@aol.com"
+                },
+                "firstName": {
+                    "type": "string",
+                    "example": "John"
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Doe"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "1234567b"
+                }
+            }
+        },
+        "http.messageError": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                }
+            }
+        },
         "http.messageOK": {
             "type": "object",
             "properties": {
@@ -62,7 +114,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:3000",
-	BasePath:         "v1/",
+	BasePath:         "/v1/",
 	Schemes:          []string{},
 	Title:            "Genesis REST API",
 	Description:      "This is a sample server.",

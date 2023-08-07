@@ -23,6 +23,7 @@ type Invoice struct {
 // InvoiceHeader model.
 type InvoiceHeader struct {
 	ID       int
+	UUID     string
 	ClientID int
 
 	CreatedAt time.Time
@@ -48,21 +49,24 @@ func (il ItemList) IsEmpty() bool {
 }
 
 // InvoiceItemForm represents a form to generate invoice item as product.
+// TODO: Pass DTO to http/ package.
 type InvoiceItemForm struct {
-	ProductID int `json:"product_id"`
+	ProductID int `json:"productId"`
 }
 
 // GenerateInvoiceForm models of fields to request to generate an invoice.
+// TODO: Pass DTO to http/ package.
 type GenerateInvoiceForm struct {
 	Header invoiceHeaderForm `json:"header"`
 	Items  []InvoiceItemForm `json:"items"`
 }
 
 type invoiceHeaderForm struct {
-	ClientID int `json:"client_id"`
+	ClientID int `json:"clientId"`
 }
 
 // InvoiceReportDTO represent a view of a invoice.
+// TODO: Pass DTO to http/ package.
 type InvoiceReportDTO struct {
 	Header invoiceHeaderForm  `json:"header"`
 	Items  []*InvoiceItemForm `json:"items"`

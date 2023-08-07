@@ -46,32 +46,36 @@ func NextUUID() string {
 }
 
 // UserSignUpForm subset of User fields to create account.
+// TODO: Pass DTO to http/ package.
 type UserSignUpForm struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
+	FirstName string `json:"firstName" example:"John"`
+	LastName  string `json:"lastName" example:"Doe"`
+	Email     string `json:"email" example:"johndoe@aol.com"`
+	Password  string `json:"password" example:"1234567b"`
 }
 
 // UserLoginForm subset of user fields to request login.
+// TODO: Pass DTO to http/ package.
 type UserLoginForm struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
 // UserUpdateForm subset of fields to request to update a User.
+// TODO: Pass DTO to http/ package.
 type UserUpdateForm struct {
 	ID        int    `json:"id"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
 }
 
-// UserProfileDTO subset of User fields .
+// UserProfileDTO subset of User fields.
+// TODO: Pass DTO to http/ package.
 type UserProfileDTO struct {
 	ID        int    `json:"id,omitempty"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 }

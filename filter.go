@@ -157,9 +157,9 @@ type FilteredResults struct {
 	Page       int    `json:"page"`
 	Sort       string `json:"sort"`
 	TotalRows  int    `json:"total"`
-	TotalPages int    `json:"total_pages"`
-	FromRow    int    `json:"from_row"`
-	ToRow      int    `json:"to_row"`
+	TotalPages int    `json:"totalPages"`
+	FromRow    int    `json:"fromRow"`
+	ToRow      int    `json:"toRow"`
 
 	// Rows subset of results, not all of results.
 	Rows interface{} `json:"-"`
