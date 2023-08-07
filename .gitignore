@@ -2,3 +2,4 @@ goclisrv
 .env
 app.rsa
 app.rsa.pub
+test.sql
