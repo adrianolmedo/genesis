@@ -16,15 +16,16 @@ type Product struct {
 
 // Create create one product.
 func (p Product) Create(product *domain.Product) error {
-	stmt, err := p.db.Prepare("INSERT INTO product (name, observations, price, created_at) VALUES ($1, $2, $3, $4) RETURNING id")
+	stmt, err := p.db.Prepare(`INSERT INTO "product" (uuid, name, observations, price, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING id`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
+	product.UUID = domain.NextUUID()
 	product.CreatedAt = time.Now()
 
-	err = stmt.QueryRow(product.Name, product.Observations, product.Price, product.CreatedAt).Scan(&product.ID)
+	err = stmt.QueryRow(product.UUID, product.Name, product.Observations, product.Price, product.CreatedAt).Scan(&product.ID)
 	if err != nil {
 		return err
 	}
@@ -33,8 +34,9 @@ func (p Product) Create(product *domain.Product) error {
 }
 
 // ByID get one product by its id.
+// TODO: Only select data that have deleted_at empty.
 func (p Product) ByID(id int) (*domain.Product, error) {
-	stmt, err := p.db.Prepare("SELECT * FROM product WHERE id = $1")
+	stmt, err := p.db.Prepare(`SELECT * FROM "product" WHERE id = $1`)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +56,7 @@ func (p Product) ByID(id int) (*domain.Product, error) {
 
 // Update product.
 func (p Product) Update(product domain.Product) error {
-	stmt, err := p.db.Prepare("UPDATE product SET name = $1, observations = $2, price = $3, updated_at = $4 WHERE id = $5")
+	stmt, err := p.db.Prepare(`UPDATE "product" SET name = $1, observations = $2, price = $3, updated_at = $4 WHERE id = $5`)
 	if err != nil {
 		return err
 	}
@@ -80,8 +82,9 @@ func (p Product) Update(product domain.Product) error {
 }
 
 // All get a collection of all prodycts.
+// TODO: Only select data that have deleted_at empty.
 func (p Product) All() (domain.Products, error) {
-	stmt, err := p.db.Prepare("SELECT * FROM product")
+	stmt, err := p.db.Prepare(`SELECT * FROM "product"`)
 	if err != nil {
 		return nil, err
 	}
@@ -110,8 +113,9 @@ func (p Product) All() (domain.Products, error) {
 }
 
 // Delete product by its id.
+// TODO: Convert to soft delete.
 func (p Product) Delete(id int) error {
-	stmt, err := p.db.Prepare("DELETE FROM product WHERE id = $1")
+	stmt, err := p.db.Prepare(`DELETE FROM "product" WHERE id = $1`)
 	if err != nil {
 		return err
 	}
@@ -134,8 +138,9 @@ func (p Product) Delete(id int) error {
 }
 
 // DeleteAll delete all products.
+// TODO: Move to tests.
 func (p Product) DeleteAll() error {
-	stmt, err := p.db.Prepare("TRUNCATE TABLE product RESTART IDENTITY CASCADE")
+	stmt, err := p.db.Prepare(`TRUNCATE TABLE "product" RESTART IDENTITY CASCADE`)
 	if err != nil {
 		return err
 	}
@@ -150,12 +155,14 @@ func (p Product) DeleteAll() error {
 }
 
 // scanRowProduct return null fields of the domain object Product parsed.
+// TODO: Check how to do this without using scanner interface.
 func scanRowProduct(s scanner) (*domain.Product, error) {
 	var updatedAtNull sql.NullTime
 	p := &domain.Product{}
 
 	err := s.Scan(
 		&p.ID,
+		&p.UUID,
 		&p.Name,
 		&p.Observations,
 		&p.Price,

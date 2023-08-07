@@ -15,7 +15,7 @@ type Customer struct {
 
 // Create return one Customer or SQL error.
 func (r Customer) Create(u *domain.Customer) error {
-	stmt, err := r.db.Prepare("INSERT INTO customer (uuid, first_name, last_name, email, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING id")
+	stmt, err := r.db.Prepare(`INSERT INTO "customer" (uuid, first_name, last_name, email, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING id`)
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func (r Customer) Create(u *domain.Customer) error {
 
 // countAll return total of Customers in storage.
 func (r Customer) countAll(f *domain.Filter) (int, error) {
-	stmt, err := r.db.Prepare("SELECT COUNT (*) FROM customer")
+	stmt, err := r.db.Prepare(`SELECT COUNT (*) FROM "customer"`)
 	if err != nil {
 		return 0, err
 	}
@@ -52,7 +52,7 @@ func (r Customer) countAll(f *domain.Filter) (int, error) {
 // All return filtered results by limit, offset and order for the pagination
 // or return a SQL error.
 func (r Customer) All(f *domain.Filter) (domain.FilteredResults, error) {
-	query := "SELECT * FROM customer"
+	query := `SELECT * FROM "customer"`
 	query += " " + fmt.Sprintf("ORDER BY %s %s", f.Sort(), f.Direction())
 	query += " " + limitOffset(f.Limit(), f.Page())
 
@@ -91,7 +91,7 @@ func (r Customer) All(f *domain.Filter) (domain.FilteredResults, error) {
 
 // Delete delete Customer from its ID.
 func (r Customer) Delete(id int) error {
-	stmt, err := r.db.Prepare("DELETE FROM customer WHERE id = $1")
+	stmt, err := r.db.Prepare(`DELETE FROM "customer" WHERE id = $1`)
 	if err != nil {
 		return err
 	}
@@ -114,6 +114,7 @@ func (r Customer) Delete(id int) error {
 }
 
 // scanRowUser return nulled fields of the domain object User parsed.
+// TODO: Check how to do this without using scanner interface.
 func scanRowCustomer(s scanner) (*domain.Customer, error) {
 	var updatedAtNull, deletedAtNull sql.NullTime
 	cx := &domain.Customer{}

@@ -14,7 +14,7 @@ type InvoiceItem struct {
 
 // Create create item asociated to a header and product for the invoice.
 func (InvoiceItem) Create(tx *sql.Tx, headerID int, items domain.ItemList) error {
-	stmt, err := tx.Prepare("INSERT INTO invoice_item (invoice_header_id, product_id) VALUES ($1, $2) RETURNING id, created_at")
+	stmt, err := tx.Prepare(`INSERT INTO "invoice_item" (invoice_header_id, product_id) VALUES ($1, $2) RETURNING id, created_at`)
 	if err != nil {
 		return err
 	}
@@ -31,8 +31,9 @@ func (InvoiceItem) Create(tx *sql.Tx, headerID int, items domain.ItemList) error
 }
 
 // DeleteAll delete all invoice items.
+// TODO: Move to tests.
 func (ii InvoiceItem) DeleteAll() error {
-	stmt, err := ii.db.Prepare("TRUNCATE TABLE invoice_item RESTART IDENTITY CASCADE")
+	stmt, err := ii.db.Prepare(`TRUNCATE TABLE "invoice_item" RESTART IDENTITY CASCADE`)
 	if err != nil {
 		return err
 	}

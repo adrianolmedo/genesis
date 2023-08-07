@@ -16,13 +16,13 @@ func TestLimitOffset(t *testing.T) {
 			want: "",
 		},
 		{
-			name:  "page-1",
+			name:  "page1",
 			page:  0,
 			limit: 5,
 			want:  "LIMIT 5 OFFSET 0",
 		},
 		{
-			name:  "page-2",
+			name:  "page2",
 			page:  2,
 			limit: 10,
 			want:  "LIMIT 10 OFFSET 10",

@@ -12,7 +12,12 @@ func limitOffset(limit, page int) string {
 		return ""
 	}
 
+	if page == 0 {
+		page = 1
+	}
+
 	offset := page*limit - limit
+
 	return fmt.Sprintf("LIMIT %d OFFSET %d", limit, offset)
 }
 
