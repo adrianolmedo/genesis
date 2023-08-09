@@ -93,6 +93,7 @@ func createCustomer(s *app.Services) fiber.Handler {
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
 			Email:     form.Email,
+			Password:  form.Password,
 		})
 
 		if err != nil {

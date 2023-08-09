@@ -15,7 +15,7 @@ type Customer struct {
 
 // Create return one Customer or SQL error.
 func (r Customer) Create(u *domain.Customer) error {
-	stmt, err := r.db.Prepare(`INSERT INTO "customer" (uuid, first_name, last_name, email, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING id`)
+	stmt, err := r.db.Prepare(`INSERT INTO "customer" (uuid, first_name, last_name, email, password, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`)
 	if err != nil {
 		return err
 	}
@@ -24,7 +24,7 @@ func (r Customer) Create(u *domain.Customer) error {
 	u.UUID = domain.NextUUID()
 	u.CreatedAt = time.Now()
 
-	err = stmt.QueryRow(u.UUID, u.FirstName, u.LastName, u.Email, u.CreatedAt).Scan(&u.ID)
+	err = stmt.QueryRow(u.UUID, u.FirstName, u.LastName, u.Email, u.Password, u.CreatedAt).Scan(&u.ID)
 	if err != nil {
 		return err
 	}
@@ -125,6 +125,7 @@ func scanRowCustomer(s scanner) (*domain.Customer, error) {
 		&cx.FirstName,
 		&cx.LastName,
 		&cx.Email,
+		&cx.Password,
 		&cx.CreatedAt,
 		&updatedAtNull,
 		&deletedAtNull,

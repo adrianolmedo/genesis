@@ -13,6 +13,7 @@ type Customer struct {
 	UUID      string
 	FirstName string
 	LastName  string
+	Password  string
 	Email     string
 
 	CreatedAt time.Time
@@ -42,6 +43,7 @@ type CreateCustomerForm struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
+	Password  string `json:"password"`
 }
 
 // CustomerProfileDTO subset of Customer fields.
