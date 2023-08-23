@@ -47,6 +47,7 @@ func loginUser(s *app.Services) fiber.Handler {
 }
 
 // signUpUser godoc
+//
 //	@Summary		SignUp User
 //	@Description	Register a user by its data
 //	@Accept			json
@@ -193,7 +194,7 @@ func listUsers(s *app.Services) fiber.Handler {
 		}
 
 		resp := respJSON(msgOK, "", list)
-		return c.Status(http.StatusCreated).JSON(resp)
+		return c.Status(http.StatusOK).JSON(resp)
 	}
 }
 
