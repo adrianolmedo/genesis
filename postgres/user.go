@@ -63,7 +63,7 @@ func (r User) ByLogin(email, password string) error {
 // ByID get a User from its id.
 // TODO: Only select data that have deleted_at empty.
 func (r User) ByID(id int) (*domain.User, error) {
-	stmt, err := r.db.Prepare(`SELECT * FROM "user" WHERE id = $1`)
+	stmt, err := r.db.Prepare(`SELECT * FROM "user" WHERE id = $1 AND deleted_at IS NULL`)
 	if err != nil {
 		return nil, err
 	}
@@ -109,9 +109,8 @@ func (r User) Update(u domain.User) error {
 }
 
 // All get User collection.
-// TODO: Only select data that have deleted_at empty.
-func (r User) All() ([]*domain.User, error) {
-	stmt, err := r.db.Prepare(`SELECT * FROM "user"`)
+func (r User) All() (domain.Users, error) {
+	stmt, err := r.db.Prepare(`SELECT * FROM "user" WHERE deleted_at IS NULL`)
 	if err != nil {
 		return nil, err
 	}
@@ -123,14 +122,31 @@ func (r User) All() ([]*domain.User, error) {
 	}
 	defer rows.Close()
 
-	users := make([]*domain.User, 0)
+	users := make(domain.Users, 0)
 
 	for rows.Next() {
-		u, err := scanRowUser(rows)
+		var updatedNull, deletedNull sql.NullTime
+		u := domain.User{}
+
+		err := rows.Scan(
+			&u.ID,
+			&u.UUID,
+			&u.FirstName,
+			&u.LastName,
+			&u.Email,
+			&u.Password,
+			&u.CreatedAt,
+			&updatedNull,
+			&deletedNull,
+		)
 		if err != nil {
 			return nil, err
 		}
-		users = append(users, u)
+
+		u.UpdatedAt = updatedNull.Time
+		u.DeletedAt = deletedNull.Time
+
+		users = append(users, &u)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
