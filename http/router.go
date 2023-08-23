@@ -34,7 +34,7 @@ func Router(strg *postgres.Storage) *fiber.App {
 	f.Post("/v1/users", signUpUser(s))
 	f.Get("/v1/users/:id", findUser(s))
 
-	f.Get("/v1/users", listUsers(s)) // TODO: Add authMiddleware.
+	f.Get("/v1/users", listUsers(s), authMiddleware)
 	f.Put("/v1/users/:id", updateUser(s), authMiddleware)
 	f.Delete("/v1/users/:id", deleteUser(s), authMiddleware)
 
