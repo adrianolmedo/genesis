@@ -12,20 +12,20 @@ import (
 	swagger "github.com/swaggo/fiber-swagger"
 )
 
-// @title Genesis REST API
-// @version 1.0
-// @description This is a sample server.
-// @termsOfService http://swagger.io/terms/
+//	@title			Genesis REST API
+//	@version		1.0
+//	@description	This is a sample server.
+//	@termsOfService	http://swagger.io/terms/
 
-// @contact.name Adrián Olmedo
-// @contact.url https://twitter.com/adrianolmedo
-// @contact.email adrianolmedo.ve@gmail.com
+//	@contact.name	Adrián Olmedo
+//	@contact.url	https://twitter.com/adrianolmedo
+//	@contact.email	adrianolmedo.ve@gmail.com
 
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:3000
-// @BasePath /v1/
+//	@host		localhost:3000
+//	@BasePath	/v1/
 func Router(strg *postgres.Storage) *fiber.App {
 	s := app.NewServices(strg)
 	f := fiber.New()
@@ -34,7 +34,7 @@ func Router(strg *postgres.Storage) *fiber.App {
 	f.Post("/v1/users", signUpUser(s))
 	f.Get("/v1/users/:id", findUser(s))
 
-	f.Get("/v1/users", listUsers(s), authMiddleware)
+	f.Get("/v1/users", listUsers(s)) // TODO: Add authMiddleware.
 	f.Put("/v1/users/:id", updateUser(s), authMiddleware)
 	f.Delete("/v1/users/:id", deleteUser(s), authMiddleware)
 
