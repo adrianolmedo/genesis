@@ -13,6 +13,7 @@ test:
 # Generate docs package for Swagger files with swag.
 # More info visit: https://github.com/swaggo/swag#getting-started
 swagger:
+	swag fmt -d http/
 	swag init -g http/router.go
 
 # Run the Go build command to generate a debuggable binary with some IDE.
