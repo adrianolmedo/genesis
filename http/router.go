@@ -34,9 +34,9 @@ func Router(strg *postgres.Storage) *fiber.App {
 	f.Post("/v1/users", signUpUser(s))
 	f.Get("/v1/users/:id", findUser(s))
 
-	f.Get("/v1/users", listUsers(s), authMiddleware)
-	f.Put("/v1/users/:id", updateUser(s), authMiddleware)
-	f.Delete("/v1/users/:id", deleteUser(s), authMiddleware)
+	f.Get("/v1/users", authMiddleware, listUsers(s))
+	f.Put("/v1/users/:id", authMiddleware, updateUser(s))
+	f.Delete("/v1/users/:id", authMiddleware, deleteUser(s))
 
 	f.Post("/v1/customers", createCustomer(s))
 	f.Get("/v1/customers", listCustomers(s))
@@ -45,11 +45,11 @@ func Router(strg *postgres.Storage) *fiber.App {
 	f.Get("/v1/products", listProducts(s))
 	f.Get("/v1/products/:id", findProduct(s))
 
-	f.Post("/v1/products", addProduct(s), authMiddleware)
-	f.Put("/v1/products/:id", updateProduct(s), authMiddleware)
-	f.Delete("/v1/products/:id", deleteProduct(s), authMiddleware)
+	f.Post("/v1/products", authMiddleware, addProduct(s))
+	f.Put("/v1/products/:id", authMiddleware, updateProduct(s))
+	f.Delete("/v1/products/:id", authMiddleware, deleteProduct(s))
 
-	f.Post("/v1/invoices", generateInvoice(s), authMiddleware)
+	f.Post("/v1/invoices", authMiddleware, generateInvoice(s))
 
 	f.Get("/swagger/*", swagger.WrapHandler)
 
