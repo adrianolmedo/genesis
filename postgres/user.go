@@ -16,7 +16,8 @@ type User struct {
 
 // Create a User to the storage.
 func (r User) Create(u *domain.User) error {
-	stmt, err := r.db.Prepare(`INSERT INTO "user" (uuid, first_name, last_name, email, password, created_at)
+	stmt, err := r.db.Prepare(`INSERT INTO "user" 
+	(uuid, first_name, last_name, email, password, created_at)
 	VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`)
 	if err != nil {
 		return err
