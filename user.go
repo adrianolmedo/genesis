@@ -12,7 +12,7 @@ var ErrUserNotFound = errors.New("user not found")
 
 // User model.
 type User struct {
-	ID        int
+	ID        uint
 	UUID      string
 	FirstName string
 	LastName  string
@@ -64,7 +64,7 @@ type UserLoginForm struct {
 // UserUpdateForm subset of fields to request to update a User.
 // TODO: Pass DTO to http/ package.
 type UserUpdateForm struct {
-	ID        int    `json:"id"`
+	ID        uint   `json:"id"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
@@ -74,7 +74,7 @@ type UserUpdateForm struct {
 // UserProfileDTO subset of User fields.
 // TODO: Pass DTO to http/ package.
 type UserProfileDTO struct {
-	ID        int    `json:"id,omitempty"`
+	ID        uint   `json:"id,omitempty"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`

@@ -134,7 +134,7 @@ func updateUser(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		form.ID = id
+		form.ID = uint(id)
 
 		err = s.User.Update(domain.User{
 			ID:        form.ID,

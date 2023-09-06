@@ -63,7 +63,7 @@ func (r User) ByLogin(email, password string) error {
 
 // ByID get a User from its id.
 // TODO: Only select data that have deleted_at empty.
-func (r User) ByID(id int) (*domain.User, error) {
+func (r User) ByID(id uint) (*domain.User, error) {
 	stmt, err := r.db.Prepare(`SELECT * FROM "user" WHERE id = $1 AND deleted_at IS NULL`)
 	if err != nil {
 		return nil, err
