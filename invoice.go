@@ -24,7 +24,7 @@ type Invoice struct {
 type InvoiceHeader struct {
 	ID       int
 	UUID     string
-	ClientID int
+	ClientID uint
 
 	CreatedAt time.Time
 	UpdatedAt time.Time

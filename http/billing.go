@@ -21,7 +21,7 @@ func generateInvoice(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		clientID := form.Header.ClientID
+		clientID := uint(form.Header.ClientID)
 
 		_, err = s.User.Find(clientID)
 		if errors.Is(err, domain.ErrUserNotFound) {

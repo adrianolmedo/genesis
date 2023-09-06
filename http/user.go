@@ -97,7 +97,7 @@ func findUser(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		user, err := s.User.Find(id)
+		user, err := s.User.Find(uint(id))
 		if errors.Is(err, domain.ErrUserNotFound) {
 			resp := respJSON(msgError, err.Error(), nil)
 			return c.Status(http.StatusNotFound).JSON(resp)
