@@ -32,23 +32,6 @@ func (r Customer) Create(u *domain.Customer) error {
 	return nil
 }
 
-// countAll return total of Customers in storage.
-func (r Customer) countAll(f *domain.Filter) (int, error) {
-	stmt, err := r.db.Prepare(`SELECT COUNT (*) FROM "customer"`)
-	if err != nil {
-		return 0, err
-	}
-	defer stmt.Close()
-
-	var n int
-	err = stmt.QueryRow().Scan(&n)
-	if err != nil {
-		return 0, err
-	}
-
-	return n, nil
-}
-
 // All return filtered results by limit, offset and order for the pagination
 // or return a SQL error.
 func (r Customer) All(f *domain.Filter) (domain.FilteredResults, error) {
@@ -81,12 +64,29 @@ func (r Customer) All(f *domain.Filter) (domain.FilteredResults, error) {
 	}
 
 	// Get total rows to calculate total pages.
-	totalRows, err := r.countAll(f)
+	totalRows, err := r.countAll()
 	if err != nil {
 		return domain.FilteredResults{}, err
 	}
 
 	return f.Paginate(customers, totalRows), nil
+}
+
+// countAll return total of Customers in storage.
+func (r Customer) countAll() (int, error) {
+	stmt, err := r.db.Prepare(`SELECT COUNT (*) FROM "customer"`)
+	if err != nil {
+		return 0, err
+	}
+	defer stmt.Close()
+
+	var n int
+	err = stmt.QueryRow().Scan(&n)
+	if err != nil {
+		return 0, err
+	}
+
+	return n, nil
 }
 
 // Delete delete Customer from its ID.
