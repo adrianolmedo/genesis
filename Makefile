@@ -1,5 +1,5 @@
 # Binary file name.
-BINARY = goclisrv
+BINARY = genesis
 
 # Generate the RSA files needed to create the user credentials.
 genrsa:
