@@ -24,8 +24,8 @@ import (
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-//	@host		localhost:3000
-//	@BasePath	/v1/
+// @host		localhost:3000
+// @BasePath	/v1/
 func Router(strg *postgres.Storage) *fiber.App {
 	s := app.NewServices(strg)
 	f := fiber.New()
@@ -61,7 +61,7 @@ func authMiddleware(c *fiber.Ctx) error {
 	token := c.Request().Header.Peek("Authorization")
 	_, err := jwt.Verify(string(token))
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(map[string]string{"messageError": "you don't have authorization"})
+		return c.Status(http.StatusBadRequest).JSON(map[string]string{"error": "you don't have authorization"})
 	}
 	return c.Next()
 }

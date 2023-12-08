@@ -49,21 +49,22 @@ func loginUser(s *app.Services) fiber.Handler {
 // signUpUser godoc
 //
 //	@Summary		SignUp User
-//	@Description	Register a user by its data
+//	@Description	Register a user
 //	@Accept			json
 //	@Produce		json
-//	@Failure		400				{object}	messageError
-//	@Failure		500				{object}	messageError
-//	@Success		201				{object}	messageOK
-//	@Param			UserSignUpForm	body		genesis.UserSignUpForm	true	"application/json"
+//	@Failure		400				{object}	respError
+//	@Failure		500				{object}	respError
+//	@Success		201				{object}	respOkData{data=userProfileDTO}
+//	@Param			userSignUpForm	body		userSignUpForm	true	"application/json"
 //	@Router			/users [post]
 func signUpUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		form := domain.UserSignUpForm{}
+		form := userSignUpForm{}
 		err := c.BodyParser(&form)
 		if err != nil {
-			resp := respJSON(msgError, "the JSON structure is not correct", nil)
-			return c.Status(http.StatusBadRequest).JSON(resp)
+			return c.Status(http.StatusBadRequest).JSON(respError{
+				Msg: "the JSON structure is not correct",
+			})
 		}
 
 		err = s.User.SignUp(&domain.User{
@@ -74,18 +75,36 @@ func signUpUser(s *app.Services) fiber.Handler {
 		})
 
 		if err != nil {
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusInternalServerError).JSON(resp)
+			return c.Status(http.StatusInternalServerError).JSON(respError{
+				Msg: err.Error(),
+			})
 		}
 
-		resp := respJSON(msgOK, "user created", domain.UserProfileDTO{
-			FirstName: form.FirstName,
-			LastName:  form.LastName,
-			Email:     form.Email,
+		return c.Status(http.StatusCreated).JSON(respOkData{
+			Msg: "user created",
+			Data: userProfileDTO{
+				FirstName: form.FirstName,
+				LastName:  form.LastName,
+				Email:     form.Email,
+			},
 		})
-
-		return c.Status(http.StatusCreated).JSON(resp)
 	}
+}
+
+// userSignUpForm subset of User fields to create account.
+type userSignUpForm struct {
+	FirstName string `json:"firstName" example:"John"`
+	LastName  string `json:"lastName" example:"Doe"`
+	Email     string `json:"email" example:"johndoe@aol.com"`
+	Password  string `json:"password" example:"1234567b"`
+}
+
+// userProfileDTO subset of User fields.
+type userProfileDTO struct {
+	ID        uint   `json:"id,omitempty" example:"1"`
+	FirstName string `json:"firstName" example:"John"`
+	LastName  string `json:"lastName" example:"Doe"`
+	Email     string `json:"email" example:"johndoe@aol.com"`
 }
 
 // findUser handler GET: /users/:id
@@ -108,7 +127,7 @@ func findUser(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		resp := respJSON(msgOK, "", domain.UserProfileDTO{
+		resp := respJSON(msgOK, "", userProfileDTO{
 			ID:        user.ID,
 			FirstName: user.FirstName,
 			LastName:  user.LastName,
@@ -179,8 +198,8 @@ func listUsers(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusOK).JSON(resp)
 		}
 
-		assemble := func(u *domain.User) domain.UserProfileDTO {
-			return domain.UserProfileDTO{
+		assemble := func(u *domain.User) userProfileDTO {
+			return userProfileDTO{
 				ID:        u.ID,
 				FirstName: u.FirstName,
 				LastName:  u.LastName,
@@ -188,7 +207,7 @@ func listUsers(s *app.Services) fiber.Handler {
 			}
 		}
 
-		list := make([]domain.UserProfileDTO, 0, len(users))
+		list := make([]userProfileDTO, 0, len(users))
 		for _, v := range users {
 			list = append(list, assemble(v))
 		}
