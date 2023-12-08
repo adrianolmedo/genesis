@@ -26,7 +26,7 @@ const docTemplate = `{
     "paths": {
         "/users": {
             "post": {
-                "description": "Register a user by its data",
+                "description": "Register a user",
                 "consumes": [
                     "application/json"
                 ],
@@ -37,11 +37,11 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "application/json",
-                        "name": "UserSignUpForm",
+                        "name": "userSignUpForm",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/genesis.UserSignUpForm"
+                            "$ref": "#/definitions/http.userSignUpForm"
                         }
                     }
                 ],
@@ -49,19 +49,31 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/http.messageOK"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/http.respOkData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/http.userProfileDTO"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/http.messageError"
+                            "$ref": "#/definitions/http.respError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/http.messageError"
+                            "$ref": "#/definitions/http.respError"
                         }
                     }
                 }
@@ -69,7 +81,45 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "genesis.UserSignUpForm": {
+        "http.respError": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.respOkData": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "ok": {
+                    "type": "string"
+                }
+            }
+        },
+        "http.userProfileDTO": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "johndoe@aol.com"
+                },
+                "firstName": {
+                    "type": "string",
+                    "example": "John"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Doe"
+                }
+            }
+        },
+        "http.userSignUpForm": {
             "type": "object",
             "properties": {
                 "email": {
@@ -87,22 +137,6 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "example": "1234567b"
-                }
-            }
-        },
-        "http.messageError": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.messageOK": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string"
                 }
             }
         }

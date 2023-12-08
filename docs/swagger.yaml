@@ -1,6 +1,32 @@
 basePath: /v1/
 definitions:
-  genesis.UserSignUpForm:
+  http.respError:
+    properties:
+      error:
+        type: string
+    type: object
+  http.respOkData:
+    properties:
+      data: {}
+      ok:
+        type: string
+    type: object
+  http.userProfileDTO:
+    properties:
+      email:
+        example: johndoe@aol.com
+        type: string
+      firstName:
+        example: John
+        type: string
+      id:
+        example: 1
+        type: integer
+      lastName:
+        example: Doe
+        type: string
+    type: object
+  http.userSignUpForm:
     properties:
       email:
         example: johndoe@aol.com
@@ -13,16 +39,6 @@ definitions:
         type: string
       password:
         example: 1234567b
-        type: string
-    type: object
-  http.messageError:
-    properties:
-      content:
-        type: string
-    type: object
-  http.messageOK:
-    properties:
-      content:
         type: string
     type: object
 host: localhost:3000
@@ -43,28 +59,33 @@ paths:
     post:
       consumes:
       - application/json
-      description: Register a user by its data
+      description: Register a user
       parameters:
       - description: application/json
         in: body
-        name: UserSignUpForm
+        name: userSignUpForm
         required: true
         schema:
-          $ref: '#/definitions/genesis.UserSignUpForm'
+          $ref: '#/definitions/http.userSignUpForm'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/http.messageOK'
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.userProfileDTO'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/http.messageError'
+            $ref: '#/definitions/http.respError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/http.messageError'
+            $ref: '#/definitions/http.respError'
       summary: SignUp User
 swagger: "2.0"
