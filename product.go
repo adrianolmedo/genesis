@@ -36,26 +36,9 @@ func (ps Products) IsEmpty() bool {
 	return len(ps) == 0
 }
 
-// AddProductForm represents a subset of fields to create a Product.
-// TODO: Pass DTO to http/ package.
-type AddProductForm struct {
-	Name         string  `json:"name"`
-	Observations string  `json:"observations"`
-	Price        float64 `json:"price"`
-}
-
 // UpdateProductForm represents a subset of fields to update a Product.
 // TODO: Pass DTO to http/ package.
 type UpdateProductForm struct {
-	ID           int     `json:"id"`
-	Name         string  `json:"name"`
-	Observations string  `json:"observations"`
-	Price        float64 `json:"price"`
-}
-
-// ProductCardDTO subset of Product fields.
-// TODO: Pass DTO to http/ package.
-type ProductCardDTO struct {
 	ID           int     `json:"id"`
 	Name         string  `json:"name"`
 	Observations string  `json:"observations"`

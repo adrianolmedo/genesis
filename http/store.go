@@ -12,14 +12,24 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// addProduct handler POST: /products
+// addProduct godoc
+// @Summary	Add product
+// @Description	Register product
+// @Tags products
+// @Accept json
+// @Produce	json
+// @Failure	400	{object}	respError
+// @Failure	401	{object}	respError
+// @Failure	500	{object}	respError
+// @Success	201	{object}	respOkData{data=productCardDTO}
+// @Param addProductForm	body addProductForm true "application/json"
+// @Router /products [post]
 func addProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		form := domain.AddProductForm{}
+		form := addProductForm{}
 		err := c.BodyParser(&form)
 		if err != nil {
-			resp := respJSON(msgError, "the JSON structure is not correct", nil)
-			return c.Status(http.StatusBadRequest).JSON(resp)
+			return c.Status(http.StatusBadRequest).JSON(respError{"the JSON structure is not correct"})
 		}
 
 		err = s.Store.Add(&domain.Product{
@@ -29,20 +39,35 @@ func addProduct(s *app.Services) fiber.Handler {
 		})
 
 		if err != nil {
-			resp := respJSON(msgError, "", err.Error())
-			return c.Status(http.StatusInternalServerError).JSON(resp)
+			return c.Status(http.StatusInternalServerError).JSON(respError{err.Error()})
 		}
 
-		// TO-DO: Add logger message: "New product added"
+		// TODO: Add logger message: "New product added"
 
-		resp := respJSON(msgOK, "product added", domain.ProductCardDTO{
-			Name:         form.Name,
-			Observations: form.Observations,
-			Price:        form.Price,
+		return c.Status(http.StatusCreated).JSON(respOkData{
+			Msg: "product added",
+			Data: productCardDTO{
+				Name:         form.Name,
+				Observations: form.Observations,
+				Price:        form.Price,
+			},
 		})
-
-		return c.Status(http.StatusCreated).JSON(resp)
 	}
+}
+
+// addProductForm represents a subset of fields to create a Product.
+type addProductForm struct {
+	Name         string  `json:"name"`
+	Observations string  `json:"observations"`
+	Price        float64 `json:"price"`
+}
+
+// productCardDTO subset of Product fields.
+type productCardDTO struct {
+	ID           int     `json:"id"`
+	Name         string  `json:"name"`
+	Observations string  `json:"observations"`
+	Price        float64 `json:"price"`
 }
 
 // listProducts handler GET: /products
@@ -59,10 +84,10 @@ func listProducts(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusOK).JSON(resp)
 		}
 
-		list := make([]domain.ProductCardDTO, 0, len(products))
+		list := make([]productCardDTO, 0, len(products))
 
-		assemble := func(p *domain.Product) domain.ProductCardDTO {
-			return domain.ProductCardDTO{
+		assemble := func(p *domain.Product) productCardDTO {
+			return productCardDTO{
 				ID:           p.ID,
 				Name:         p.Name,
 				Observations: p.Observations,
@@ -205,7 +230,7 @@ func findProduct(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(resp)
 		}
 
-		resp := respJSON(msgOK, "", domain.ProductCardDTO{
+		resp := respJSON(msgOK, "", productCardDTO{
 			ID:           product.ID,
 			Name:         product.Name,
 			Observations: product.Observations,

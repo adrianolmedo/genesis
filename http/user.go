@@ -13,43 +13,65 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// loginUser handler POST: /login
+// loginUser godoc
+//	@Summary		Login user
+//	@Description	User authentication
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Failure		400				{object}	respError
+//	@Failure		401				{object}	respError
+//	@Failure		500				{object}	respError
+//	@Success		201				{object}	respOkData{data=dataTokenDTO}
+//	@Param			userLoginForm	body		userLoginForm	true	"application/json"
+//	@Router			/login [post]
 func loginUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		form := domain.UserLoginForm{}
+		form := userLoginForm{}
 		err := c.BodyParser(&form)
 		if err != nil {
-			resp := respJSON(msgError, "the JSON structure is not correct", nil)
-			return c.Status(http.StatusBadRequest).JSON(resp)
+			return c.Status(http.StatusBadRequest).JSON(respError{
+				"the JSON structure is not correct",
+			})
 		}
 
 		err = s.User.Login(form.Email, form.Password)
 		if errors.Is(err, domain.ErrUserNotFound) {
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusUnauthorized).JSON(resp)
+			return c.Status(http.StatusUnauthorized).JSON(respError{err.Error()})
 		}
 
 		if err != nil {
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusBadRequest).JSON(resp)
+			return c.Status(http.StatusBadRequest).JSON(respError{err.Error()})
 		}
 
 		token, err := jwt.Generate(form.Email)
 		if err != nil {
-			resp := respJSON(msgError, "the token could not be generated", nil)
-			return c.Status(http.StatusInternalServerError).JSON(resp)
+			return c.Status(http.StatusInternalServerError).JSON(respError{
+				"the token could not be generated",
+			})
 		}
 
-		dataToken := map[string]string{"token": token}
-		resp := respJSON(msgOK, "logged", dataToken)
-		return c.Status(http.StatusCreated).JSON(resp)
+		return c.Status(http.StatusCreated).JSON(respOkData{
+			Msg:  "logged",
+			Data: dataTokenDTO{token},
+		})
 	}
 }
 
+// userLoginForm subset of user fields to request login.
+type userLoginForm struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type dataTokenDTO struct {
+	Token string `json:"token"`
+}
+
 // signUpUser godoc
-//
-//	@Summary		SignUp User
+//	@Summary		SignUp user
 //	@Description	Register a user
+//	@Tags			users
 //	@Accept			json
 //	@Produce		json
 //	@Failure		400				{object}	respError
@@ -107,56 +129,71 @@ type userProfileDTO struct {
 	Email     string `json:"email" example:"johndoe@aol.com"`
 }
 
-// findUser handler GET: /users/:id
+// findUser godoc
+//	@Summary		Find user
+//	@Description	Find user by its id
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"User id"
+//	@Failure		400	{object}	respError
+//	@Failure		404	{object}	respError
+//	@Success		200	{object}	respData{data=userProfileDTO}
+//	@Router			/users/{id} [get]
 func findUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
-			resp := respJSON(msgError, "positive number expected for ID user", nil)
-			return c.Status(http.StatusBadRequest).JSON(resp)
+			return c.Status(http.StatusBadRequest).JSON(respError{"positive number expected for ID user"})
 		}
 
 		user, err := s.User.Find(uint(id))
 		if errors.Is(err, domain.ErrUserNotFound) {
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusNotFound).JSON(resp)
+			return c.Status(http.StatusNotFound).JSON(respError{err.Error()})
 		}
 
 		if err != nil {
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusBadRequest).JSON(resp)
+			return c.Status(http.StatusBadRequest).JSON(respError{err.Error()})
 		}
 
-		resp := respJSON(msgOK, "", userProfileDTO{
+		return c.Status(http.StatusOK).JSON(respData{userProfileDTO{
 			ID:        user.ID,
 			FirstName: user.FirstName,
 			LastName:  user.LastName,
 			Email:     user.Email,
-		})
-		return c.Status(http.StatusOK).JSON(resp)
+		}})
 	}
 }
 
-// updateUser handler PUT: /users/:id
+// updateUser godoc
+//	@Summary		Update user
+//	@Description	Update user by its id
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			id				path		int	true	"User id"
+//	@Failure		400				{object}	respError
+//	@Failure		404				{object}	respError
+//	@Success		200				{object}	respOkData{data=userProfileDTO}
+//	@Param			userUpdateForm	body		userUpdateForm	true	"application/json"
+//	@Router			/users/{id} [put]
 func updateUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
-			resp := respJSON(msgError, "positive number expected for ID user", nil)
-			return c.Status(http.StatusBadRequest).JSON(resp)
+			return c.Status(http.StatusBadRequest).JSON(respError{"positive number expected for ID user"})
 		}
 
-		form := domain.UserUpdateForm{}
+		form := userUpdateForm{}
 		err = c.BodyParser(&form)
 		if err != nil {
-			resp := respJSON(msgError, "the JSON structure is not correct", nil)
-			return c.Status(http.StatusBadRequest).JSON(resp)
+			return c.Status(http.StatusBadRequest).JSON(respError{"the JSON structure is not correct"})
 		}
 
-		form.ID = uint(id)
+		userID := uint(id)
 
 		err = s.User.Update(domain.User{
-			ID:        form.ID,
+			ID:        userID,
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
 			Email:     form.Email,
@@ -164,27 +201,42 @@ func updateUser(s *app.Services) fiber.Handler {
 		})
 
 		if errors.Is(err, domain.ErrUserNotFound) {
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusNoContent).JSON(resp)
+			return c.Status(http.StatusNotFound).JSON(respError{err.Error()})
 		}
 
 		if err != nil {
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusInternalServerError).JSON(resp)
+			return c.Status(http.StatusInternalServerError).JSON(respError{err.Error()})
 		}
 
-		resp := respJSON(msgOK, "user updated", domain.User{
-			ID:        form.ID,
-			FirstName: form.FirstName,
-			LastName:  form.LastName,
-			Email:     form.Email,
+		return c.Status(http.StatusCreated).JSON(respOkData{
+			Msg: "user updated",
+			Data: userProfileDTO{
+				ID:        userID,
+				FirstName: form.FirstName,
+				LastName:  form.LastName,
+				Email:     form.Email,
+			},
 		})
-
-		return c.Status(http.StatusCreated).JSON(resp)
 	}
 }
 
-// listUsers handler GET: /users
+// userUpdateForm subset of fields to request to update a User.
+type userUpdateForm struct {
+	FirstName string `json:"firstName" example:"John"`
+	LastName  string `json:"lastName" example:"Doe"`
+	Email     string `json:"email" example:"lorem@ipsum.com"`
+	Password  string `json:"password" example:"1234567a"`
+}
+
+// listUsers godoc
+//	@Summary	List users
+//	@Tags		users
+//	@Accept		json
+//	@Produce	json
+//	@Failure	500	{object}	respError
+//	@Success	200	{object}	respOk
+//	@Success	200	{object}	respOkData{data=[]userProfileDTO}
+//	@Router		/users [get]
 func listUsers(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		users, err := s.User.List()
@@ -194,8 +246,9 @@ func listUsers(s *app.Services) fiber.Handler {
 		}
 
 		if users.IsEmpty() {
-			resp := respJSON(msgOK, "there are not users", nil)
-			return c.Status(http.StatusOK).JSON(resp)
+			return c.Status(http.StatusOK).JSON(respOk{
+				Msg: "there are not users",
+			})
 		}
 
 		assemble := func(u *domain.User) userProfileDTO {
@@ -212,35 +265,43 @@ func listUsers(s *app.Services) fiber.Handler {
 			list = append(list, assemble(v))
 		}
 
-		resp := respJSON(msgOK, "", list)
-		return c.Status(http.StatusOK).JSON(resp)
+		return c.Status(http.StatusOK).JSON(respData{
+			Data: list,
+		})
 	}
 }
 
-// deleteUser handler DELETE: /users/:id
+// deleteUser godoc
+//	@Summary		Delete user
+//	@Description	Delete user by its id
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"User id"
+//	@Failure		400	{object}	respError
+//	@Failure		404	{object}	respError
+//	@Success		200	{object}	respOk
+//	@Router			/users/{id} [delete]
 func deleteUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
-			resp := respJSON(msgError, "positive number expected for ID user", nil)
-			return c.Status(http.StatusBadRequest).JSON(resp)
+			return c.Status(http.StatusBadRequest).JSON(respError{"positive number expected for ID user"})
 		}
 
 		err = s.User.Remove(int64(id))
 		if errors.Is(err, domain.ErrUserNotFound) {
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusNoContent).JSON(resp)
+			return c.Status(http.StatusNotFound).JSON(respError{err.Error()})
 		}
 
 		if err != nil {
-			resp := respJSON(msgError, fmt.Sprintf("could not delete user: %s", err), nil)
-			return c.Status(http.StatusInternalServerError).JSON(resp)
+			return c.Status(http.StatusInternalServerError).JSON(respError{
+				Msg: fmt.Sprintf("could not delete user: %s", err),
+			})
 		}
 
-		// TO-DO: Add logger message: "User with ID %d deleted"
+		// TODO: Add logger message: "User with ID %d deleted"
 
-		resp := respJSON(msgOK, "user deleted", nil)
-		return c.Status(http.StatusOK).JSON(resp)
-
+		return c.Status(http.StatusOK).JSON(respOk{"user deleted"})
 	}
 }

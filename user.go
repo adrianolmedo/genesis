@@ -44,20 +44,3 @@ func (us Users) IsEmpty() bool {
 func NextUUID() string {
 	return uuid.New()
 }
-
-// UserLoginForm subset of user fields to request login.
-// TODO: Pass DTO to http/ package.
-type UserLoginForm struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-// UserUpdateForm subset of fields to request to update a User.
-// TODO: Pass DTO to http/ package.
-type UserUpdateForm struct {
-	ID        uint   `json:"id"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-}
