@@ -1,14 +1,55 @@
 basePath: /v1/
 definitions:
+  http.addProductForm:
+    properties:
+      name:
+        type: string
+      observations:
+        type: string
+      price:
+        type: number
+    type: object
+  http.dataTokenDTO:
+    properties:
+      token:
+        type: string
+    type: object
+  http.productCardDTO:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      observations:
+        type: string
+      price:
+        type: number
+    type: object
+  http.respData:
+    properties:
+      data: {}
+    type: object
   http.respError:
     properties:
       error:
+        type: string
+    type: object
+  http.respOk:
+    properties:
+      ok:
         type: string
     type: object
   http.respOkData:
     properties:
       data: {}
       ok:
+        type: string
+    type: object
+  http.userLoginForm:
+    properties:
+      email:
+        type: string
+      password:
         type: string
     type: object
   http.userProfileDTO:
@@ -41,6 +82,21 @@ definitions:
         example: 1234567b
         type: string
     type: object
+  http.userUpdateForm:
+    properties:
+      email:
+        example: lorem@ipsum.com
+        type: string
+      firstName:
+        example: John
+        type: string
+      lastName:
+        example: Doe
+        type: string
+      password:
+        example: 1234567a
+        type: string
+    type: object
 host: localhost:3000
 info:
   contact:
@@ -55,7 +111,109 @@ info:
   title: Genesis REST API
   version: "1.0"
 paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: User authentication
+      parameters:
+      - description: application/json
+        in: body
+        name: userLoginForm
+        required: true
+        schema:
+          $ref: '#/definitions/http.userLoginForm'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.dataTokenDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Login user
+      tags:
+      - users
+  /products:
+    post:
+      consumes:
+      - application/json
+      description: Register product
+      parameters:
+      - description: application/json
+        in: body
+        name: addProductForm
+        required: true
+        schema:
+          $ref: '#/definitions/http.addProductForm'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.productCardDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Add product
+      tags:
+      - products
   /users:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/http.userProfileDTO'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: List users
+      tags:
+      - users
     post:
       consumes:
       - application/json
@@ -87,5 +245,108 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/http.respError'
-      summary: SignUp User
+      summary: SignUp user
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user by its id
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.respOk'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Delete user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Find user by its id
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.userProfileDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Find user
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update user by its id
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: application/json
+        in: body
+        name: userUpdateForm
+        required: true
+        schema:
+          $ref: '#/definitions/http.userUpdateForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.userProfileDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Update user
+      tags:
+      - users
 swagger: "2.0"
