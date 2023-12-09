@@ -67,33 +67,29 @@ func respJSON(msgType, content string, data interface{}) response {
 	return resp
 }
 
-// Response represents standar JSON response.
-type Response struct {
-	Ok    string      `json:"ok,omitempty" example:"resource created"`
-	Data  interface{} `json:"data,omitempty"`
-	Meta  interface{} `json:"meta,omitempty"`
-	Error interface{} `json:"error,omitempty"`
-}
-
 type respOk struct {
-	Msg string `json:"ok,omitempty"`
-}
-
-type respOkData struct {
-	Msg  string      `json:"ok,omitempty"`
-	Data interface{} `json:"data,omitempty"`
+	Msg string `json:"ok"`
 }
 
 type respError struct {
-	Msg string `json:"error,omitempty"`
+	Msg string `json:"error"`
+}
+
+type respData struct {
+	Data any `json:"data"`
+}
+
+type respOkData struct {
+	Msg  string `json:"ok"`
+	Data any    `json:"data"`
 }
 
 type respErrorData struct {
-	Msg  string      `json:"error,omitempty"`
-	Data interface{} `json:"data,omitempty"`
+	Msg  string `json:"error"`
+	Data any    `json:"data"`
 }
 
 type respMetaData struct {
-	Meta interface{} `json:"meta,omitempty"`
-	Data interface{} `json:"data,omitempty"`
+	Meta any `json:"meta"`
+	Data any `json:"data"`
 }
