@@ -9,6 +9,28 @@ definitions:
       price:
         type: number
     type: object
+  http.createCustomerForm:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      password:
+        type: string
+    type: object
+  http.customerProfileDTO:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: integer
+      lastName:
+        type: string
+    type: object
   http.dataTokenDTO:
     properties:
       token:
@@ -111,6 +133,128 @@ info:
   title: Genesis REST API
   version: "1.0"
 paths:
+  /customer:
+    post:
+      consumes:
+      - application/json
+      description: Set new customer
+      parameters:
+      - description: application/json
+        in: body
+        name: createCustomerForm
+        required: true
+        schema:
+          $ref: '#/definitions/http.createCustomerForm'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.customerProfileDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Create customer
+      tags:
+      - products
+  /customers:
+    get:
+      consumes:
+      - application/json
+      description: Paginate customers
+      parameters:
+      - description: Limit of pages
+        example: 2
+        in: query
+        name: limit
+        type: integer
+      - description: Current page
+        example: 1
+        in: query
+        name: page
+        type: integer
+      - description: Sort results by a value
+        example: created_at
+        in: query
+        name: sort
+        type: string
+      - description: Order by ascendent o descendent
+        example: desc
+        in: query
+        name: direction
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.customerProfileDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: List customers
+      tags:
+      - products
+  /customers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Set new customer
+      parameters:
+      - description: Customer id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.customerProfileDTO'
+              type: object
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/http.respError'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Create customer
+      tags:
+      - products
   /login:
     post:
       consumes:
@@ -151,6 +295,29 @@ paths:
       tags:
       - users
   /products:
+    get:
+      description: Get a list of products
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respData'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/http.productCardDTO'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: List products
+      tags:
+      - products
     post:
       consumes:
       - application/json
