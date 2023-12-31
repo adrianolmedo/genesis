@@ -219,7 +219,7 @@ func deleteCustomer(s *app.Services) fiber.Handler {
 //	@Produce		json
 //	@Failure		400			{object}	respError
 //	@Failure		500			{object}	respError
-//	@Success		200			{object}	respOkData{data=customerProfileDTO}
+//	@Success		200			{object}	respMetaData{links=genesis.LinksResp,meta=genesis.FilteredResults,data=[]customerProfileDTO}
 //	@Param			limit		query		int		false	"Limit of pages"					example(2)
 //	@Param			page		query		int		false	"Current page"						example(1)
 //	@Param			sort		query		string	false	"Sort results by a value"			example(created_at)
@@ -229,28 +229,22 @@ func listCustomers(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		f, err := getFilter(c)
 		if err != nil {
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusBadRequest).JSON(resp) // 400
+			return c.Status(http.StatusBadRequest).JSON(respError{err.Error()}) // 400
 		}
 
 		fr, err := s.Store.ListCustomers(f)
 		if err != nil {
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusInternalServerError).JSON(resp)
+			return c.Status(http.StatusInternalServerError).JSON(respError{err.Error()})
 		}
 
 		customers, ok := fr.Rows.(domain.Customers)
 		if !ok {
-			resp := respJSON(msgError, "error in data assertion", nil)
-			return c.Status(http.StatusInternalServerError).JSON(resp)
+			return c.Status(http.StatusInternalServerError).JSON(respError{"data assertion"})
 		}
 
 		if customers.IsEmpty() {
-			resp := respJSON(msgOK, "there are not customers", nil)
-			return c.Status(http.StatusOK).JSON(resp)
+			return c.Status(http.StatusOK).JSON(respOk{"there are not customers"})
 		}
-
-		data := make([]customerProfileDTO, 0, len(customers))
 
 		assemble := func(cx *domain.Customer) customerProfileDTO {
 			return customerProfileDTO{
@@ -261,47 +255,74 @@ func listCustomers(s *app.Services) fiber.Handler {
 			}
 		}
 
+		data := make([]customerProfileDTO, 0, len(customers))
 		for _, v := range customers {
 			data = append(data, assemble(v))
 		}
 
 		ls := f.GenLinksResp(c.Path(), fr.TotalPages)
-		resp := respJSON(msgOK, "", data).setLinks(ls).setMeta(fr)
-		return c.Status(http.StatusOK).JSON(resp)
+		return c.Status(http.StatusOK).JSON(respMetaData{
+			Links: ls,
+			Meta:  fr,
+			Data:  data,
+		})
 	}
 }
 
-// findProduct handler GET: /products/:id
+// findProduct godoc
+//
+//	@Summary		Find product
+//	@Description	Find product by its id
+//	@Tags			products
+//	@Accept			json
+//	@Produce		json
+//	@Failure		400	{object}	respError
+//	@Failure		404	{object}	respError
+//	@Success		200	{object}	respData{data=productCardDTO}
+//	@Param			id	path		int	true	"Product id"
+//	@Router			/products/{id} [get]
 func findProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
-			resp := respJSON(msgError, "positive number expected for ID product", nil)
-			return c.Status(http.StatusBadRequest).JSON(resp) // 400
+			return c.Status(http.StatusBadRequest).JSON(respError{
+				"positive number expected for ID product",
+			}) // 400
 		}
 
 		product, err := s.Store.Find(id)
 		if errors.Is(err, domain.ErrProductNotFound) {
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusNotFound).JSON(resp) // 404
+			return c.Status(http.StatusNotFound).JSON(respError{err.Error()}) // 404
 		}
 
 		if err != nil {
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusBadRequest).JSON(resp)
+			return c.Status(http.StatusBadRequest).JSON(respError{err.Error()})
 		}
 
-		resp := respJSON(msgOK, "", productCardDTO{
-			ID:           product.ID,
-			Name:         product.Name,
-			Observations: product.Observations,
-			Price:        product.Price,
+		return c.Status(http.StatusOK).JSON(respData{
+			Data: productCardDTO{
+				ID:           product.ID,
+				Name:         product.Name,
+				Observations: product.Observations,
+				Price:        product.Price,
+			},
 		})
-		return c.Status(http.StatusOK).JSON(resp)
 	}
 }
 
-// updateProduct handler PUT: /products/:id
+// updateProduct godoc
+//
+//	@Summary		Update product
+//	@Description	Update product by its id
+//	@Tags			products
+//	@Accept			json
+//	@Produce		json
+//	@Failure		400	{object}	respError
+//	@Failure		204	{object}	respError
+//	@Failure		500	{object}	respError
+//	@Success		200	{object}	respOk
+//	@Param			id	path		int	true	"Product id"
+//	@Router			/products/{id} [put]
 func updateProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
@@ -309,15 +330,17 @@ func updateProduct(s *app.Services) fiber.Handler {
 		// TO-DO: Add logger message: "Request to update product ID %d"
 
 		if id < 0 || err != nil {
-			resp := respJSON(msgError, "positive number expected for ID product", nil)
-			return c.Status(http.StatusBadRequest).JSON(resp)
+			return c.Status(http.StatusBadRequest).JSON(respError{
+				"positive number expected for ID product",
+			})
 		}
 
-		form := domain.UpdateProductForm{}
+		form := updateProductForm{}
 		err = c.BodyParser(&form)
 		if err != nil {
-			resp := respJSON(msgError, "the JSON structure is not correct", nil)
-			return c.Status(http.StatusBadRequest).JSON(resp)
+			return c.Status(http.StatusBadRequest).JSON(respError{
+				"the JSON structure is not correct",
+			})
 		}
 
 		form.ID = id
@@ -329,45 +352,60 @@ func updateProduct(s *app.Services) fiber.Handler {
 			Price:        form.Price,
 		})
 		if errors.Is(err, domain.ErrProductNotFound) {
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusNoContent).JSON(resp)
+			return c.Status(http.StatusNoContent).JSON(respError{err.Error()})
 		}
 
 		if err != nil {
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusInternalServerError).JSON(resp)
+			return c.Status(http.StatusInternalServerError).JSON(respError{err.Error()})
 		}
 
 		// TO-DO: Add logger message: "Product ID %d updated"
-
-		resp := respJSON(msgOK, "product updated", form)
-		return c.Status(http.StatusOK).JSON(resp)
+		return c.Status(http.StatusOK).JSON(respOk{"product updated"})
 	}
 }
 
-// deleteProduct handler DELETE: /products/:id
+// updateProductForm represents a subset of fields to update a Product.
+type updateProductForm struct {
+	ID           int     `json:"id"`
+	Name         string  `json:"name"`
+	Observations string  `json:"observations"`
+	Price        float64 `json:"price"`
+}
+
+// deleteProduct godoc
+//
+//	@Summary		Delete product
+//	@Description	Delete product by its id
+//	@Tags			products
+//	@Accept			json
+//	@Produce		json
+//	@Failure		400	{object}	respError
+//	@Failure		204	{object}	respError
+//	@Failure		500	{object}	respError
+//	@Success		200	{object}	respOk
+//	@Param			id	path		int	true	"Product id"
+//	@Router			/products/{id} [delete]
 func deleteProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
-			resp := respJSON(msgError, "positive number expected for ID product", nil)
-			return c.Status(http.StatusBadRequest).JSON(resp)
+			return c.Status(http.StatusBadRequest).JSON(respError{
+				"positive number expected for ID product",
+			})
 		}
 
 		err = s.Store.Remove(id)
 		if errors.Is(err, domain.ErrProductNotFound) {
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusNoContent).JSON(resp)
+			return c.Status(http.StatusNoContent).JSON(respError{err.Error()})
 		}
 
 		if err != nil {
-			resp := respJSON(msgError, fmt.Sprintf("could not delete product: %s", err), nil)
-			return c.Status(http.StatusInternalServerError).JSON(resp)
+			return c.Status(http.StatusInternalServerError).JSON(respError{
+				fmt.Sprintf("could not delete product: %s", err),
+			})
 		}
 
 		// TO-DO: Add logger mesaage: "Product with ID %d removed from DB"
-
-		resp := respJSON(msgOK, "product deleted", nil)
-		return c.Status(http.StatusOK).JSON(resp) // maybe 204
+		return c.Status(http.StatusOK).JSON(respOk{"product deleted"}) // maybe 204
 	}
 }

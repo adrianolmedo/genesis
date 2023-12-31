@@ -14,6 +14,7 @@ import (
 )
 
 // loginUser godoc
+//
 //	@Summary		Login user
 //	@Description	User authentication
 //	@Tags			users
@@ -69,6 +70,7 @@ type dataTokenDTO struct {
 }
 
 // signUpUser godoc
+//
 //	@Summary		SignUp user
 //	@Description	Register a user
 //	@Tags			users
@@ -130,6 +132,7 @@ type userProfileDTO struct {
 }
 
 // findUser godoc
+//
 //	@Summary		Find user
 //	@Description	Find user by its id
 //	@Tags			users
@@ -166,6 +169,7 @@ func findUser(s *app.Services) fiber.Handler {
 }
 
 // updateUser godoc
+//
 //	@Summary		Update user
 //	@Description	Update user by its id
 //	@Tags			users
@@ -229,6 +233,7 @@ type userUpdateForm struct {
 }
 
 // listUsers godoc
+//
 //	@Summary	List users
 //	@Tags		users
 //	@Accept		json
@@ -272,6 +277,7 @@ func listUsers(s *app.Services) fiber.Handler {
 }
 
 // deleteUser godoc
+//
 //	@Summary		Delete user
 //	@Description	Delete user by its id
 //	@Tags			users

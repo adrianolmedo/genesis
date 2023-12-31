@@ -90,6 +90,7 @@ type respErrorData struct {
 }
 
 type respMetaData struct {
-	Meta any `json:"meta"`
-	Data any `json:"data"`
+	Meta  any `json:"meta"`
+	Data  any `json:"data"`
+	Links any `json:"links,omitempty"`
 }

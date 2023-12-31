@@ -47,27 +47,3 @@ type ItemList []*InvoiceItem
 func (il ItemList) IsEmpty() bool {
 	return len(il) == 0
 }
-
-// InvoiceItemForm represents a form to generate invoice item as product.
-// TODO: Pass DTO to http/ package.
-type InvoiceItemForm struct {
-	ProductID int `json:"productId"`
-}
-
-// GenerateInvoiceForm models of fields to request to generate an invoice.
-// TODO: Pass DTO to http/ package.
-type GenerateInvoiceForm struct {
-	Header invoiceHeaderForm `json:"header"`
-	Items  []InvoiceItemForm `json:"items"`
-}
-
-type invoiceHeaderForm struct {
-	ClientID int `json:"clientId"`
-}
-
-// InvoiceReportDTO represent a view of a invoice.
-// TODO: Pass DTO to http/ package.
-type InvoiceReportDTO struct {
-	Header invoiceHeaderForm  `json:"header"`
-	Items  []*InvoiceItemForm `json:"items"`
-}

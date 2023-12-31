@@ -11,14 +11,28 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// generateInvoice godoc
+//
+//	@Summary		Generate invoice
+//	@Description	Generate invoice of products
+//	@Tags			billing
+//	@Accept			json
+//	@Produce		json
+//	@Failure		400					{object}	respError
+//	@Failure		404					{object}	respError
+//	@Failure		500					{object}	respError
+//	@Success		201					{object}	respOkData{data=generateInvoiceForm}
+//	@Param			generateInvoiceForm	body		generateInvoiceForm	true	"application/json"
+//	@Router			/invoices [post]
 func generateInvoice(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		form := domain.GenerateInvoiceForm{}
+		form := generateInvoiceForm{}
 
 		err := c.BodyParser(&form)
 		if err != nil {
-			resp := respJSON(msgError, "the JSON structure is not correct", nil)
-			return c.Status(http.StatusBadRequest).JSON(resp)
+			return c.Status(http.StatusBadRequest).JSON(respError{
+				"the JSON structure is not correct",
+			})
 		}
 
 		clientID := uint(form.Header.ClientID)
@@ -28,19 +42,17 @@ func generateInvoice(s *app.Services) fiber.Handler {
 			// TO-DO
 			//c.Logger().Error("User not found to generate invoice")
 
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusNotFound).JSON(resp) // 404
+			return c.Status(http.StatusNotFound).JSON(respError{err.Error()}) // 404
 		}
 
 		if err != nil {
 			// TO-DO
 			//c.Logger().Error(err)
 
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusBadRequest).JSON(resp)
+			return c.Status(http.StatusBadRequest).JSON(respError{err.Error()})
 		}
 
-		assemble := func(i domain.InvoiceItemForm) *domain.InvoiceItem {
+		assemble := func(i invoiceItemForm) *domain.InvoiceItem {
 			return &domain.InvoiceItem{
 				ProductID: i.ProductID,
 			}
@@ -55,16 +67,16 @@ func generateInvoice(s *app.Services) fiber.Handler {
 				// TO-DO
 				//c.Logger().Error("Product not found to add the invoice")
 
-				resp := respJSON(msgError, fmt.Sprintf("%s with id %d", domain.ErrProductNotFound, item.ProductID), nil)
-				return c.Status(http.StatusNotFound).JSON(resp) // 404
+				return c.Status(http.StatusNotFound).JSON(respError{
+					fmt.Sprintf("%s with id %d", domain.ErrProductNotFound, item.ProductID),
+				}) // 404
 			}
 
 			if err != nil {
 				// TO-DO
 				//c.Logger().Error(err)
 
-				resp := respJSON(msgError, err.Error(), nil)
-				return c.Status(http.StatusBadRequest).JSON(resp)
+				return c.Status(http.StatusBadRequest).JSON(respError{err.Error()})
 			}
 
 			items = append(items, assemble(item))
@@ -83,17 +95,39 @@ func generateInvoice(s *app.Services) fiber.Handler {
 			// TO-DO
 			//c.Logger().Error(err)
 
-			resp := respJSON(msgError, err.Error(), nil)
-			return c.Status(http.StatusInternalServerError).JSON(resp)
+			return c.Status(http.StatusInternalServerError).JSON(respError{err.Error()})
 		}
 
 		// TO-DO
 		//c.Logger().Infof("Invoice ID %d generated", invoice.Header.ID)
 
-		resp := respJSON(msgOK, "invoice generated", domain.GenerateInvoiceForm{
-			Header: form.Header,
-			Items:  form.Items,
+		return c.Status(http.StatusCreated).JSON(respOkData{
+			Msg: "invoice generated",
+			Data: generateInvoiceForm{
+				Header: form.Header,
+				Items:  form.Items,
+			},
 		})
-		return c.Status(http.StatusCreated).JSON(resp)
 	}
+}
+
+// generateInvoiceForm models of fields to request to generate an invoice.
+type generateInvoiceForm struct {
+	Header invoiceHeaderForm `json:"header"`
+	Items  []invoiceItemForm `json:"items"`
+}
+
+// invoiceItemForm represents a form to generate invoice item as product.
+type invoiceItemForm struct {
+	ProductID int `json:"productId"`
+}
+
+type invoiceHeaderForm struct {
+	ClientID int `json:"clientId"`
+}
+
+// InvoiceReportDTO represent a view of a invoice.
+type InvoiceReportDTO struct {
+	Header invoiceHeaderForm  `json:"header"`
+	Items  []*invoiceItemForm `json:"items"`
 }
