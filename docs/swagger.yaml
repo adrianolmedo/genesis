@@ -1,5 +1,33 @@
 basePath: /v1/
 definitions:
+  genesis.FilteredResults:
+    properties:
+      fromRow:
+        type: integer
+      limit:
+        type: integer
+      page:
+        type: integer
+      sort:
+        type: string
+      toRow:
+        type: integer
+      total:
+        type: integer
+      totalPages:
+        type: integer
+    type: object
+  genesis.LinksResp:
+    properties:
+      first:
+        type: string
+      last:
+        type: string
+      next:
+        type: string
+      prev:
+        type: string
+    type: object
   http.addProductForm:
     properties:
       name:
@@ -36,6 +64,25 @@ definitions:
       token:
         type: string
     type: object
+  http.generateInvoiceForm:
+    properties:
+      header:
+        $ref: '#/definitions/http.invoiceHeaderForm'
+      items:
+        items:
+          $ref: '#/definitions/http.invoiceItemForm'
+        type: array
+    type: object
+  http.invoiceHeaderForm:
+    properties:
+      clientId:
+        type: integer
+    type: object
+  http.invoiceItemForm:
+    properties:
+      productId:
+        type: integer
+    type: object
   http.productCardDTO:
     properties:
       id:
@@ -55,6 +102,12 @@ definitions:
     properties:
       error:
         type: string
+    type: object
+  http.respMetaData:
+    properties:
+      data: {}
+      links: {}
+      meta: {}
     type: object
   http.respOk:
     properties:
@@ -201,10 +254,16 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/http.respOkData'
+            - $ref: '#/definitions/http.respMetaData'
             - properties:
                 data:
-                  $ref: '#/definitions/http.customerProfileDTO'
+                  items:
+                    $ref: '#/definitions/http.customerProfileDTO'
+                  type: array
+                links:
+                  $ref: '#/definitions/genesis.LinksResp'
+                meta:
+                  $ref: '#/definitions/genesis.FilteredResults'
               type: object
         "400":
           description: Bad Request
@@ -255,6 +314,45 @@ paths:
       summary: Create customer
       tags:
       - products
+  /invoices:
+    post:
+      consumes:
+      - application/json
+      description: Generate invoice of products
+      parameters:
+      - description: application/json
+        in: body
+        name: generateInvoiceForm
+        required: true
+        schema:
+          $ref: '#/definitions/http.generateInvoiceForm'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.generateInvoiceForm'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Generate invoice
+      tags:
+      - billing
   /login:
     post:
       consumes:
@@ -354,6 +452,104 @@ paths:
           schema:
             $ref: '#/definitions/http.respError'
       summary: Add product
+      tags:
+      - products
+  /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete product by its id
+      parameters:
+      - description: Product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.respOk'
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/http.respError'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Delete product
+      tags:
+      - products
+    get:
+      consumes:
+      - application/json
+      description: Find product by its id
+      parameters:
+      - description: Product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.productCardDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Find product
+      tags:
+      - products
+    put:
+      consumes:
+      - application/json
+      description: Update product by its id
+      parameters:
+      - description: Product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.respOk'
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/http.respError'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Update product
       tags:
       - products
   /users:
