@@ -246,13 +246,12 @@ func listUsers(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		users, err := s.User.List()
 		if err != nil {
-			resp := respJSON(msgError, "", nil)
-			return c.Status(http.StatusInternalServerError).JSON(resp)
+			return c.Status(http.StatusInternalServerError).JSON(respError{err.Error()})
 		}
 
 		if users.IsEmpty() {
 			return c.Status(http.StatusOK).JSON(respOk{
-				Msg: "there are not users",
+				"there are not users",
 			})
 		}
 
