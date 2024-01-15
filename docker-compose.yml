@@ -5,8 +5,6 @@ networks:
     driver: ${NETWORKS_DRIVER}
 
 volumes:
-  mysql:
-    driver: ${VOLUMES_DRIVER}
   postgres:
     driver: ${VOLUMES_DRIVER}
 
@@ -31,22 +29,6 @@ services:
     networks:
       - backend
 
-  mysql:
-    image: mysql:${MYSQL_VERSION}
-    container_name: mysql
-    environment:
-      - MYSQL_DATABASE=${DBNAME}
-      - MYSQL_USER=${DBUSER}
-      - MYSQL_PASSWORD=${DBPASS}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-    ports:
-      - ${MYSQL_EXTERNAL_PORT}:${DBPORT}
-    volumes:
-      - ./.docker/mysql/database.sql:/docker-entrypoint-initdb.d/init.sql
-      - mysql:/var/lib/mysql
-    networks:
-      - backend
-
   postgres:
     image: postgres:${POSTGRES_VERSION}
     container_name: postgres
@@ -57,9 +39,6 @@ services:
     ports:
       - ${POSTGRES_EXTERNAL_PORT}:${DBPORT}
     volumes:
-      - ./.docker/postgres/database.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./.docker/postgres/tables.sql:/tables.sql
       - postgres:/var/lib/postgresql/data
     networks:
       - backend
-

@@ -1,0 +1,715 @@
+basePath: /v1/
+definitions:
+  genesis.FilteredResults:
+    properties:
+      fromRow:
+        type: integer
+      limit:
+        type: integer
+      page:
+        type: integer
+      sort:
+        type: string
+      toRow:
+        type: integer
+      total:
+        type: integer
+      totalPages:
+        type: integer
+    type: object
+  genesis.LinksResp:
+    properties:
+      first:
+        type: string
+      last:
+        type: string
+      next:
+        type: string
+      prev:
+        type: string
+    type: object
+  http.addProductForm:
+    properties:
+      name:
+        type: string
+      observations:
+        type: string
+      price:
+        type: number
+    type: object
+  http.createCustomerForm:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      password:
+        type: string
+    type: object
+  http.customerProfileDTO:
+    properties:
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: integer
+      lastName:
+        type: string
+    type: object
+  http.dataTokenDTO:
+    properties:
+      token:
+        type: string
+    type: object
+  http.generateInvoiceForm:
+    properties:
+      header:
+        $ref: '#/definitions/http.invoiceHeaderForm'
+      items:
+        items:
+          $ref: '#/definitions/http.invoiceItemForm'
+        type: array
+    type: object
+  http.invoiceHeaderForm:
+    properties:
+      clientId:
+        type: integer
+    type: object
+  http.invoiceItemForm:
+    properties:
+      productId:
+        type: integer
+    type: object
+  http.productCardDTO:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      observations:
+        type: string
+      price:
+        type: number
+    type: object
+  http.respData:
+    properties:
+      data: {}
+    type: object
+  http.respError:
+    properties:
+      error:
+        type: string
+    type: object
+  http.respMetaData:
+    properties:
+      data: {}
+      links: {}
+      meta: {}
+    type: object
+  http.respOk:
+    properties:
+      ok:
+        type: string
+    type: object
+  http.respOkData:
+    properties:
+      data: {}
+      ok:
+        type: string
+    type: object
+  http.userLoginForm:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  http.userProfileDTO:
+    properties:
+      email:
+        example: johndoe@aol.com
+        type: string
+      firstName:
+        example: John
+        type: string
+      id:
+        example: 1
+        type: integer
+      lastName:
+        example: Doe
+        type: string
+    type: object
+  http.userSignUpForm:
+    properties:
+      email:
+        example: johndoe@aol.com
+        type: string
+      firstName:
+        example: John
+        type: string
+      lastName:
+        example: Doe
+        type: string
+      password:
+        example: 1234567b
+        type: string
+    type: object
+  http.userUpdateForm:
+    properties:
+      email:
+        example: lorem@ipsum.com
+        type: string
+      firstName:
+        example: John
+        type: string
+      lastName:
+        example: Doe
+        type: string
+      password:
+        example: 1234567a
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: adrianolmedo.ve@gmail.com
+    name: Adrián Olmedo
+    url: https://twitter.com/adrianolmedo
+  description: This is a sample server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Genesis REST API
+  version: "1.0"
+paths:
+  /customer:
+    post:
+      consumes:
+      - application/json
+      description: Set new customer
+      parameters:
+      - description: application/json
+        in: body
+        name: createCustomerForm
+        required: true
+        schema:
+          $ref: '#/definitions/http.createCustomerForm'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.customerProfileDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Create customer
+      tags:
+      - products
+  /customers:
+    get:
+      consumes:
+      - application/json
+      description: Paginate customers
+      parameters:
+      - description: Limit of pages
+        example: 2
+        in: query
+        name: limit
+        type: integer
+      - description: Current page
+        example: 1
+        in: query
+        name: page
+        type: integer
+      - description: Sort results by a value
+        example: created_at
+        in: query
+        name: sort
+        type: string
+      - description: Order by ascendent o descendent
+        example: desc
+        in: query
+        name: direction
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respMetaData'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/http.customerProfileDTO'
+                  type: array
+                links:
+                  $ref: '#/definitions/genesis.LinksResp'
+                meta:
+                  $ref: '#/definitions/genesis.FilteredResults'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: List customers
+      tags:
+      - products
+  /customers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Set new customer
+      parameters:
+      - description: Customer id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.customerProfileDTO'
+              type: object
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/http.respError'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Create customer
+      tags:
+      - products
+  /invoices:
+    post:
+      consumes:
+      - application/json
+      description: Generate invoice of products
+      parameters:
+      - description: application/json
+        in: body
+        name: generateInvoiceForm
+        required: true
+        schema:
+          $ref: '#/definitions/http.generateInvoiceForm'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.generateInvoiceForm'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Generate invoice
+      tags:
+      - billing
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: User authentication
+      parameters:
+      - description: application/json
+        in: body
+        name: userLoginForm
+        required: true
+        schema:
+          $ref: '#/definitions/http.userLoginForm'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.dataTokenDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Login user
+      tags:
+      - users
+  /products:
+    get:
+      description: Get a list of products
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respData'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/http.productCardDTO'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: List products
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: Register product
+      parameters:
+      - description: application/json
+        in: body
+        name: addProductForm
+        required: true
+        schema:
+          $ref: '#/definitions/http.addProductForm'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.productCardDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Add product
+      tags:
+      - products
+  /products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete product by its id
+      parameters:
+      - description: Product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.respOk'
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/http.respError'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Delete product
+      tags:
+      - products
+    get:
+      consumes:
+      - application/json
+      description: Find product by its id
+      parameters:
+      - description: Product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.productCardDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Find product
+      tags:
+      - products
+    put:
+      consumes:
+      - application/json
+      description: Update product by its id
+      parameters:
+      - description: Product id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.respOk'
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/http.respError'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Update product
+      tags:
+      - products
+  /users:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/http.userProfileDTO'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: List users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Register a user
+      parameters:
+      - description: application/json
+        in: body
+        name: userSignUpForm
+        required: true
+        schema:
+          $ref: '#/definitions/http.userSignUpForm'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.userProfileDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: SignUp user
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete user by its id
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/http.respOk'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Delete user
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Find user by its id
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.userProfileDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Find user
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update user by its id
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: application/json
+        in: body
+        name: userUpdateForm
+        required: true
+        schema:
+          $ref: '#/definitions/http.userUpdateForm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/http.respOkData'
+            - properties:
+                data:
+                  $ref: '#/definitions/http.userProfileDTO'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.respError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/http.respError'
+      summary: Update user
+      tags:
+      - users
+swagger: "2.0"

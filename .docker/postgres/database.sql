@@ -1,2 +1,0 @@
-CREATE DATABASE genesis;
-GRANT ALL PRIVILEGES ON DATABASE genesis TO johndoe;
