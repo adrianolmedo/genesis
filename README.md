@@ -2,7 +2,11 @@
 
 REST API of CRM, its architecture is inspired (not based) on Hexagonal Architecture.
 
-## Run with Postgres service:
+## Architecture
+
+![Golang structure inspired on Hexagonal Architecture](https://i.imgur.com/pHIlCL5.png)
+
+## Run with Postgres service
 
 ```bash
 $ git clone https://github.com/adrianolmedo/genesis.git
