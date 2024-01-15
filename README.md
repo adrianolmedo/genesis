@@ -4,7 +4,7 @@ REST API of CRM, its architecture is inspired (not based) on Hexagonal Architect
 
 ## Architecture
 
-![Golang structure inspired on Hexagonal Architecture](https://i.imgur.com/pHIlCL5.png)
+![Golang structure inspired on Hexagonal Architecture](https://i.imgur.com/eZxD6S1.png)
 
 ## Run with Postgres service
 
