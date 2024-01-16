@@ -17,7 +17,7 @@ $ docker-compose up -d --build postgres
 **Run migrations**
 
 ```bash
-./migrations.sh
+./migrate.sh
 ```
 
 **Up application service:**
