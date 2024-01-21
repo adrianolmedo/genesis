@@ -14,9 +14,6 @@ type Config struct {
 
 // DB Database config.
 type DB struct {
-	// Engine eg.: "mysql" or "postgres".
-	Engine string
-
 	// Host when is running the database Engine.
 	Host string
 

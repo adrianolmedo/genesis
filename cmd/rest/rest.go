@@ -36,7 +36,6 @@ func main() {
 		Port: *port,
 		CORS: *cors,
 		DB: config.DB{
-			Engine:   "postgres",
 			Host:     *dbhost,
 			Port:     *dbport,
 			User:     *dbuser,
