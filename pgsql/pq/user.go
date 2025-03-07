@@ -1,4 +1,4 @@
-package postgres
+package pq
 
 import (
 	"database/sql"
@@ -36,7 +36,7 @@ func (r User) Create(u *domain.User) error {
 }
 
 // ByLogin get a User from its login data.
-// TODO: Only select data that have deleted_at empty.
+// TODO: Only select data that have deleted_at as NULL.
 func (r User) ByLogin(email, password string) error {
 	stmt, err := r.db.Prepare(`SELECT id FROM "user" WHERE email = $1 AND password = $2`)
 	if err != nil {
@@ -62,7 +62,6 @@ func (r User) ByLogin(email, password string) error {
 }
 
 // ByID get a User from its id.
-// TODO: Only select data that have deleted_at empty.
 func (r User) ByID(id uint) (*domain.User, error) {
 	stmt, err := r.db.Prepare(`SELECT * FROM "user" WHERE id = $1 AND deleted_at IS NULL`)
 	if err != nil {
@@ -158,7 +157,7 @@ func (r User) All() (domain.Users, error) {
 
 // Delete delete user from its is.
 // TODO: Convert to soft delete.
-func (r User) Delete(id int64) error {
+func (r User) Delete(id uint) error {
 	stmt, err := r.db.Prepare(`DELETE FROM "user" WHERE id = $1`)
 	if err != nil {
 		return err

@@ -1,4 +1,4 @@
-package postgres
+package pq
 
 import (
 	"database/sql"
@@ -6,6 +6,7 @@ import (
 	"time"
 
 	domain "github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis/pgsql"
 )
 
 // Customer repository.
@@ -34,20 +35,20 @@ func (r Customer) Create(u *domain.Customer) error {
 
 // All return filtered results by limit, offset and order for the pagination
 // or return a SQL error.
-func (r Customer) All(f *domain.Filter) (domain.FilteredResults, error) {
+func (r Customer) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 	query := `SELECT * FROM "customer"`
-	query += " " + fmt.Sprintf("ORDER BY %s %s", f.Sort(), f.Direction())
-	query += " " + limitOffset(f.Limit(), f.Page())
+	query += " " + fmt.Sprintf("ORDER BY %s %s", p.Sort(), p.Direction())
+	query += " " + pgsql.LimitOffset(p.Limit(), p.Page())
 
 	stmt, err := r.db.Prepare(query)
 	if err != nil {
-		return domain.FilteredResults{}, err
+		return pgsql.PagerResults{}, err
 	}
 	defer stmt.Close()
 
 	rows, err := stmt.Query()
 	if err != nil {
-		return domain.FilteredResults{}, err
+		return pgsql.PagerResults{}, err
 	}
 	defer rows.Close()
 
@@ -55,21 +56,21 @@ func (r Customer) All(f *domain.Filter) (domain.FilteredResults, error) {
 	for rows.Next() {
 		c, err := scanRowCustomer(rows)
 		if err != nil {
-			return domain.FilteredResults{}, err
+			return pgsql.PagerResults{}, err
 		}
 		customers = append(customers, c)
 	}
 	if err := rows.Err(); err != nil {
-		return domain.FilteredResults{}, err
+		return pgsql.PagerResults{}, err
 	}
 
 	// Get total rows to calculate total pages.
 	totalRows, err := r.countAll()
 	if err != nil {
-		return domain.FilteredResults{}, err
+		return pgsql.PagerResults{}, err
 	}
 
-	return f.Paginate(customers, totalRows), nil
+	return p.Paginate(customers, totalRows), nil
 }
 
 // countAll return total of Customers in storage.

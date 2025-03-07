@@ -6,11 +6,11 @@ import (
 	"regexp"
 
 	domain "github.com/adrianolmedo/genesis"
-	"github.com/adrianolmedo/genesis/postgres"
+	strg "github.com/adrianolmedo/genesis/pgsql/pq"
 )
 
 type userService struct {
-	repo postgres.User
+	repo strg.User
 }
 
 func (s userService) Login(email, password string) error {
@@ -78,7 +78,7 @@ func (s userService) List() (domain.Users, error) {
 }
 
 // Remove delete User by its ID.
-func (s userService) Remove(id int64) error {
+func (s userService) Remove(id uint) error {
 	if id == 0 {
 		return domain.ErrUserNotFound
 	}

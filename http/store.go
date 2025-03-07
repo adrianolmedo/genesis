@@ -8,6 +8,7 @@ import (
 
 	domain "github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/app"
+	"github.com/adrianolmedo/genesis/pgsql"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -227,17 +228,21 @@ func deleteCustomer(s *app.Services) fiber.Handler {
 //	@Router			/customers [get]
 func listCustomers(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		f, err := getFilter(c)
+		p, err := pgsql.NewPager(
+			c.QueryInt("limit"),
+			c.QueryInt("page"),
+			c.Query("sort", "created_at"),
+			c.Query("direction"))
 		if err != nil {
 			return c.Status(http.StatusBadRequest).JSON(respError{err.Error()}) // 400
 		}
 
-		fr, err := s.Store.ListCustomers(f)
+		pr, err := s.Store.ListCustomers(p)
 		if err != nil {
 			return c.Status(http.StatusInternalServerError).JSON(respError{err.Error()})
 		}
 
-		customers, ok := fr.Rows.(domain.Customers)
+		customers, ok := pr.Rows.(domain.Customers)
 		if !ok {
 			return c.Status(http.StatusInternalServerError).JSON(respError{"data assertion"})
 		}
@@ -260,10 +265,9 @@ func listCustomers(s *app.Services) fiber.Handler {
 			data = append(data, assemble(v))
 		}
 
-		ls := f.GenLinksResp(c.Path(), fr.TotalPages)
 		return c.Status(http.StatusOK).JSON(respMetaData{
-			Links: ls,
-			Meta:  fr,
+			Links: p.GenLinks(c.Path(), pr.TotalPages),
+			Meta:  pr,
 			Data:  data,
 		})
 	}

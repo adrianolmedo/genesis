@@ -1,7 +1,7 @@
 //go:build integration
 // +build integration
 
-package postgres
+package pq
 
 import (
 	"database/sql"

@@ -2,11 +2,11 @@ package app
 
 import (
 	domain "github.com/adrianolmedo/genesis"
-	"github.com/adrianolmedo/genesis/postgres"
+	strg "github.com/adrianolmedo/genesis/pgsql/pq"
 )
 
 type billingService struct {
-	repo postgres.Invoice
+	repo strg.Invoice
 }
 
 func (s billingService) Generate(inv *domain.Invoice) error {

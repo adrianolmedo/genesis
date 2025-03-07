@@ -294,7 +294,7 @@ func deleteUser(s *app.Services) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(respError{"positive number expected for ID user"})
 		}
 
-		err = s.User.Remove(int64(id))
+		err = s.User.Remove(uint(id))
 		if errors.Is(err, domain.ErrUserNotFound) {
 			return c.Status(http.StatusNotFound).JSON(respError{err.Error()})
 		}

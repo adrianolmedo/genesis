@@ -2,12 +2,13 @@ package app
 
 import (
 	domain "github.com/adrianolmedo/genesis"
-	"github.com/adrianolmedo/genesis/postgres"
+	"github.com/adrianolmedo/genesis/pgsql"
+	strg "github.com/adrianolmedo/genesis/pgsql/pq"
 )
 
 type storeService struct {
-	repoProduct  postgres.Product
-	repoCustomer postgres.Customer
+	repoProduct  strg.Product
+	repoCustomer strg.Customer
 }
 
 func (s storeService) Add(product *domain.Product) error {
@@ -54,8 +55,8 @@ func (s storeService) AddCustomer(cx *domain.Customer) error {
 	return s.repoCustomer.Create(cx)
 }
 
-func (s storeService) ListCustomers(f *domain.Filter) (domain.FilteredResults, error) {
-	return s.repoCustomer.All(f)
+func (s storeService) ListCustomers(p *pgsql.Pager) (pgsql.PagerResults, error) {
+	return s.repoCustomer.All(p)
 }
 
 func (s storeService) RemoveCustomer(id int) error {

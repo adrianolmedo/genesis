@@ -6,7 +6,7 @@ import (
 	"github.com/adrianolmedo/genesis/app"
 	_ "github.com/adrianolmedo/genesis/docs"
 	"github.com/adrianolmedo/genesis/http/jwt"
-	"github.com/adrianolmedo/genesis/postgres"
+	"github.com/adrianolmedo/genesis/pgsql/pq"
 
 	"github.com/gofiber/fiber/v2"
 	swagger "github.com/swaggo/fiber-swagger"
@@ -26,7 +26,7 @@ import (
 
 // @host		localhost:3000
 // @BasePath	/v1/
-func Router(strg *postgres.Storage) *fiber.App {
+func Router(strg *pq.Storage) *fiber.App {
 	s := app.NewServices(strg)
 	f := fiber.New()
 

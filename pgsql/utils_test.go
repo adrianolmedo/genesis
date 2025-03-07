@@ -1,4 +1,4 @@
-package postgres
+package pgsql
 
 import (
 	"testing"
@@ -30,7 +30,7 @@ func TestLimitOffset(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		got := limitOffset(tc.limit, tc.page)
+		got := LimitOffset(tc.limit, tc.page)
 		if tc.want != got {
 			t.Errorf("%s: want %q, got %q", tc.name, tc.want, got)
 		}

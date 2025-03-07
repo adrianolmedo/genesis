@@ -8,7 +8,7 @@ import (
 	config "github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/http"
 	"github.com/adrianolmedo/genesis/http/jwt"
-	"github.com/adrianolmedo/genesis/postgres"
+	"github.com/adrianolmedo/genesis/pgsql/pq"
 
 	"github.com/peterbourgon/ff/v3"
 )
@@ -57,7 +57,7 @@ func run(cfg *config.Config) error {
 		return fmt.Errorf("certificates could not be loaded: %v", err)
 	}
 
-	strg, err := postgres.NewStorage(cfg.DB)
+	strg, err := pq.NewStorage(cfg.DB)
 	if err != nil {
 		return fmt.Errorf("error from storage: %v", err)
 	}

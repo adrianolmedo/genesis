@@ -1,4 +1,4 @@
-package postgres
+package pq
 
 import (
 	"fmt"
@@ -14,10 +14,9 @@ type Storage struct {
 	Invoice  Invoice
 }
 
-// NewStorage init postgres database connection, build the Storage and return it
+// NewStorage start postgres database connection, build the Storage and return it
 // its pointer.
 func NewStorage(dbcfg config.DB) (*Storage, error) {
-
 	db, err := newDB(dbcfg)
 	if err != nil {
 		return nil, fmt.Errorf("postgres: %v", err)
