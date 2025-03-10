@@ -86,38 +86,44 @@ func validateLimit(n int) (int, error) {
 // setDirection Pager helper.
 func setDirection(dir string) string {
 	dir = strings.ToUpper(dir)
+	validDirections := map[string]bool{"ASC": true, "DESC": true}
 
-	if dir == "ASC" {
+	if validDirections[dir] {
 		return dir
 	}
-
-	if dir == "DESC" {
-		return dir
-	}
-
 	return "ASC"
 }
 
-// Paginate return meta data with subset of filterd results.
 func (p *Pager) Paginate(rows any, totalRows int) PagerResults {
+	if totalRows == 0 {
+		return PagerResults{
+			Page:       p.page,
+			Limit:      p.limit,
+			Sort:       p.sort,
+			TotalRows:  0,
+			TotalPages: 0,
+			FromRow:    0,
+			ToRow:      0,
+			Rows:       rows,
+		}
+	}
+
 	totalPages := int(math.Ceil(float64(totalRows) / float64(p.limit)))
-	totalPages = int(math.Max(float64(totalPages), 0))
 
 	var fromRow, toRow int
 
-	// Set fromRow and toRow on first page.
-	if p.page == 0 {
-		fromRow = 1
-		toRow = p.limit
-	} else if p.page <= totalPages {
-		// Calculate fromRow and toRow.
-		fromRow = p.page*p.limit + 1
-		toRow = (p.page + 1) * p.limit
-	}
-
-	// Or set toRow with totalRows.
-	if toRow > totalRows {
-		toRow = totalRows
+	if p.direction == "ASC" {
+		fromRow = (p.page - 1) * p.limit
+		toRow = fromRow + p.limit
+		if toRow > totalRows {
+			toRow = totalRows
+		}
+	} else { // DESC case
+		toRow = totalRows - (p.page-1)*p.limit
+		fromRow = toRow - p.limit
+		if fromRow < 0 {
+			fromRow = 0
+		}
 	}
 
 	return PagerResults{
@@ -126,7 +132,7 @@ func (p *Pager) Paginate(rows any, totalRows int) PagerResults {
 		Sort:       p.sort,
 		TotalRows:  totalRows,
 		TotalPages: totalPages,
-		FromRow:    fromRow,
+		FromRow:    fromRow + 1, // Convert to 1-based index
 		ToRow:      toRow,
 		Rows:       rows,
 	}
@@ -149,25 +155,19 @@ type PagerResults struct {
 
 // GenLinks generate links field to JSON reponse.
 func (p *Pager) GenLinks(path string, totalPages int) PagerLinks {
-	var firstPage, lastPage, previousPage, nextPage string
+	genLink := func(page int) string {
+		return fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, p.limit, page, p.sort)
+	}
 
-	// Set first page and last page for the pagination reponse.
-	firstPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, p.limit, 1, p.sort)
-	lastPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, p.limit, totalPages, p.sort)
+	firstPage := genLink(1)
+	lastPage := genLink(totalPages)
 
-	// Set previous page pagination response.
+	var previousPage, nextPage string
 	if p.page > 1 {
-		previousPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, p.limit, p.page-1, p.sort)
+		previousPage = genLink(p.page - 1)
 	}
-
-	// Set next pagination response.
 	if p.page < totalPages {
-		nextPage = fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, p.limit, p.page+1, p.sort)
-	}
-
-	// Reset previous page.
-	if p.page > totalPages {
-		previousPage = ""
+		nextPage = genLink(p.page + 1)
 	}
 
 	return PagerLinks{
