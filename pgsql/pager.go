@@ -7,27 +7,12 @@ import (
 	"strings"
 )
 
-// Direction enum for the sort field of Pager.
-type Direction int
-
-const (
-	// ASC sort results ascending.
-	ASC Direction = iota
-
-	// DESC sort results descending.
-	DESC
-)
-
-func (d Direction) String() string {
-	return [2]string{"ASC", "DESC"}[d]
-}
-
 // Pager query for filtering paginated results.
 type Pager struct {
 	limit     int
 	page      int
 	sort      string
-	direction Direction
+	direction string
 }
 
 // NewPager constructor.
@@ -46,7 +31,7 @@ func NewPager(limit, page int, sort, direction string) (*Pager, error) {
 		limit:     limit,
 		page:      page,
 		sort:      sort,
-		direction: getDirection(direction),
+		direction: setDirection(direction),
 	}, nil
 }
 
@@ -67,7 +52,7 @@ func (p *Pager) Sort() string {
 
 // Direction to display the results in DESC or ASC order based on the
 // Sort value.
-func (p *Pager) Direction() Direction {
+func (p *Pager) Direction() string {
 	return p.direction
 }
 
@@ -98,20 +83,19 @@ func validateLimit(n int) (int, error) {
 	return n, nil
 }
 
-// getDirection Pager helper.
-func getDirection(dir string) Direction {
-	var d Direction
-	dir = strings.ToLower(dir)
+// setDirection Pager helper.
+func setDirection(dir string) string {
+	dir = strings.ToUpper(dir)
 
-	if dir == "asc" {
-		d = ASC
+	if dir == "ASC" {
+		return dir
 	}
 
-	if dir == "desc" {
-		d = DESC
+	if dir == "DESC" {
+		return dir
 	}
 
-	return d
+	return "ASC"
 }
 
 // Paginate return meta data with subset of filterd results.
