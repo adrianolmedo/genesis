@@ -35,12 +35,3 @@ type Products []*Product
 func (ps Products) IsEmpty() bool {
 	return len(ps) == 0
 }
-
-// UpdateProductForm represents a subset of fields to update a Product.
-// TODO: Pass DTO to http/ package.
-type UpdateProductForm struct {
-	ID           int     `json:"id"`
-	Name         string  `json:"name"`
-	Observations string  `json:"observations"`
-	Price        float64 `json:"price"`
-}
