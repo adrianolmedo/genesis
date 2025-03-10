@@ -2,7 +2,7 @@ package pgsql
 
 import "fmt"
 
-// LimitOffset returns a SQL string for a given limit & offset.
+// LimitOffset returns a SQL string for LIMIT OFFSET a given limit & page.
 func LimitOffset(limit, page int) string {
 	if limit == 0 && page == 0 {
 		return ""
