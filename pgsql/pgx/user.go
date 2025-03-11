@@ -90,8 +90,8 @@ func (r User) Update(u domain.User) error {
 
 func (r User) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 	query := `SELECT id, uuid, first_name, last_name, email, password, created_at, updated_at, deleted_at FROM "user" WHERE deleted_at IS NULL`
-	query += " " + fmt.Sprintf("ORDER BY %s %s", p.Sort(), p.Direction())
-	query += " " + pgsql.LimitOffset(p.Limit(), p.Page())
+	query += " " + p.OrderBy()
+	query += " " + p.LimitOffset()
 
 	rows, err := r.conn.Query(context.Background(), query)
 	if err != nil {

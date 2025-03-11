@@ -31,7 +31,7 @@ func NewPager(limit, page int, sort, direction string) (*Pager, error) {
 		limit:     limit,
 		page:      page,
 		sort:      sort,
-		direction: setDirection(direction),
+		direction: normalizeDirection(direction),
 	}, nil
 }
 
@@ -56,7 +56,7 @@ func (p *Pager) Direction() string {
 	return p.direction
 }
 
-// validatePage Pager helper.
+// validatePage Pager helper, ensures page number is valid.
 func validatePage(p int) (int, error) {
 	if p < 0 {
 		return p, errors.New("positive number expected for page")
@@ -69,7 +69,8 @@ func validatePage(p int) (int, error) {
 	return p, nil
 }
 
-// validateLimit Pager helper, by default 10 it's the max limit.
+// validateLimit Pager helper, ensures limit is within a reasonable
+// range (default max 10).
 func validateLimit(n int) (int, error) {
 	if n < 0 {
 		return n, errors.New("positive number expected for limit")
@@ -83,8 +84,9 @@ func validateLimit(n int) (int, error) {
 	return n, nil
 }
 
-// setDirection Pager helper.
-func setDirection(dir string) string {
+// normalizeDirection Pager helper, ensures the direction is either
+// ASC or DESC.
+func normalizeDirection(dir string) string {
 	dir = strings.ToUpper(dir)
 	validDirections := map[string]bool{"ASC": true, "DESC": true}
 
@@ -94,6 +96,17 @@ func setDirection(dir string) string {
 	return "ASC"
 }
 
+// OrderBy generates an SQL ORDER BY clause.
+func (p *Pager) OrderBy() string {
+	return fmt.Sprintf(`ORDER BY %q %s`, p.sort, p.direction)
+}
+
+// LimitOffset generates an SQL LIMIT OFFSET clause.
+func (p *Pager) LimitOffset() string {
+	return LimitOffset(p.limit, p.page)
+}
+
+// Paginate calculates pagination details.
 func (p *Pager) Paginate(rows any, totalRows int) PagerResults {
 	if totalRows == 0 {
 		return PagerResults{
@@ -178,8 +191,7 @@ func (p *Pager) GenLinks(path string, totalPages int) PagerLinks {
 	}
 }
 
-// PagerLinks to complies with the HATEOAS principle to display the information
-// needed to create pagination.
+// PagerLinks follows HATEOAS principles.
 type PagerLinks struct {
 	FirstPage    string `json:"first"`
 	PreviousPage string `json:"prev"`

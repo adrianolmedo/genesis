@@ -2,7 +2,6 @@ package pq
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	domain "github.com/adrianolmedo/genesis"
@@ -37,8 +36,8 @@ func (r Customer) Create(u *domain.Customer) error {
 // or return a SQL error.
 func (r Customer) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 	query := `SELECT * FROM "customer"`
-	query += " " + fmt.Sprintf("ORDER BY %s %s", p.Sort(), p.Direction())
-	query += " " + pgsql.LimitOffset(p.Limit(), p.Page())
+	query += " " + p.OrderBy()
+	query += " " + p.LimitOffset()
 
 	stmt, err := r.db.Prepare(query)
 	if err != nil {
