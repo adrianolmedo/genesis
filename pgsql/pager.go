@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// Pager query for filtering paginated results.
+// Pager for filtering paginated results.
 type Pager struct {
 	limit     int
 	page      int
@@ -15,7 +15,7 @@ type Pager struct {
 	direction string
 }
 
-// NewPager constructor.
+// NewPager constructor, ensures valid defaults when creating a Pager.
 func NewPager(limit, page int, sort, direction string) (*Pager, error) {
 	limit, err := validateLimit(limit)
 	if err != nil {
@@ -151,8 +151,7 @@ func (p *Pager) Paginate(rows any, totalRows int) PagerResults {
 	}
 }
 
-// PagerResults that provide the filtered results and its data for
-// build the pagination.
+// PagerResults contains paginated data.
 type PagerResults struct {
 	Limit      int    `json:"limit"`
 	Page       int    `json:"page"`
@@ -166,7 +165,7 @@ type PagerResults struct {
 	Rows any `json:"-"`
 }
 
-// GenLinks generate links field to JSON reponse.
+// GenLinks generates HATEOAS pagination links.
 func (p *Pager) GenLinks(path string, totalPages int) PagerLinks {
 	genLink := func(page int) string {
 		return fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, p.limit, page, p.sort)
