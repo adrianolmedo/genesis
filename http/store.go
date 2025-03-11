@@ -266,7 +266,7 @@ func listCustomers(s *app.Services) fiber.Handler {
 		}
 
 		return c.Status(http.StatusOK).JSON(respMetaData{
-			Links: p.GenLinks(c.Path(), pr.TotalPages),
+			Links: p.Links(c.Path(), pr.TotalPages),
 			Meta:  pr,
 			Data:  data,
 		})

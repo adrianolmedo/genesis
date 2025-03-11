@@ -165,8 +165,8 @@ type PagerResults struct {
 	Rows any `json:"-"`
 }
 
-// GenLinks generates HATEOAS pagination links.
-func (p *Pager) GenLinks(path string, totalPages int) PagerLinks {
+// Links generates HATEOAS pagination links.
+func (p *Pager) Links(path string, totalPages int) PagerLinks {
 	genLink := func(page int) string {
 		return fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, p.limit, page, p.sort)
 	}
