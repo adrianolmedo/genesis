@@ -220,7 +220,7 @@ func deleteCustomer(s *app.Services) fiber.Handler {
 //	@Produce		json
 //	@Failure		400			{object}	respError
 //	@Failure		500			{object}	respError
-//	@Success		200			{object}	respMetaData{links=genesis.LinksResp,meta=genesis.FilteredResults,data=[]customerProfileDTO}
+//	@Success		200			{object}	respMetaData{links=pgsql.PagerLinks,meta=pgsql.PagerResults,data=[]customerProfileDTO}
 //	@Param			limit		query		int		false	"Limit of pages"					example(2)
 //	@Param			page		query		int		false	"Current page"						example(1)
 //	@Param			sort		query		string	false	"Sort results by a value"			example(created_at)
@@ -232,7 +232,8 @@ func listCustomers(s *app.Services) fiber.Handler {
 			c.QueryInt("limit"),
 			c.QueryInt("page"),
 			c.Query("sort", "created_at"),
-			c.Query("direction"))
+			c.Query("direction"),
+        )
 		if err != nil {
 			return c.Status(http.StatusBadRequest).JSON(respError{err.Error()}) // 400
 		}
