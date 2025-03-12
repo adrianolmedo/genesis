@@ -79,9 +79,9 @@ func validateLimit(n int) (int, error) {
 		return n, errors.New("positive number expected for limit")
 	}
 
-	// 10 it's the max limit
-	if n == 0 || n > int(PagerMaxLimit) {
-		n = int(PagerMaxLimit)
+    maxLimit := int(PagerMaxLimit)
+	if n == 0 || n > maxLimit {
+		n = maxLimit
 	}
 
 	return n, nil
