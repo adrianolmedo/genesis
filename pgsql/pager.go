@@ -7,6 +7,9 @@ import (
 	"strings"
 )
 
+// PagerMaxLimit is the default value for the limit in a reasonable range.
+const PagerMaxLimit uint = 10
+
 // Pager for filtering paginated results.
 type Pager struct {
 	limit     int
@@ -70,15 +73,15 @@ func validatePage(p int) (int, error) {
 }
 
 // validateLimit Pager helper, ensures limit is within a reasonable
-// range (default max 10).
+// range (by default value check PagerMaxLimit const).
 func validateLimit(n int) (int, error) {
 	if n < 0 {
 		return n, errors.New("positive number expected for limit")
 	}
 
 	// 10 it's the max limit
-	if n == 0 || n > 10 {
-		n = 10
+	if n == 0 || n > int(PagerMaxLimit) {
+		n = int(PagerMaxLimit)
 	}
 
 	return n, nil
@@ -104,6 +107,21 @@ func (p *Pager) OrderBy() string {
 // LimitOffset generates an SQL LIMIT OFFSET clause.
 func (p *Pager) LimitOffset() string {
 	return LimitOffset(p.limit, p.page)
+}
+
+// LimitOffset returns a SQL string for LIMIT OFFSET a given limit & page.
+func LimitOffset(limit, page int) string {
+	if limit == 0 && page == 0 {
+		return ""
+	}
+
+	if page == 0 {
+		page = 1
+	}
+
+	offset := page*limit - limit
+
+	return fmt.Sprintf("LIMIT %d OFFSET %d", limit, offset)
 }
 
 // Paginate calculates pagination details.
