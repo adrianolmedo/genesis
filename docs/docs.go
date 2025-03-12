@@ -143,10 +143,10 @@ const docTemplate = `{
                                             }
                                         },
                                         "links": {
-                                            "$ref": "#/definitions/genesis.LinksResp"
+                                            "$ref": "#/definitions/pgsql.PagerLinks"
                                         },
                                         "meta": {
-                                            "$ref": "#/definitions/genesis.FilteredResults"
+                                            "$ref": "#/definitions/pgsql.PagerResults"
                                         }
                                     }
                                 }
@@ -875,49 +875,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "genesis.FilteredResults": {
-            "type": "object",
-            "properties": {
-                "fromRow": {
-                    "type": "integer"
-                },
-                "limit": {
-                    "type": "integer"
-                },
-                "page": {
-                    "type": "integer"
-                },
-                "sort": {
-                    "type": "string"
-                },
-                "toRow": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
-                },
-                "totalPages": {
-                    "type": "integer"
-                }
-            }
-        },
-        "genesis.LinksResp": {
-            "type": "object",
-            "properties": {
-                "first": {
-                    "type": "string"
-                },
-                "last": {
-                    "type": "string"
-                },
-                "next": {
-                    "type": "string"
-                },
-                "prev": {
-                    "type": "string"
-                }
-            }
-        },
         "http.addProductForm": {
             "type": "object",
             "properties": {
@@ -1131,6 +1088,49 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "example": "1234567a"
+                }
+            }
+        },
+        "pgsql.PagerLinks": {
+            "type": "object",
+            "properties": {
+                "first": {
+                    "type": "string"
+                },
+                "last": {
+                    "type": "string"
+                },
+                "next": {
+                    "type": "string"
+                },
+                "prev": {
+                    "type": "string"
+                }
+            }
+        },
+        "pgsql.PagerResults": {
+            "type": "object",
+            "properties": {
+                "fromRow": {
+                    "type": "integer"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "sort": {
+                    "type": "string"
+                },
+                "toRow": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "totalPages": {
+                    "type": "integer"
                 }
             }
         }

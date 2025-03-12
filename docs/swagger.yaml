@@ -1,33 +1,5 @@
 basePath: /v1/
 definitions:
-  genesis.FilteredResults:
-    properties:
-      fromRow:
-        type: integer
-      limit:
-        type: integer
-      page:
-        type: integer
-      sort:
-        type: string
-      toRow:
-        type: integer
-      total:
-        type: integer
-      totalPages:
-        type: integer
-    type: object
-  genesis.LinksResp:
-    properties:
-      first:
-        type: string
-      last:
-        type: string
-      next:
-        type: string
-      prev:
-        type: string
-    type: object
   http.addProductForm:
     properties:
       name:
@@ -172,6 +144,34 @@ definitions:
         example: 1234567a
         type: string
     type: object
+  pgsql.PagerLinks:
+    properties:
+      first:
+        type: string
+      last:
+        type: string
+      next:
+        type: string
+      prev:
+        type: string
+    type: object
+  pgsql.PagerResults:
+    properties:
+      fromRow:
+        type: integer
+      limit:
+        type: integer
+      page:
+        type: integer
+      sort:
+        type: string
+      toRow:
+        type: integer
+      total:
+        type: integer
+      totalPages:
+        type: integer
+    type: object
 host: localhost:3000
 info:
   contact:
@@ -261,9 +261,9 @@ paths:
                     $ref: '#/definitions/http.customerProfileDTO'
                   type: array
                 links:
-                  $ref: '#/definitions/genesis.LinksResp'
+                  $ref: '#/definitions/pgsql.PagerLinks'
                 meta:
-                  $ref: '#/definitions/genesis.FilteredResults'
+                  $ref: '#/definitions/pgsql.PagerResults'
               type: object
         "400":
           description: Bad Request
