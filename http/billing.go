@@ -18,10 +18,10 @@ import (
 //	@Tags			billing
 //	@Accept			json
 //	@Produce		json
-//	@Failure		400					{object}	respError
-//	@Failure		404					{object}	respError
-//	@Failure		500					{object}	respError
-//	@Success		201					{object}	respOkData{data=generateInvoiceForm}
+//	@Failure		400					{object}	errorResp
+//	@Failure		404					{object}	errorResp
+//	@Failure		500					{object}	errorResp
+//	@Success		201					{object}	successResp{data=generateInvoiceForm}
 //	@Param			generateInvoiceForm	body		generateInvoiceForm	true	"application/json"
 //	@Router			/invoices [post]
 func generateInvoice(s *app.Services) fiber.Handler {
@@ -30,8 +30,10 @@ func generateInvoice(s *app.Services) fiber.Handler {
 
 		err := c.BodyParser(&form)
 		if err != nil {
-			return c.Status(http.StatusBadRequest).JSON(respError{
-				"the JSON structure is not correct",
+			return errorJSON(c, http.StatusBadRequest, respDetails{
+				Code:    "002",
+				Message: "The JSON structure is not correct",
+				Details: "Check the JSON syntax in the structure",
 			})
 		}
 
@@ -42,14 +44,20 @@ func generateInvoice(s *app.Services) fiber.Handler {
 			// TO-DO
 			//c.Logger().Error("User not found to generate invoice")
 
-			return c.Status(http.StatusNotFound).JSON(respError{err.Error()}) // 404
+			return errorJSON(c, http.StatusNotFound, respDetails{
+				Code:    "002",
+				Message: err.Error(),
+			})
 		}
 
 		if err != nil {
 			// TO-DO
 			//c.Logger().Error(err)
 
-			return c.Status(http.StatusBadRequest).JSON(respError{err.Error()})
+			return errorJSON(c, http.StatusBadRequest, respDetails{
+				Code:    "002",
+				Message: err.Error(),
+			})
 		}
 
 		assemble := func(i invoiceItemForm) *domain.InvoiceItem {
@@ -67,16 +75,20 @@ func generateInvoice(s *app.Services) fiber.Handler {
 				// TO-DO
 				//c.Logger().Error("Product not found to add the invoice")
 
-				return c.Status(http.StatusNotFound).JSON(respError{
-					fmt.Sprintf("%s with id %d", domain.ErrProductNotFound, item.ProductID),
-				}) // 404
+				return errorJSON(c, http.StatusNotFound, respDetails{
+					Code:    "002",
+					Message: fmt.Sprintf("%s with id %d", domain.ErrProductNotFound, item.ProductID),
+				})
 			}
 
 			if err != nil {
 				// TO-DO
 				//c.Logger().Error(err)
 
-				return c.Status(http.StatusBadRequest).JSON(respError{err.Error()})
+				return errorJSON(c, http.StatusBadRequest, respDetails{
+					Code:    "002",
+					Message: err.Error(),
+				})
 			}
 
 			items = append(items, assemble(item))
@@ -95,14 +107,17 @@ func generateInvoice(s *app.Services) fiber.Handler {
 			// TO-DO
 			//c.Logger().Error(err)
 
-			return c.Status(http.StatusInternalServerError).JSON(respError{err.Error()})
+			return errorJSON(c, http.StatusInternalServerError, respDetails{
+				Code:    "002",
+				Message: err.Error(),
+			})
 		}
 
 		// TO-DO
 		//c.Logger().Infof("Invoice ID %d generated", invoice.Header.ID)
 
-		return c.Status(http.StatusCreated).JSON(respOkData{
-			Msg: "invoice generated",
+		return successJSON(c, http.StatusCreated, respDetails{
+			Message: "Invoice generated",
 			Data: generateInvoiceForm{
 				Header: form.Header,
 				Items:  form.Items,

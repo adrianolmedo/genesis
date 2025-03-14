@@ -20,10 +20,10 @@ import (
 //	@Tags			products
 //	@Accept			json
 //	@Produce		json
-//	@Failure		400				{object}	respError
-//	@Failure		401				{object}	respError
-//	@Failure		500				{object}	respError
-//	@Success		201				{object}	respOkData{data=productCardDTO}
+//	@Failure		400				{object}	errorResp
+//	@Failure		401				{object}	errorResp
+//	@Failure		500				{object}	errorResp
+//	@Success		201				{object}	successResp{data=productCardDTO}
 //	@Param			addProductForm	body		addProductForm	true	"application/json"
 //	@Router			/products [post]
 func addProduct(s *app.Services) fiber.Handler {
@@ -31,7 +31,11 @@ func addProduct(s *app.Services) fiber.Handler {
 		form := addProductForm{}
 		err := c.BodyParser(&form)
 		if err != nil {
-			return c.Status(http.StatusBadRequest).JSON(respError{"the JSON structure is not correct"})
+			return errorJSON(c, http.StatusBadRequest, respDetails{
+				Code:    "002",
+				Message: "The JSON structure is not correct",
+				Details: "Check the JSON syntax in the structure",
+			})
 		}
 
 		err = s.Store.Add(&domain.Product{
@@ -41,13 +45,16 @@ func addProduct(s *app.Services) fiber.Handler {
 		})
 
 		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(respError{err.Error()})
+			return errorJSON(c, http.StatusInternalServerError, respDetails{
+				Code:    "003",
+				Message: err.Error(),
+			})
 		}
 
 		// TODO: Add logger message: "New product added"
 
-		return c.Status(http.StatusCreated).JSON(respOkData{
-			Msg: "product added",
+		return successJSON(c, http.StatusCreated, respDetails{
+			Message: "Product added",
 			Data: productCardDTO{
 				Name:         form.Name,
 				Observations: form.Observations,
@@ -78,19 +85,25 @@ type productCardDTO struct {
 //	@Description	Get a list of products
 //	@Tags			products
 //	@Produce		json
-//	@Failure		500	{object}	respError
-//	@Success		200	{object}	respOk
-//	@Success		200	{object}	respData{data=[]productCardDTO}
+//	@Failure		500	{object}	errorResp
+//	@Success		200	{object}	successResp
+//	@Success		200	{object}	successResp{data=[]productCardDTO}
 //	@Router			/products [get]
 func listProducts(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		products, err := s.Store.List()
 		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(respError{err.Error()})
+			return errorJSON(c, http.StatusInternalServerError, respDetails{
+				Code:    "003",
+				Message: err.Error(),
+			})
 		}
 
 		if products.IsEmpty() {
-			return c.Status(http.StatusOK).JSON(respOk{"there are not products"})
+			return successJSON(c, http.StatusOK, respDetails{
+				Code:    "005",
+				Message: "There are not products",
+			})
 		}
 
 		list := make([]productCardDTO, 0, len(products))
@@ -107,8 +120,9 @@ func listProducts(s *app.Services) fiber.Handler {
 			list = append(list, assemble(v))
 		}
 
-		return c.Status(http.StatusOK).JSON(respData{
-			Data: list,
+		return successJSON(c, http.StatusOK, respDetails{
+			Message: "Ok",
+			Data:    list,
 		})
 	}
 }
@@ -120,9 +134,9 @@ func listProducts(s *app.Services) fiber.Handler {
 //	@Tags			products
 //	@Accept			json
 //	@Produce		json
-//	@Failure		400					{object}	respError
-//	@Failure		500					{object}	respError
-//	@Success		201					{object}	respOkData{data=customerProfileDTO}
+//	@Failure		400					{object}	errorResp
+//	@Failure		500					{object}	errorResp
+//	@Success		201					{object}	successResp{data=customerProfileDTO}
 //	@Param			createCustomerForm	body		createCustomerForm	true	"application/json"
 //	@Router			/customer [post]
 func createCustomer(s *app.Services) fiber.Handler {
@@ -130,8 +144,10 @@ func createCustomer(s *app.Services) fiber.Handler {
 		form := createCustomerForm{}
 		err := c.BodyParser(&form)
 		if err != nil {
-			return c.Status(http.StatusBadRequest).JSON(respError{
-				"the JSON structure is not correct",
+			return errorJSON(c, http.StatusBadRequest, respDetails{
+				Code:    "002",
+				Message: "The JSON structure is not correct",
+				Details: "Check the JSON syntax in the structure",
 			})
 		}
 
@@ -143,11 +159,14 @@ func createCustomer(s *app.Services) fiber.Handler {
 		})
 
 		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(respError{err.Error()})
+			return errorJSON(c, http.StatusInternalServerError, respDetails{
+				Code:    "003",
+				Message: err.Error(),
+			})
 		}
 
-		return c.Status(http.StatusCreated).JSON(respOkData{
-			Msg: "customer created",
+		return successJSON(c, http.StatusCreated, respDetails{
+			Message: "Customer created",
 			Data: customerProfileDTO{
 				FirstName: form.FirstName,
 				LastName:  form.LastName,
@@ -180,34 +199,42 @@ type createCustomerForm struct {
 //	@Tags			products
 //	@Accept			json
 //	@Produce		json
-//	@Failure		400	{object}	respError
-//	@Failure		204	{object}	respError
-//	@Failure		500	{object}	respError
-//	@Success		200	{object}	respOkData{data=customerProfileDTO}
+//	@Failure		400	{object}	errorResp
+//	@Failure		204	{object}	errorResp
+//	@Failure		500	{object}	errorResp
+//	@Success		200	{object}	successResp{data=customerProfileDTO}
 //	@Param			id	path		int	true	"Customer id"
 //	@Router			/customers/{id} [delete]
 func deleteCustomer(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
-			return c.Status(http.StatusBadRequest).JSON(respError{
-				"positive number expected for customer ID",
+			return errorJSON(c, http.StatusBadRequest, respDetails{
+				Code:    "002",
+				Message: "Positive number expected for ID user",
 			})
 		}
 
 		err = s.Store.RemoveCustomer(id)
 		if errors.Is(err, domain.ErrProductNotFound) {
-			return c.Status(http.StatusNoContent).JSON(respError{err.Error()})
+			return errorJSON(c, http.StatusNoContent, respDetails{
+				Code:    "003",
+				Message: err.Error(),
+			})
 		}
 
 		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(respError{
-				fmt.Sprintf("could not delete customer: %s", err),
+			return errorJSON(c, http.StatusInternalServerError, respDetails{
+				Code:    "003",
+				Message: "Coudl not delete customer",
 			})
 		}
 
 		// TO-DO: Add logger message: "Customer with ID %d removed from DB"
-		return c.Status(http.StatusOK).JSON(respOk{"customer deleted"}) // maybe 204
+
+		return successJSON(c, http.StatusOK, respDetails{
+			Message: "Customer delete",
+		})
 	}
 }
 
@@ -218,9 +245,9 @@ func deleteCustomer(s *app.Services) fiber.Handler {
 //	@Tags			products
 //	@Accept			json
 //	@Produce		json
-//	@Failure		400			{object}	respError
-//	@Failure		500			{object}	respError
-//	@Success		200			{object}	respMetaData{links=pgsql.PagerLinks,meta=pgsql.PagerResults,data=[]customerProfileDTO}
+//	@Failure		400			{object}	errorResp
+//	@Failure		500			{object}	errorResp
+//	@Success		200			{object}	pagerResp{links=pgsql.PagerLinks,meta=pgsql.PagerResults,data=[]customerProfileDTO}
 //	@Param			limit		query		int		false	"Limit of pages"					example(2)
 //	@Param			page		query		int		false	"Current page"						example(1)
 //	@Param			sort		query		string	false	"Sort results by a value"			example(created_at)
@@ -233,23 +260,35 @@ func listCustomers(s *app.Services) fiber.Handler {
 			c.QueryInt("page"),
 			c.Query("sort", "created_at"),
 			c.Query("direction"),
-        )
+		)
 		if err != nil {
-			return c.Status(http.StatusBadRequest).JSON(respError{err.Error()}) // 400
+			return errorJSON(c, http.StatusBadRequest, respDetails{
+				Code:    "003",
+				Message: err.Error(),
+			})
 		}
 
 		pr, err := s.Store.ListCustomers(p)
 		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(respError{err.Error()})
+			return errorJSON(c, http.StatusInternalServerError, respDetails{
+				Code:    "003",
+				Message: err.Error(),
+			})
 		}
 
 		customers, ok := pr.Rows.(domain.Customers)
 		if !ok {
-			return c.Status(http.StatusInternalServerError).JSON(respError{"data assertion"})
+			return errorJSON(c, http.StatusInternalServerError, respDetails{
+				Code:    "003",
+				Message: "Data assertion",
+				Details: err.Error(),
+			})
 		}
 
 		if customers.IsEmpty() {
-			return c.Status(http.StatusOK).JSON(respOk{"there are not customers"})
+			return successJSON(c, http.StatusOK, respDetails{
+				Message: "There are not customers",
+			})
 		}
 
 		assemble := func(cx *domain.Customer) customerProfileDTO {
@@ -266,7 +305,7 @@ func listCustomers(s *app.Services) fiber.Handler {
 			data = append(data, assemble(v))
 		}
 
-		return c.Status(http.StatusOK).JSON(respMetaData{
+		return c.Status(http.StatusOK).JSON(pagerResp{
 			Links: p.Links(c.Path(), pr.TotalPages),
 			Meta:  pr,
 			Data:  data,
@@ -281,30 +320,37 @@ func listCustomers(s *app.Services) fiber.Handler {
 //	@Tags			products
 //	@Accept			json
 //	@Produce		json
-//	@Failure		400	{object}	respError
-//	@Failure		404	{object}	respError
-//	@Success		200	{object}	respData{data=productCardDTO}
+//	@Failure		400	{object}	errorResp
+//	@Failure		404	{object}	errorResp
+//	@Success		200	{object}	successResp{data=productCardDTO}
 //	@Param			id	path		int	true	"Product id"
 //	@Router			/products/{id} [get]
 func findProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
-			return c.Status(http.StatusBadRequest).JSON(respError{
-				"positive number expected for ID product",
-			}) // 400
+			return errorJSON(c, http.StatusBadRequest, respDetails{
+				Code:    "002",
+				Message: "Positive number expected for ID product",
+			})
 		}
 
 		product, err := s.Store.Find(id)
 		if errors.Is(err, domain.ErrProductNotFound) {
-			return c.Status(http.StatusNotFound).JSON(respError{err.Error()}) // 404
+			return errorJSON(c, http.StatusNotFound, respDetails{
+				Code:    "003",
+				Message: err.Error(),
+			})
 		}
 
 		if err != nil {
-			return c.Status(http.StatusBadRequest).JSON(respError{err.Error()})
+			return errorJSON(c, http.StatusBadRequest, respDetails{
+				Code:    "003",
+				Message: err.Error(),
+			})
 		}
 
-		return c.Status(http.StatusOK).JSON(respData{
+		return successJSON(c, http.StatusOK, respDetails{
 			Data: productCardDTO{
 				ID:           product.ID,
 				Name:         product.Name,
@@ -322,10 +368,10 @@ func findProduct(s *app.Services) fiber.Handler {
 //	@Tags			products
 //	@Accept			json
 //	@Produce		json
-//	@Failure		400	{object}	respError
-//	@Failure		204	{object}	respError
-//	@Failure		500	{object}	respError
-//	@Success		200	{object}	respOk
+//	@Failure		400	{object}	errorResp
+//	@Failure		204	{object}	errorResp
+//	@Failure		500	{object}	errorResp
+//	@Success		200	{object}	successResp
 //	@Param			id	path		int	true	"Product id"
 //	@Router			/products/{id} [put]
 func updateProduct(s *app.Services) fiber.Handler {
@@ -335,16 +381,19 @@ func updateProduct(s *app.Services) fiber.Handler {
 		// TO-DO: Add logger message: "Request to update product ID %d"
 
 		if id < 0 || err != nil {
-			return c.Status(http.StatusBadRequest).JSON(respError{
-				"positive number expected for ID product",
+			return errorJSON(c, http.StatusBadRequest, respDetails{
+				Code:    "002",
+				Message: "Positive number expected for ID product",
 			})
 		}
 
 		form := updateProductForm{}
 		err = c.BodyParser(&form)
 		if err != nil {
-			return c.Status(http.StatusBadRequest).JSON(respError{
-				"the JSON structure is not correct",
+			return errorJSON(c, http.StatusBadRequest, respDetails{
+				Code:    "002",
+				Message: "The JSON structure is not correct",
+				Details: "Check the JSON syntax in the structure",
 			})
 		}
 
@@ -357,15 +406,26 @@ func updateProduct(s *app.Services) fiber.Handler {
 			Price:        form.Price,
 		})
 		if errors.Is(err, domain.ErrProductNotFound) {
-			return c.Status(http.StatusNoContent).JSON(respError{err.Error()})
+			return errorJSON(c, http.StatusNoContent, respDetails{
+				Code:    "002",
+				Message: err.Error(),
+			})
 		}
 
 		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(respError{err.Error()})
+			return errorJSON(c, http.StatusInternalServerError, respDetails{
+				Code:    "002",
+				Message: err.Error(),
+			})
 		}
 
 		// TO-DO: Add logger message: "Product ID %d updated"
-		return c.Status(http.StatusOK).JSON(respOk{"product updated"})
+
+		//return c.Status(http.StatusOK).JSON(respOk{"product updated"})
+		return successJSON(c, http.StatusOK, respDetails{
+			Message: "Product updated",
+		})
+
 	}
 }
 
@@ -384,33 +444,39 @@ type updateProductForm struct {
 //	@Tags			products
 //	@Accept			json
 //	@Produce		json
-//	@Failure		400	{object}	respError
-//	@Failure		204	{object}	respError
-//	@Failure		500	{object}	respError
-//	@Success		200	{object}	respOk
+//	@Failure		400	{object}	errorResp
+//	@Failure		204	{object}	errorResp
+//	@Failure		500	{object}	errorResp
+//	@Success		200	{object}	successResp
 //	@Param			id	path		int	true	"Product id"
 //	@Router			/products/{id} [delete]
 func deleteProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
-			return c.Status(http.StatusBadRequest).JSON(respError{
-				"positive number expected for ID product",
+			return errorJSON(c, http.StatusBadRequest, respDetails{
+				Code:    "002",
+				Message: "Positive number expected for ID product",
 			})
 		}
 
 		err = s.Store.Remove(id)
 		if errors.Is(err, domain.ErrProductNotFound) {
-			return c.Status(http.StatusNoContent).JSON(respError{err.Error()})
+			return errorJSON(c, http.StatusNoContent, respDetails{
+				Message: err.Error(),
+			})
 		}
 
 		if err != nil {
-			return c.Status(http.StatusInternalServerError).JSON(respError{
-				fmt.Sprintf("could not delete product: %s", err),
+			return errorJSON(c, http.StatusNoContent, respDetails{
+				Message: fmt.Sprintf("Could not delete product: %s", err),
 			})
 		}
 
 		// TO-DO: Add logger mesaage: "Product with ID %d removed from DB"
-		return c.Status(http.StatusOK).JSON(respOk{"product deleted"}) // maybe 204
+
+		return successJSON(c, http.StatusOK, respDetails{
+			Message: "Product deleted",
+		})
 	}
 }
