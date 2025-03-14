@@ -56,12 +56,32 @@ func Router(strg *pq.Storage) *fiber.App {
 	return f
 }
 
+// successJSON respond JSON.
+func successJSON(c *fiber.Ctx, httpStatus int, details respDetails) error {
+	return c.Status(http.StatusCreated).JSON(successResp{
+		Status:      "success",
+		respDetails: details,
+	})
+}
+
+// errorJSON respond JSON.
+func errorJSON(c *fiber.Ctx, httpStatus int, details respDetails) error {
+	return c.Status(http.StatusCreated).JSON(errorResp{
+		Status: "error",
+		Error:  details,
+	})
+}
+
 // authWare middleware for handlers that require user login.
 func authWare(c *fiber.Ctx) error {
 	token := c.Request().Header.Peek("Authorization")
 	_, err := jwt.Verify(string(token))
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(respError{Msg: "you don't have authorization"})
+		return errorJSON(c, http.StatusBadRequest, respDetails{
+			Code:    "001",
+			Message: "You don't have authorization",
+			Details: "Sign to access",
+		})
 	}
 	return c.Next()
 }
