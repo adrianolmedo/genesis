@@ -54,7 +54,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.respOkData"
+                                    "$ref": "#/definitions/http.successResp"
                                 },
                                 {
                                     "type": "object",
@@ -70,13 +70,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     }
                 }
@@ -131,7 +131,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.respMetaData"
+                                    "$ref": "#/definitions/http.pagerResp"
                                 },
                                 {
                                     "type": "object",
@@ -156,13 +156,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     }
                 }
@@ -196,7 +196,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.respOkData"
+                                    "$ref": "#/definitions/http.successResp"
                                 },
                                 {
                                     "type": "object",
@@ -212,19 +212,19 @@ const docTemplate = `{
                     "204": {
                         "description": "No Content",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     }
                 }
@@ -260,7 +260,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.respOkData"
+                                    "$ref": "#/definitions/http.successResp"
                                 },
                                 {
                                     "type": "object",
@@ -276,19 +276,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     }
                 }
@@ -324,7 +324,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.respOkData"
+                                    "$ref": "#/definitions/http.successResp"
                                 },
                                 {
                                     "type": "object",
@@ -340,19 +340,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     }
                 }
@@ -374,7 +374,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.respData"
+                                    "$ref": "#/definitions/http.successResp"
                                 },
                                 {
                                     "type": "object",
@@ -393,7 +393,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     }
                 }
@@ -427,7 +427,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.respOkData"
+                                    "$ref": "#/definitions/http.successResp"
                                 },
                                 {
                                     "type": "object",
@@ -443,19 +443,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     }
                 }
@@ -489,7 +489,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.respData"
+                                    "$ref": "#/definitions/http.successResp"
                                 },
                                 {
                                     "type": "object",
@@ -505,13 +505,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     }
                 }
@@ -541,25 +541,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.respOk"
+                            "$ref": "#/definitions/http.successResp"
                         }
                     },
                     "204": {
                         "description": "No Content",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     }
                 }
@@ -589,25 +589,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.respOk"
+                            "$ref": "#/definitions/http.successResp"
                         }
                     },
                     "204": {
                         "description": "No Content",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     }
                 }
@@ -631,7 +631,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.respOkData"
+                                    "$ref": "#/definitions/http.successResp"
                                 },
                                 {
                                     "type": "object",
@@ -650,7 +650,7 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     }
                 }
@@ -684,7 +684,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.respOkData"
+                                    "$ref": "#/definitions/http.successResp"
                                 },
                                 {
                                     "type": "object",
@@ -700,13 +700,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     }
                 }
@@ -740,7 +740,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.respData"
+                                    "$ref": "#/definitions/http.successResp"
                                 },
                                 {
                                     "type": "object",
@@ -756,13 +756,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     }
                 }
@@ -803,7 +803,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.respOkData"
+                                    "$ref": "#/definitions/http.successResp"
                                 },
                                 {
                                     "type": "object",
@@ -819,13 +819,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     }
                 }
@@ -855,19 +855,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.respOk"
+                            "$ref": "#/definitions/http.successResp"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/http.respError"
+                            "$ref": "#/definitions/http.errorResp"
                         }
                     }
                 }
@@ -931,6 +931,17 @@ const docTemplate = `{
                 }
             }
         },
+        "http.errorResp": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "$ref": "#/definitions/http.respDetails"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "http.generateInvoiceForm": {
             "type": "object",
             "properties": {
@@ -961,6 +972,30 @@ const docTemplate = `{
                 }
             }
         },
+        "http.pagerResp": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Holds the actual paginated data"
+                },
+                "links": {
+                    "description": "Uses your existing struct for pagination links",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pgsql.PagerLinks"
+                        }
+                    ]
+                },
+                "meta": {
+                    "description": "Uses your existing struct for metadata",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/pgsql.PagerResults"
+                        }
+                    ]
+                }
+            }
+        },
         "http.productCardDTO": {
             "type": "object",
             "properties": {
@@ -978,41 +1013,35 @@ const docTemplate = `{
                 }
             }
         },
-        "http.respData": {
+        "http.respDetails": {
             "type": "object",
             "properties": {
-                "data": {}
-            }
-        },
-        "http.respError": {
-            "type": "object",
-            "properties": {
-                "error": {
+                "code": {
+                    "type": "string"
+                },
+                "data": {},
+                "details": {
+                    "type": "string"
+                },
+                "message": {
                     "type": "string"
                 }
             }
         },
-        "http.respMetaData": {
+        "http.successResp": {
             "type": "object",
             "properties": {
-                "data": {},
-                "links": {},
-                "meta": {}
-            }
-        },
-        "http.respOk": {
-            "type": "object",
-            "properties": {
-                "ok": {
+                "code": {
                     "type": "string"
-                }
-            }
-        },
-        "http.respOkData": {
-            "type": "object",
-            "properties": {
+                },
                 "data": {},
-                "ok": {
+                "details": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
                     "type": "string"
                 }
             }
