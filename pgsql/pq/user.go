@@ -198,7 +198,7 @@ func (r User) DeleteAll() error {
 }
 
 type scanner interface {
-	Scan(dest ...interface{}) error
+	Scan(dest ...any) error
 }
 
 // scanRowUser return nulled fields of the domain object User parsed.

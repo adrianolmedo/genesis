@@ -59,7 +59,7 @@ func Verify(token string) (Claims, error) {
 	return *claims, nil
 }
 
-func verify(t *jwt.Token) (interface{}, error) {
+func verify(t *jwt.Token) (any, error) {
 	return publicKey, nil
 }
 
