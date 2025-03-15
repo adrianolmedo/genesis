@@ -1,10 +1,10 @@
 # Genesis
 
-REST API of CRM, its architecture is inspired (not based) on Hexagonal Architecture.
+REST API of CRM, architecture based on the main objective of Hexagonal Architecture: to isolate business logic from external dependencies.
 
 ## Architecture
 
-![Golang structure inspired on Hexagonal Architecture](https://i.imgur.com/eZxD6S1.png)
+![Golang structure based on Hexagonal Architecture purpose](https://i.imgur.com/eZxD6S1.png)
 
 ## Run with Postgres service
 
