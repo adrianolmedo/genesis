@@ -2,6 +2,9 @@ package genesis
 
 // Config server RESTful API.
 type Config struct {
+	// Host where is running the app.
+	Host string
+
 	// Port for address server, if it is empty by default it will be 80.
 	Port string
 
@@ -14,7 +17,7 @@ type Config struct {
 
 // DB Database config.
 type DB struct {
-	// Host when is running the database Engine.
+	// Host where is running the database Engine.
 	Host string
 
 	// Port of database Engine server.
