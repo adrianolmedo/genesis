@@ -31,7 +31,7 @@ func (InvoiceItem) Create(tx *sql.Tx, headerID int, items domain.ItemList) error
 }
 
 // DeleteAll delete all invoice items.
-// TODO: Move to tests.
+// TODO: Test.
 func (ii InvoiceItem) DeleteAll() error {
 	stmt, err := ii.db.Prepare(`TRUNCATE TABLE "invoice_item" RESTART IDENTITY CASCADE`)
 	if err != nil {

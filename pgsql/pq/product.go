@@ -34,9 +34,8 @@ func (p Product) Create(product *domain.Product) error {
 }
 
 // ByID get one product by its id.
-// TODO: Only select data that have deleted_at empty.
 func (p Product) ByID(id int) (*domain.Product, error) {
-	stmt, err := p.db.Prepare(`SELECT * FROM "product" WHERE id = $1`)
+	stmt, err := p.db.Prepare(`SELECT * FROM "product" WHERE id = $1 AND deleted_at IS NULL`)
 	if err != nil {
 		return nil, err
 	}
@@ -82,9 +81,8 @@ func (p Product) Update(product domain.Product) error {
 }
 
 // All get a collection of all prodycts.
-// TODO: Only select data that have deleted_at empty.
 func (p Product) All() (domain.Products, error) {
-	stmt, err := p.db.Prepare(`SELECT * FROM "product"`)
+	stmt, err := p.db.Prepare(`SELECT * FROM "product" WHERE deleted_at IS NULL`)
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +136,7 @@ func (p Product) Delete(id int) error {
 }
 
 // DeleteAll delete all products.
-// TODO: Move to tests.
+// TODO: Test.
 func (p Product) DeleteAll() error {
 	stmt, err := p.db.Prepare(`TRUNCATE TABLE "product" RESTART IDENTITY CASCADE`)
 	if err != nil {
@@ -155,7 +153,6 @@ func (p Product) DeleteAll() error {
 }
 
 // scanRowProduct return null fields of the domain object Product parsed.
-// TODO: Check how to do this without using scanner interface.
 func scanRowProduct(s scanner) (*domain.Product, error) {
 	var updatedAtNull sql.NullTime
 	p := &domain.Product{}

@@ -114,7 +114,6 @@ func (r Customer) Delete(id int) error {
 }
 
 // scanRowUser return nulled fields of the domain object User parsed.
-// TODO: Check how to do this without using scanner interface.
 func scanRowCustomer(s scanner) (*domain.Customer, error) {
 	var updatedAtNull, deletedAtNull sql.NullTime
 	cx := &domain.Customer{}
