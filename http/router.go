@@ -6,6 +6,7 @@ import (
 	"github.com/adrianolmedo/genesis/app"
 	_ "github.com/adrianolmedo/genesis/docs"
 	"github.com/adrianolmedo/genesis/http/jwt"
+	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/pgsql/pq"
 
 	"github.com/gofiber/fiber/v2"
@@ -28,8 +29,16 @@ import (
 // @BasePath	/v1/
 func Router(strg *pq.Storage) *fiber.App {
 	s := app.NewServices(strg)
-	f := fiber.New()
+	f := fiber.New(fiber.Config{
+		DisableStartupMessage: true, // Disables Fiber's startup message
+	})
 
+	f.Get("/v1/test", func(c *fiber.Ctx) error {
+		logger.Info("testing", "path", c.Path())
+		return successJSON(c, http.StatusOK, respDetails{
+			Message: "The server is ok",
+		})
+	})
 	f.Post("/v1/login", loginUser(s))
 	f.Post("/v1/users", signUpUser(s))
 	f.Get("/v1/users/:id", findUser(s))
