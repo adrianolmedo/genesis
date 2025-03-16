@@ -8,6 +8,7 @@ import (
 	config "github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/http"
 	"github.com/adrianolmedo/genesis/http/jwt"
+	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/pgsql/pq"
 
 	"github.com/peterbourgon/ff/v3"
@@ -16,6 +17,7 @@ import (
 func main() {
 	fs := flag.NewFlagSet("rest", flag.ExitOnError)
 	var (
+		host   = fs.String("host", ":", "Internal container IP.")
 		port   = fs.String("port", "80", "Internal container port.")
 		cors   = fs.String("cors", "", "CORS directive, write address separated by comma.")
 		dbhost = fs.String("dbhost", "", "Database host.")
@@ -32,7 +34,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = run(&config.Config{
+	cfg := &config.Config{
+		Host: *host,
 		Port: *port,
 		CORS: *cors,
 		DB: config.DB{
@@ -42,12 +45,16 @@ func main() {
 			Password: *dbpass,
 			Name:     *dbname,
 		},
-	})
+	}
 
+	err = run(cfg)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
+		logger.Error("run error", err.Error())
 		os.Exit(1)
 	}
+
+	logger.Info("server started", "addr", cfg.Host+cfg.Port)
 }
 
 func run(cfg *config.Config) error {
@@ -62,5 +69,7 @@ func run(cfg *config.Config) error {
 		return fmt.Errorf("error from storage: %v", err)
 	}
 
-	return http.Router(strg).Listen(":" + cfg.Port)
+	addr := cfg.Host + cfg.Port
+	logger.Info("starting server", "addr", addr, "dbhost", cfg.DB.Host)
+	return http.Router(strg).Listen(addr)
 }

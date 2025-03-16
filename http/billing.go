@@ -7,6 +7,7 @@ import (
 
 	domain "github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/app"
+	"github.com/adrianolmedo/genesis/logger"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -41,8 +42,7 @@ func generateInvoice(s *app.Services) fiber.Handler {
 
 		_, err = s.User.Find(clientID)
 		if errors.Is(err, domain.ErrUserNotFound) {
-			// TO-DO
-			//c.Logger().Error("User not found to generate invoice")
+			logger.Error("generating invoice", fmt.Sprintf("user ID %d not found to generate invoice", clientID))
 
 			return errorJSON(c, http.StatusNotFound, respDetails{
 				Code:    "002",
@@ -51,8 +51,7 @@ func generateInvoice(s *app.Services) fiber.Handler {
 		}
 
 		if err != nil {
-			// TO-DO
-			//c.Logger().Error(err)
+			logger.Error("generating invoice", err.Error())
 
 			return errorJSON(c, http.StatusBadRequest, respDetails{
 				Code:    "002",
@@ -72,8 +71,7 @@ func generateInvoice(s *app.Services) fiber.Handler {
 			_, err := s.Store.Find(item.ProductID)
 
 			if errors.Is(err, domain.ErrProductNotFound) {
-				// TO-DO
-				//c.Logger().Error("Product not found to add the invoice")
+				logger.Debug("generating invoice", fmt.Sprintf("product ID %d not found to add the invoice", item.ProductID))
 
 				return errorJSON(c, http.StatusNotFound, respDetails{
 					Code:    "002",
@@ -82,8 +80,7 @@ func generateInvoice(s *app.Services) fiber.Handler {
 			}
 
 			if err != nil {
-				// TO-DO
-				//c.Logger().Error(err)
+				logger.Error("generating invoice", err.Error())
 
 				return errorJSON(c, http.StatusBadRequest, respDetails{
 					Code:    "002",
@@ -104,8 +101,7 @@ func generateInvoice(s *app.Services) fiber.Handler {
 
 		err = s.Billing.Generate(invoice)
 		if err != nil {
-			// TO-DO
-			//c.Logger().Error(err)
+			logger.Error("generating invoice", err.Error())
 
 			return errorJSON(c, http.StatusInternalServerError, respDetails{
 				Code:    "002",
@@ -113,8 +109,7 @@ func generateInvoice(s *app.Services) fiber.Handler {
 			})
 		}
 
-		// TO-DO
-		//c.Logger().Infof("Invoice ID %d generated", invoice.Header.ID)
+		logger.Info("generating invoice", fmt.Sprintf("invoice ID %d generated", invoice.Header.ID))
 
 		return successJSON(c, http.StatusCreated, respDetails{
 			Message: "Invoice generated",

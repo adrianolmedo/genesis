@@ -8,6 +8,7 @@ import (
 
 	domain "github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/app"
+	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/pgsql"
 
 	"github.com/gofiber/fiber/v2"
@@ -38,11 +39,13 @@ func addProduct(s *app.Services) fiber.Handler {
 			})
 		}
 
-		err = s.Store.Add(&domain.Product{
+		product := &domain.Product{
 			Name:         form.Name,
 			Observations: form.Observations,
 			Price:        form.Price,
-		})
+		}
+
+		err = s.Store.Add(product)
 
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, respDetails{
@@ -51,7 +54,7 @@ func addProduct(s *app.Services) fiber.Handler {
 			})
 		}
 
-		// TODO: Add logger message: "New product added"
+		logger.Debug("Product added", "product", product.UUID)
 
 		return successJSON(c, http.StatusCreated, respDetails{
 			Message: "Product added",
@@ -230,7 +233,7 @@ func deleteCustomer(s *app.Services) fiber.Handler {
 			})
 		}
 
-		// TO-DO: Add logger message: "Customer with ID %d removed from DB"
+		logger.Info("customer", fmt.Sprintf("customer with ID %d removed from DB", id))
 
 		return successJSON(c, http.StatusOK, respDetails{
 			Message: "Customer delete",
@@ -378,7 +381,7 @@ func updateProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		id, err := strconv.Atoi(c.Params("id"))
 
-		// TO-DO: Add logger message: "Request to update product ID %d"
+		logger.Debug("product", fmt.Sprintf("request to update product ID %d", id))
 
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
@@ -419,9 +422,8 @@ func updateProduct(s *app.Services) fiber.Handler {
 			})
 		}
 
-		// TO-DO: Add logger message: "Product ID %d updated"
+		logger.Debug("product", fmt.Sprintf("product ID %d updated", id))
 
-		//return c.Status(http.StatusOK).JSON(respOk{"product updated"})
 		return successJSON(c, http.StatusOK, respDetails{
 			Message: "Product updated",
 		})
@@ -473,7 +475,7 @@ func deleteProduct(s *app.Services) fiber.Handler {
 			})
 		}
 
-		// TO-DO: Add logger mesaage: "Product with ID %d removed from DB"
+		logger.Debug("product", fmt.Sprintf("product with ID %d removed from DB", id))
 
 		return successJSON(c, http.StatusOK, respDetails{
 			Message: "Product deleted",

@@ -9,6 +9,7 @@ import (
 	domain "github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/app"
 	"github.com/adrianolmedo/genesis/http/jwt"
+	"github.com/adrianolmedo/genesis/logger"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -354,7 +355,7 @@ func deleteUser(s *app.Services) fiber.Handler {
 			})
 		}
 
-		// TODO: Add logger message: "User with ID %d deleted"
+		logger.Debug("user", fmt.Sprintf("user ID %d deleted", id))
 
 		return successJSON(c, http.StatusOK, respDetails{
 			Message: "User deleted",
