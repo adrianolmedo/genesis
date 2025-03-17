@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	config "github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/http"
 	"github.com/adrianolmedo/genesis/http/jwt"
 	"github.com/adrianolmedo/genesis/logger"
@@ -34,7 +34,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	cfg := config.Config{
+	cfg := genesis.Config{
 		Host:       *host,
 		Port:       *port,
 		CORS:       *cors,
@@ -52,7 +52,7 @@ func main() {
 	}
 }
 
-func run(cfg config.Config) error {
+func run(cfg genesis.Config) error {
 	// Load authentication credentials.
 	err := jwt.LoadFiles("app.rsa", "app.rsa.pub")
 	if err != nil {
