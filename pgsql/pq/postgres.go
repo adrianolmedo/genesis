@@ -4,17 +4,17 @@ import (
 	"database/sql"
 	"fmt"
 
-	config "github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis"
 
 	// blank import to init postgres library.
 	_ "github.com/lib/pq"
 )
 
 // newDB return a postgres database connection from dbcfg params.
-func newDB(dbcfg config.DB) (db *sql.DB, err error) {
+func newDB(cfg genesis.Config) (db *sql.DB, err error) {
 	// postgres://user:password@host:port/dbname?sslmode=disable
 	conn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		dbcfg.User, dbcfg.Password, dbcfg.Host, dbcfg.Port, dbcfg.Name)
+		cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
 
 	db, err = sql.Open("postgres", conn)
 	if err != nil {

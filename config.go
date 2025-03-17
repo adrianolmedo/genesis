@@ -11,24 +11,18 @@ type Config struct {
 	// CORS directive. Add address separated by comma. Example, "127.0.0.1,172.17.0.1".
 	CORS string
 
-	// Database.
-	DB
-}
-
-// DB Database config.
-type DB struct {
 	// Host where is running the database Engine.
-	Host string
+	DBHost string
 
 	// Port of database Engine server.
-	Port string
+	DBPort string
 
 	// User of database, eg.: "root".
-	User string
+	DBUser string
 
 	// Password of User database.
-	Password string
+	DBPassword string
 
 	// Name of SQL database.
-	Name string
+	DBName string
 }

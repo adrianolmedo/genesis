@@ -3,7 +3,7 @@ package pq
 import (
 	"fmt"
 
-	config "github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis"
 )
 
 // Storage represents all repositories.
@@ -16,8 +16,8 @@ type Storage struct {
 
 // NewStorage start postgres database connection, build the Storage and return it
 // its pointer.
-func NewStorage(dbcfg config.DB) (*Storage, error) {
-	db, err := newDB(dbcfg)
+func NewStorage(cfg genesis.Config) (*Storage, error) {
+	db, err := newDB(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("postgres: %v", err)
 	}
