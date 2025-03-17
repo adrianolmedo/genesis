@@ -36,9 +36,8 @@ func (r User) Create(u *domain.User) error {
 }
 
 // ByLogin get a User from its login data.
-// TODO: Only select data that have deleted_at as NULL.
 func (r User) ByLogin(email, password string) error {
-	stmt, err := r.db.Prepare(`SELECT id FROM "user" WHERE email = $1 AND password = $2`)
+	stmt, err := r.db.Prepare(`SELECT id FROM "user" WHERE email = $1 AND password = $2 AND deleted_at IS NULL`)
 	if err != nil {
 		return err
 	}
@@ -155,9 +154,33 @@ func (r User) All() (domain.Users, error) {
 	return users, nil
 }
 
-// Delete delete user from its is.
-// TODO: Convert to soft delete.
+// Delete mark user as deleted.
 func (r User) Delete(id uint) error {
+	stmt, err := r.db.Prepare(`UPDATE "user" SET deleted_at = $1 WHERE id = $2`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(timeToNull(time.Now()), id)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return domain.ErrUserNotFound
+	}
+
+	return nil
+}
+
+// HardDelete delete user from the storage.
+func (r User) HardDelete(id uint) error {
 	stmt, err := r.db.Prepare(`DELETE FROM "user" WHERE id = $1`)
 	if err != nil {
 		return err
@@ -181,7 +204,7 @@ func (r User) Delete(id uint) error {
 }
 
 // DeleteAll delete all users.
-// TODO: Move this query to tests.
+// TODO: Test.
 func (r User) DeleteAll() error {
 	stmt, err := r.db.Prepare(`TRUNCATE TABLE "user" RESTART IDENTITY`)
 	if err != nil {
@@ -202,7 +225,6 @@ type scanner interface {
 }
 
 // scanRowUser return nulled fields of the domain object User parsed.
-// TODO: Check how to do this without using scanner interface.
 func scanRowUser(s scanner) (*domain.User, error) {
 	var updatedAtNull, deletedAtNull sql.NullTime
 	m := &domain.User{}
