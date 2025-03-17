@@ -29,14 +29,12 @@ import (
 // @BasePath	/v1/
 func Router(strg *pq.Storage) *fiber.App {
 	s := app.NewServices(strg)
-	f := fiber.New(fiber.Config{
-		DisableStartupMessage: true, // Disables Fiber's startup message
-	})
+	f := fiber.New()
 
 	f.Get("/v1/test", func(c *fiber.Ctx) error {
 		logger.Info("testing", "path", c.Path())
 		return successJSON(c, http.StatusOK, respDetails{
-			Message: "The server is ok",
+			Message: "Hello world",
 		})
 	})
 	f.Post("/v1/login", loginUser(s))
