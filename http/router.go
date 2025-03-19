@@ -65,7 +65,7 @@ func Router(strg *pq.Storage) *fiber.App {
 
 // successJSON respond JSON.
 func successJSON(c *fiber.Ctx, httpStatus int, details respDetails) error {
-	return c.Status(http.StatusCreated).JSON(successResp{
+	return c.Status(httpStatus).JSON(successResp{
 		Status:      "success",
 		respDetails: details,
 	})
@@ -73,7 +73,7 @@ func successJSON(c *fiber.Ctx, httpStatus int, details respDetails) error {
 
 // errorJSON respond JSON.
 func errorJSON(c *fiber.Ctx, httpStatus int, details respDetails) error {
-	return c.Status(http.StatusCreated).JSON(errorResp{
+	return c.Status(httpStatus).JSON(errorResp{
 		Status: "error",
 		Error:  details,
 	})
@@ -86,7 +86,7 @@ func authWare(c *fiber.Ctx) error {
 	if err != nil {
 		return errorJSON(c, http.StatusBadRequest, respDetails{
 			Code:    "001",
-			Message: "You don't have authorization",
+			Message: "You aren't authenticated",
 			Details: "Sign to access",
 		})
 	}
