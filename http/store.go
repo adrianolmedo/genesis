@@ -284,7 +284,6 @@ func listCustomers(s *app.Services) fiber.Handler {
 			return errorJSON(c, http.StatusInternalServerError, respDetails{
 				Code:    "003",
 				Message: "Data assertion",
-				Details: err.Error(),
 			})
 		}
 
