@@ -163,6 +163,7 @@ func cleanProductsData(t *testing.T) {
 	defer closeDB(t, db)
 
 	p := Product{db: db}
+
 	err := p.DeleteAll()
 	if err != nil {
 		t.Fatal(err)

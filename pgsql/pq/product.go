@@ -111,9 +111,32 @@ func (p Product) All() (domain.Products, error) {
 }
 
 // Delete product by its id.
-// TODO: Convert to soft delete.
 func (p Product) Delete(id int) error {
-	stmt, err := p.db.Prepare(`DELETE FROM "product" WHERE id = $1`)
+	stmt, err := p.db.Prepare(`UPDATE "product" SET deleted_at = $1 WHERE id = $2`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	result, err := stmt.Exec(timeToNull(time.Now()), id)
+	if err != nil {
+		return err
+	}
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return domain.ErrProductNotFound
+	}
+	return nil
+}
+
+// HardDelete delete product from the storage.
+func (r Product) HardDelete(id uint) error {
+	stmt, err := r.db.Prepare(`DELETE FROM "product" WHERE id = $1`)
 	if err != nil {
 		return err
 	}
@@ -136,7 +159,6 @@ func (p Product) Delete(id int) error {
 }
 
 // DeleteAll delete all products.
-// TODO: Test.
 func (p Product) DeleteAll() error {
 	stmt, err := p.db.Prepare(`TRUNCATE TABLE "product" RESTART IDENTITY CASCADE`)
 	if err != nil {
