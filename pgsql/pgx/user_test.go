@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package pgx
 
 import (
@@ -47,6 +44,46 @@ func TestCreateUser(t *testing.T) {
 
 	if !got.DeletedAt.IsZero() {
 		t.Error("unexpected deleted at")
+	}
+}
+
+func TestByLogin(t *testing.T) {
+	t.Cleanup(func() {
+		cleanUsersData(t)
+	})
+
+	conn := openDB(t)
+	defer closeDB(t, conn)
+	insertUsersData(t, conn)
+
+	tt := []struct {
+		name        string
+		inputEmail  string
+		inputPass   string
+		errExpected bool
+	}{
+		{
+			name:        "successful",
+			inputEmail:  "example@gmail.com",
+			inputPass:   "1234567a",
+			errExpected: false,
+		},
+		{
+			name:        "user-not-found",
+			inputEmail:  "example@hotmail.com",
+			inputPass:   "1234567a",
+			errExpected: true,
+		},
+	}
+
+	u := User{conn: conn}
+
+	for _, tc := range tt {
+		err := u.ByLogin(tc.inputEmail, tc.inputPass)
+		if (err != nil) != tc.errExpected {
+			t.Errorf("%s: ByLogin(%s, %s): unexpected error status: %v",
+				tc.name, tc.inputEmail, tc.inputPass, err)
+		}
 	}
 }
 

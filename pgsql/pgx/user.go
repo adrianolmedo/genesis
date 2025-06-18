@@ -149,6 +149,19 @@ func (r User) countAll() (int, error) {
 }
 
 func (r User) Delete(id uint) error {
+	result, err := r.conn.Exec(context.Background(), `UPDATE "user" SET deleted_at = $1 WHERE id = $2`, time.Now(), id)
+	if err != nil {
+		return err
+	}
+
+	if result.RowsAffected() == 0 {
+		return domain.ErrUserNotFound
+	}
+
+	return nil
+}
+
+func (r User) HardDelete(id uint) error {
 	result, err := r.conn.Exec(context.Background(), `DELETE FROM "user" WHERE id = $1`)
 	if err != nil {
 		return err

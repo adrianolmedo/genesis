@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package pgx
 
 import (
@@ -24,17 +21,17 @@ var (
 
 // TestDB test for open & close database.
 func TestDB(t *testing.T) {
-	db := openDB(t)
-	closeDB(t, db)
+	conn := openDB(t)
+	closeDB(t, conn)
 }
 
 func openDB(t *testing.T) *pgx.Conn {
-	dbcfg := config.DB{
-		Host:     *dbhost,
-		Port:     *dbport,
-		User:     *dbuser,
-		Password: *dbpass,
-		Name:     *dbname,
+	dbcfg := config.Config{
+		DBHost:     *dbhost,
+		DBPort:     *dbport,
+		DBUser:     *dbuser,
+		DBPassword: *dbpass,
+		DBName:     *dbname,
 	}
 
 	conn, err := newDB(dbcfg)
