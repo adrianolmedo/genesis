@@ -204,7 +204,6 @@ func (r User) HardDelete(id uint) error {
 }
 
 // DeleteAll delete all users.
-// TODO: Test.
 func (r User) DeleteAll() error {
 	stmt, err := r.db.Prepare(`TRUNCATE TABLE "user" RESTART IDENTITY`)
 	if err != nil {
