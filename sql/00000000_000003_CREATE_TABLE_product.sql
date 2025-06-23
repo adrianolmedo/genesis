@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS product (
     price INT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP,
+    deleted_at TIMESTAMP,
 
     CONSTRAINT product_id_pk PRIMARY KEY (id)
 );

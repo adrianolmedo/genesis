@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS invoice_header (
     id BIGSERIAL,
     uuid UUID NOT NULL,
-    client_id VARCHAR(100) NOT NULL,
+    cliente_id INT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP,
 
