@@ -56,8 +56,8 @@ func (r User) ByID(id uint) (*domain.User, error) {
 
 	err := r.conn.QueryRow(context.Background(), `SELECT * FROM "user" WHERE id = $1 AND deleted_at IS NULL`, id).
 		Scan(&m.ID, &m.UUID, &m.FirstName, &m.LastName, &m.Email, &m.Password, &m.CreatedAt, &updatedAtNull, &deletedAtNull)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, domain.ErrUserNotFound
+	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
+		return nil, domain.ErrProductNotFound
 	}
 
 	if err != nil {

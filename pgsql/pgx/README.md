@@ -5,7 +5,7 @@
 The `_test.go` files it have a build tag:
 
 ```go
-//go:build integration
+// go:build integration
 // +build integration
 ```
 

@@ -15,17 +15,17 @@ type Product struct {
 }
 
 // Create create one product.
-func (p Product) Create(product *domain.Product) error {
-	stmt, err := p.db.Prepare(`INSERT INTO "product" (uuid, name, observations, price, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING id`)
+func (r Product) Create(m *domain.Product) error {
+	stmt, err := r.db.Prepare(`INSERT INTO "product" (uuid, name, observations, price, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING id`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	product.UUID = domain.NextUUID()
-	product.CreatedAt = time.Now()
+	m.UUID = domain.NextUUID()
+	m.CreatedAt = time.Now()
 
-	err = stmt.QueryRow(product.UUID, product.Name, product.Observations, product.Price, product.CreatedAt).Scan(&product.ID)
+	err = stmt.QueryRow(m.UUID, m.Name, m.Observations, m.Price, m.CreatedAt).Scan(&m.ID)
 	if err != nil {
 		return err
 	}
@@ -34,8 +34,8 @@ func (p Product) Create(product *domain.Product) error {
 }
 
 // ByID get one product by its id.
-func (p Product) ByID(id int) (*domain.Product, error) {
-	stmt, err := p.db.Prepare(`SELECT * FROM "product" WHERE id = $1 AND deleted_at IS NULL`)
+func (r Product) ByID(id int) (*domain.Product, error) {
+	stmt, err := r.db.Prepare(`SELECT * FROM "product" WHERE id = $1 AND deleted_at IS NULL`)
 	if err != nil {
 		return nil, err
 	}
@@ -54,8 +54,8 @@ func (p Product) ByID(id int) (*domain.Product, error) {
 }
 
 // Update product.
-func (p Product) Update(product domain.Product) error {
-	stmt, err := p.db.Prepare(`UPDATE "product" SET name = $1, observations = $2, price = $3, updated_at = $4 WHERE id = $5`)
+func (r Product) Update(product domain.Product) error {
+	stmt, err := r.db.Prepare(`UPDATE "product" SET name = $1, observations = $2, price = $3, updated_at = $4 WHERE id = $5`)
 	if err != nil {
 		return err
 	}
@@ -81,8 +81,8 @@ func (p Product) Update(product domain.Product) error {
 }
 
 // All get a collection of all prodycts.
-func (p Product) All() (domain.Products, error) {
-	stmt, err := p.db.Prepare(`SELECT * FROM "product" WHERE deleted_at IS NULL`)
+func (r Product) All() (domain.Products, error) {
+	stmt, err := r.db.Prepare(`SELECT * FROM "product" WHERE deleted_at IS NULL`)
 	if err != nil {
 		return nil, err
 	}
@@ -111,8 +111,8 @@ func (p Product) All() (domain.Products, error) {
 }
 
 // Delete product by its id.
-func (p Product) Delete(id int) error {
-	stmt, err := p.db.Prepare(`UPDATE "product" SET deleted_at = $1 WHERE id = $2`)
+func (r Product) Delete(id int) error {
+	stmt, err := r.db.Prepare(`UPDATE "product" SET deleted_at = $1 WHERE id = $2`)
 	if err != nil {
 		return err
 	}
@@ -159,8 +159,8 @@ func (r Product) HardDelete(id uint) error {
 }
 
 // DeleteAll delete all products.
-func (p Product) DeleteAll() error {
-	stmt, err := p.db.Prepare(`TRUNCATE TABLE "product" RESTART IDENTITY CASCADE`)
+func (r Product) DeleteAll() error {
+	stmt, err := r.db.Prepare(`TRUNCATE TABLE "product" RESTART IDENTITY CASCADE`)
 	if err != nil {
 		return err
 	}
@@ -176,7 +176,7 @@ func (p Product) DeleteAll() error {
 
 // scanRowProduct return null fields of the domain object Product parsed.
 func scanRowProduct(s scanner) (*domain.Product, error) {
-	var updatedAtNull sql.NullTime
+	var updatedAtNull, deletedAtNull sql.NullTime
 	p := &domain.Product{}
 
 	err := s.Scan(
@@ -187,12 +187,14 @@ func scanRowProduct(s scanner) (*domain.Product, error) {
 		&p.Price,
 		&p.CreatedAt,
 		&updatedAtNull,
+		&deletedAtNull,
 	)
 	if err != nil {
 		return &domain.Product{}, err
 	}
 
 	p.UpdatedAt = updatedAtNull.Time
+	p.DeletedAt = deletedAtNull.Time
 
 	return p, nil
 }
