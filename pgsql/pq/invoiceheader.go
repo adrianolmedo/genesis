@@ -26,7 +26,6 @@ func (InvoiceHeader) Create(tx *sql.Tx, m *domain.InvoiceHeader) error {
 }
 
 // DeleteAll delete all invoice header.
-// TODO: Test.
 func (ih InvoiceHeader) DeleteAll() error {
 	stmt, err := ih.db.Prepare(`TRUNCATE TABLE "invoice_header" RESTART IDENTITY CASCADE`)
 	if err != nil {

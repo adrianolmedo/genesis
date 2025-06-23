@@ -29,6 +29,7 @@ func (u User) Validate() error {
 	if u.FirstName == "" || u.Email == "" || u.Password == "" {
 		return errors.New("first name, email or password can't be empty")
 	}
+
 	return nil
 }
 
