@@ -17,11 +17,12 @@ type Product struct {
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	DeletedAt time.Time
 }
 
-// Validate check that Name can't be empty.
+// Validate check integrity of fields.
 func (p Product) Validate() error {
-	if p.Name != "" {
+	if p.Name == "" {
 		return errors.New("the product has no name")
 	}
 
