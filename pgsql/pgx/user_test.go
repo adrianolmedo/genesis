@@ -1,3 +1,6 @@
+//go:build integration
+// +build integration
+
 package pgx
 
 import (
@@ -47,7 +50,7 @@ func TestCreateUser(t *testing.T) {
 	}
 }
 
-func TestByLogin(t *testing.T) {
+func TestUserByLogin(t *testing.T) {
 	t.Cleanup(func() {
 		cleanUsersData(t)
 	})
@@ -84,6 +87,55 @@ func TestByLogin(t *testing.T) {
 			t.Errorf("%s: ByLogin(%s, %s): unexpected error status: %v",
 				tc.name, tc.inputEmail, tc.inputPass, err)
 		}
+	}
+}
+
+func TestUpdateUser(t *testing.T) {
+	t.Cleanup(func() {
+		cleanUsersData(t)
+	})
+
+	conn := openDB(t)
+	defer closeDB(t, conn)
+	insertUsersData(t, conn)
+
+	input := domain.User{
+		ID:        1,
+		FirstName: "Adrián",
+		LastName:  "Olmedo",
+		Email:     "example@gmail.com",
+		Password:  "1234567a",
+	}
+
+	u := User{conn: conn}
+
+	if err := u.Update(input); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := u.ByID(input.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if got.FirstName != input.FirstName {
+		t.Errorf("FirstName: want %s, got %s", input.FirstName, got.FirstName)
+	}
+
+	if got.LastName != input.LastName {
+		t.Errorf("LastName: want %s, got %s", input.LastName, got.LastName)
+	}
+
+	if got.CreatedAt.IsZero() {
+		t.Error("expected created at")
+	}
+
+	if got.UpdatedAt.IsZero() {
+		t.Error("expected updated at")
+	}
+
+	if !got.DeletedAt.IsZero() {
+		t.Error("unexpected deleted at")
 	}
 }
 

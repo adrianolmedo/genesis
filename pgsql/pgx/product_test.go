@@ -1,3 +1,6 @@
+//go:build integration
+// +build integration
+
 package pgx
 
 import (
@@ -5,16 +8,18 @@ import (
 	"testing"
 
 	domain "github.com/adrianolmedo/genesis"
+
 	"github.com/jackc/pgx/v5"
 )
 
-func TestCreate(t *testing.T) {
+func TestCreateProduct(t *testing.T) {
 	t.Cleanup(func() {
 		cleanProductsData(t)
 	})
 
 	conn := openDB(t)
 	defer closeDB(t, conn)
+
 	p := Product{conn: conn}
 
 	input := &domain.Product{
@@ -27,17 +32,21 @@ func TestCreate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	model, err := p.ByID(input.ID)
+	got, err := p.ByID(1)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if model.CreatedAt.IsZero() {
+	if got.CreatedAt.IsZero() {
 		t.Error("expected created at")
 	}
 
-	if !model.UpdatedAt.IsZero() {
+	if !got.UpdatedAt.IsZero() {
 		t.Error("unexpected updated at")
+	}
+
+	if !got.DeletedAt.IsZero() {
+		t.Error("unexpected deleted at")
 	}
 }
 
@@ -58,7 +67,7 @@ func TestProductByID(t *testing.T) {
 		wantErrContain string
 	}{
 		{
-			name:           "ok",
+			name:           "ok-test", // test name
 			input:          1,
 			wantName:       "Coca-Cola",
 			errExpected:    false,
@@ -123,7 +132,7 @@ func TestUpdateProduct(t *testing.T) {
 	}
 
 	if got.Observations != input.Observations {
-		t.Errorf("LastName: want %s, got %s", input.Observations, got.Observations)
+		t.Errorf("Observations: want %s, got %s", input.Observations, got.Observations)
 	}
 
 	if got.CreatedAt.IsZero() {
@@ -135,9 +144,11 @@ func TestUpdateProduct(t *testing.T) {
 	}
 }
 
+// insertProductsData add default `product` data.
 func insertProductsData(t *testing.T, conn *pgx.Conn) {
 	p := Product{conn: conn}
 
+	// Add first product
 	if err := p.Create(&domain.Product{
 		Name:         "Coca-Cola",
 		Observations: "",
@@ -146,6 +157,7 @@ func insertProductsData(t *testing.T, conn *pgx.Conn) {
 		t.Fatal(err)
 	}
 
+	// Add second product
 	if err := p.Create(&domain.Product{
 		Name:         "Big-Cola",
 		Observations: "Made in Venezuela",
@@ -155,6 +167,7 @@ func insertProductsData(t *testing.T, conn *pgx.Conn) {
 	}
 }
 
+// cleanProductsData delete all rows of `product` table.
 func cleanProductsData(t *testing.T) {
 	conn := openDB(t)
 	defer closeDB(t, conn)

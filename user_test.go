@@ -7,25 +7,25 @@ import (
 	domain "github.com/adrianolmedo/genesis"
 )
 
-func TestCheckEmptyFields(t *testing.T) {
+func TestUser(t *testing.T) {
 	tt := []struct {
 		name        string
-		user        domain.User
+		model       domain.User
 		errExpected bool
 	}{
 		{
 			name:        "empty-struct",
-			user:        domain.User{},
+			model:       domain.User{},
 			errExpected: true,
 		},
 		{
 			name:        "empty-fields",
-			user:        domain.User{FirstName: "", LastName: "", Email: "", Password: ""},
+			model:       domain.User{FirstName: "", LastName: "", Email: "", Password: ""},
 			errExpected: true,
 		},
 		{
 			name: "filled-fields",
-			user: domain.User{
+			model: domain.User{
 				FirstName: "Adrián",
 				LastName:  "Olmedo",
 				Email:     "aol.ve@aol.com",
@@ -35,11 +35,11 @@ func TestCheckEmptyFields(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		err := tc.user.Validate()
+		err := tc.model.Validate()
 		errReceived := err != nil
 
 		if errReceived != tc.errExpected {
-			t.Fatalf("%s: validateUser: unexpected error status: %v", tc.name, err)
+			t.Fatalf("%s: unexpected error value: %v", tc.name, err)
 		}
 	}
 }

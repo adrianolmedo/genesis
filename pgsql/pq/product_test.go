@@ -11,7 +11,7 @@ import (
 	domain "github.com/adrianolmedo/genesis"
 )
 
-func TestCreate(t *testing.T) {
+func TestCreateProduct(t *testing.T) {
 	t.Cleanup(func() {
 		cleanProductsData(t)
 	})
@@ -61,7 +61,7 @@ func TestProductByID(t *testing.T) {
 		wantErrContain string
 	}{
 		{
-			name:           "ok",
+			name:           "ok", // test name
 			input:          1,
 			wantName:       "Coca-Cola",
 			errExpected:    false,
@@ -126,7 +126,7 @@ func TestUpdateProduct(t *testing.T) {
 	}
 
 	if got.Observations != input.Observations {
-		t.Errorf("LastName: want %s, got %s", input.Observations, got.Observations)
+		t.Errorf("Observations: want %s, got %s", input.Observations, got.Observations)
 	}
 
 	if got.CreatedAt.IsZero() {
@@ -138,9 +138,11 @@ func TestUpdateProduct(t *testing.T) {
 	}
 }
 
+// insertProductsData add default `product` data.
 func insertProductsData(t *testing.T, db *sql.DB) {
 	p := Product{db: db}
 
+	// Add first product
 	if err := p.Create(&domain.Product{
 		Name:         "Coca-Cola",
 		Observations: "",
@@ -149,6 +151,7 @@ func insertProductsData(t *testing.T, db *sql.DB) {
 		t.Fatal(err)
 	}
 
+	// Add second product
 	if err := p.Create(&domain.Product{
 		Name:         "Big-Cola",
 		Observations: "Made in Venezuela",
@@ -158,6 +161,7 @@ func insertProductsData(t *testing.T, db *sql.DB) {
 	}
 }
 
+// cleanProductsData delete all rows of `product` table.
 func cleanProductsData(t *testing.T) {
 	db := openDB(t)
 	defer closeDB(t, db)

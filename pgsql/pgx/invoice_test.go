@@ -1,3 +1,6 @@
+//go:build integration
+// +build integration
+
 package pgx
 
 import (
@@ -13,14 +16,6 @@ func TestCreateInvoice(t *testing.T) {
 		cleanInvoiceHeadersData(t)
 	})
 
-	conn := openDB(t)
-	defer closeDB(t, conn)
-	insertProductsData(t, conn)
-
-	ih := InvoiceHeader{conn: conn}
-	ii := InvoiceItem{conn: conn}
-	in := Invoice{conn: conn, header: ih, items: ii}
-
 	input := &domain.Invoice{
 		Header: &domain.InvoiceHeader{
 			ClientID: 1,
@@ -29,6 +24,14 @@ func TestCreateInvoice(t *testing.T) {
 			&domain.InvoiceItem{ProductID: 1},
 		},
 	}
+
+	conn := openDB(t)
+	defer closeDB(t, conn)
+	insertProductsData(t, conn)
+
+	ih := InvoiceHeader{conn: conn}
+	ii := InvoiceItem{conn: conn}
+	in := Invoice{conn: conn, header: ih, items: ii}
 
 	if err := in.Create(input); err != nil {
 		t.Fatal(err)

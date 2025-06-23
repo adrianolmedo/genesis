@@ -27,12 +27,12 @@ func TestDB(t *testing.T) {
 }
 
 func openDB(t *testing.T) *sql.DB {
-	dbcfg := config.DB{
-		Host:     *dbhost,
-		Port:     *dbport,
-		User:     *dbuser,
-		Password: *dbpass,
-		Name:     *dbname,
+	dbcfg := config.Config{
+		DBHost:     *dbhost,
+		DBPort:     *dbport,
+		DBUser:     *dbuser,
+		DBPassword: *dbpass,
+		DBName:     *dbname,
 	}
 
 	db, err := newDB(dbcfg)

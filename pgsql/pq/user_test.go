@@ -49,7 +49,7 @@ func TestCreateUser(t *testing.T) {
 	}
 }
 
-func TestByLogin(t *testing.T) {
+func TestUserByLogin(t *testing.T) {
 	t.Cleanup(func() {
 		cleanUsersData(t)
 	})
@@ -60,23 +60,20 @@ func TestByLogin(t *testing.T) {
 
 	tt := []struct {
 		name        string
-		input       domain.UserLoginForm
+		inputEmail  string
+		inputPass   string
 		errExpected bool
 	}{
 		{
-			name: "successful",
-			input: domain.UserLoginForm{
-				Email:    "example@gmail.com",
-				Password: "1234567a",
-			},
+			name:        "successful",
+			inputEmail:  "example@gmail.com",
+			inputPass:   "1234567a",
 			errExpected: false,
 		},
 		{
-			name: "user-not-found",
-			input: domain.UserLoginForm{
-				Email:    "example@hotmail.com",
-				Password: "1234567a",
-			},
+			name:        "user-not-found",
+			inputEmail:  "example@hotmail.com",
+			inputPass:   "1234567a",
 			errExpected: true,
 		},
 	}
@@ -84,10 +81,10 @@ func TestByLogin(t *testing.T) {
 	u := User{db: db}
 
 	for _, tc := range tt {
-		err := u.ByLogin(tc.input.Email, tc.input.Password)
+		err := u.ByLogin(tc.inputEmail, tc.inputPass)
 		if (err != nil) != tc.errExpected {
 			t.Errorf("%s: ByLogin(%s, %s): unexpected error status: %v",
-				tc.name, tc.input.Email, tc.input.Password, err)
+				tc.name, tc.inputEmail, tc.inputPass, err)
 		}
 	}
 }
