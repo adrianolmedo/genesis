@@ -2,8 +2,8 @@ CREATE TABLE IF NOT EXISTS invoice_item (
     id BIGSERIAL,
     invoice_header_id INT NOT NULL,
     product_id INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ,
 
     CONSTRAINT invoice_item_id_pk PRIMARY KEY (id),
 

@@ -4,9 +4,9 @@ CREATE TABLE IF NOT EXISTS product (
     name VARCHAR(25) NOT NULL,
     observations VARCHAR(100),
     price INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP,
-    deleted_at TIMESTAMP,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ,
 
     CONSTRAINT product_id_pk PRIMARY KEY (id)
 );
