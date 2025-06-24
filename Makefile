@@ -8,6 +8,7 @@ genrsa:
 
 # Execute Go test command.
 test:
+	sqlc generate
 	go test ./...
 
 # Generate docs package for Swagger files with swag.
@@ -18,10 +19,12 @@ swagger:
 
 # Execute the Go build command to generate a debuggable binary with some IDE.
 debug:
+	sqlc generate
 	go build -gcflags "-N -l" -o $(BINARY) .
 
 # Execute the Go build command to compile and generate the binary in the root.
 build: swagger
+	sqlc generate
 	go build -o $(BINARY) cmd/rest/*.go
 
 # Execute rm command to delete binary file.

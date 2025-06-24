@@ -10,3 +10,18 @@ sql:
         package: "dbgen"
         out: "./pgsql/sqlc/dbgen"
         sql_package: "pgx/v5"
+        overrides:
+          - db_type: "uuid"
+            go_type: "github.com/pborman/uuid.UUID"
+          - db_type: "timestamptz"
+            nullable: false
+            go_type: "time.Time"
+          - db_type: "timestamptz"
+            nullable: true
+            go_type: "database/sql.NullTime"
+          - db_type: "timestamp"
+            nullable: false
+            go_type: "time.Time"
+          - db_type: "timestamp"
+            nullable: true
+            go_type: "database/sql.NullTime"
