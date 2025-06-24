@@ -1,4 +1,4 @@
-# postgres package
+# pgsql package
 
 ## Run integration tests
 
