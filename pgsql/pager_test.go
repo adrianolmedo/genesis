@@ -15,8 +15,8 @@ func TestPager(t *testing.T) {
 		direction   string
 		errExpected bool
 	}{
-        {
-			name:        "page-0",
+		{
+			name:        "page-zero", // test-name
 			limit:       2,
 			page:        0,
 			sort:        "created_at",
@@ -64,13 +64,13 @@ func TestLimitOffset(t *testing.T) {
 			want: "",
 		},
 		{
-			name:  "page-1",
+			name:  "page-one",
 			page:  0,
 			limit: 5,
 			want:  "LIMIT 5 OFFSET 0",
 		},
 		{
-			name:  "page-2",
+			name:  "page-two",
 			page:  2,
 			limit: 10,
 			want:  "LIMIT 10 OFFSET 10",
