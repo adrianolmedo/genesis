@@ -51,7 +51,7 @@ func TestNextUUID(t *testing.T) {
 	if !isValidUUID(uuid) {
 		t.Errorf("NextUUID() generate invalid UUID: %s", uuid)
 	} else {
-		t.Logf("%s: valid! ", uuid)
+		t.Logf("%s: UUID valid! ", uuid)
 	}
 }
 
