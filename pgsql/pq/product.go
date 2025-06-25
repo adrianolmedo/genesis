@@ -35,7 +35,7 @@ func (r Product) Create(m *domain.Product) error {
 }
 
 // ByID get one product by its id.
-func (r Product) ByID(id int) (*domain.Product, error) {
+func (r Product) ByID(id int64) (*domain.Product, error) {
 	stmt, err := r.db.Prepare(`SELECT * FROM "product" WHERE id = $1 AND deleted_at IS NULL`)
 	if err != nil {
 		return nil, err

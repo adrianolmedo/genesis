@@ -32,9 +32,9 @@ func addProduct(p *domain.Product) error {
 	return nil
 }
 
-func (s storeService) Find(id int) (*domain.Product, error) {
+func (s storeService) Find(id int64) (*domain.Product, error) {
 	if id == 0 {
-		return &domain.Product{}, domain.ErrProductNotFound
+		return nil, domain.ErrProductNotFound
 	}
 
 	return s.repoProduct.ByID(id)

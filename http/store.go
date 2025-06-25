@@ -76,7 +76,7 @@ type addProductForm struct {
 
 // productCardDTO subset of Product fields.
 type productCardDTO struct {
-	ID           int     `json:"id"`
+	ID           int64   `json:"id"`
 	Name         string  `json:"name"`
 	Observations string  `json:"observations"`
 	Price        float64 `json:"price"`
@@ -181,7 +181,7 @@ func createCustomer(s *app.Services) fiber.Handler {
 
 // customerProfileDTO subset of Customer fields.
 type customerProfileDTO struct {
-	ID        int    `json:"id,omitempty"`
+	ID        int64  `json:"id,omitempty"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
@@ -337,7 +337,7 @@ func findProduct(s *app.Services) fiber.Handler {
 			})
 		}
 
-		product, err := s.Store.Find(id)
+		product, err := s.Store.Find(int64(id))
 		if errors.Is(err, domain.ErrProductNotFound) {
 			return errorJSON(c, http.StatusNotFound, respDetails{
 				Code:    "003",
@@ -399,7 +399,7 @@ func updateProduct(s *app.Services) fiber.Handler {
 			})
 		}
 
-		form.ID = id
+		form.ID = int64(id)
 
 		err = s.Store.Update(domain.Product{
 			ID:           form.ID,
@@ -432,7 +432,7 @@ func updateProduct(s *app.Services) fiber.Handler {
 
 // updateProductForm represents a subset of fields to update a Product.
 type updateProductForm struct {
-	ID           int     `json:"id"`
+	ID           int64   `json:"id"`
 	Name         string  `json:"name"`
 	Observations string  `json:"observations"`
 	Price        float64 `json:"price"`

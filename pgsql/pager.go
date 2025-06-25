@@ -79,7 +79,7 @@ func validateLimit(n int) (int, error) {
 		return n, errors.New("positive number expected for limit")
 	}
 
-    maxLimit := int(PagerMaxLimit)
+	maxLimit := int(PagerMaxLimit)
 	if n == 0 || n > maxLimit {
 		n = maxLimit
 	}
@@ -125,7 +125,7 @@ func LimitOffset(limit, page int) string {
 }
 
 // Paginate calculates pagination details.
-func (p *Pager) Paginate(rows any, totalRows int) PagerResults {
+func (p *Pager) Paginate(rows any, totalRows int64) PagerResults {
 	if totalRows == 0 {
 		return PagerResults{
 			Page:       p.page,
@@ -146,11 +146,11 @@ func (p *Pager) Paginate(rows any, totalRows int) PagerResults {
 	if p.direction == "ASC" {
 		fromRow = (p.page - 1) * p.limit
 		toRow = fromRow + p.limit
-		if toRow > totalRows {
-			toRow = totalRows
+		if toRow > int(totalRows) {
+			toRow = int(totalRows)
 		}
 	} else { // DESC case
-		toRow = totalRows - (p.page-1)*p.limit
+		toRow = int(totalRows) - (p.page-1)*p.limit
 		fromRow = toRow - p.limit
 		if fromRow < 0 {
 			fromRow = 0
@@ -174,7 +174,7 @@ type PagerResults struct {
 	Limit      int    `json:"limit"`
 	Page       int    `json:"page"`
 	Sort       string `json:"sort"`
-	TotalRows  int    `json:"total"`
+	TotalRows  int64  `json:"total"`
 	TotalPages int    `json:"totalPages"`
 	FromRow    int    `json:"fromRow"`
 	ToRow      int    `json:"toRow"`

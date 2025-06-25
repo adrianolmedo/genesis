@@ -73,14 +73,14 @@ func (r Customer) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 }
 
 // countAll return total of Customers in storage.
-func (r Customer) countAll() (int, error) {
+func (r Customer) countAll() (int64, error) {
 	stmt, err := r.db.Prepare(`SELECT COUNT (*) FROM "customer"`)
 	if err != nil {
 		return 0, err
 	}
 	defer stmt.Close()
 
-	var n int
+	var n int64
 	err = stmt.QueryRow().Scan(&n)
 	if err != nil {
 		return 0, err

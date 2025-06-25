@@ -8,7 +8,7 @@ var ErrProductNotFound = errors.New("product not found")
 
 // Product domain model.
 type Product struct {
-	ID           int
+	ID           int64
 	UUID         string
 	Name         string
 	Observations string

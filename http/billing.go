@@ -38,7 +38,7 @@ func generateInvoice(s *app.Services) fiber.Handler {
 			})
 		}
 
-		clientID := uint(form.Header.ClientID)
+		clientID := form.Header.ClientID
 
 		_, err = s.User.Find(clientID)
 		if errors.Is(err, domain.ErrUserNotFound) {
@@ -129,11 +129,11 @@ type generateInvoiceForm struct {
 
 // invoiceItemForm represents a form to generate invoice item as product.
 type invoiceItemForm struct {
-	ProductID int `json:"productId"`
+	ProductID int64 `json:"productId"`
 }
 
 type invoiceHeaderForm struct {
-	ClientID int `json:"clientId"`
+	ClientID int64 `json:"clientId"`
 }
 
 // InvoiceReportDTO represent a view of a invoice.

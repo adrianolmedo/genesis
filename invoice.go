@@ -22,9 +22,9 @@ type Invoice struct {
 
 // InvoiceHeader model.
 type InvoiceHeader struct {
-	ID       int
+	ID       int64
 	UUID     string
-	ClientID uint
+	ClientID int64
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -32,9 +32,9 @@ type InvoiceHeader struct {
 
 // InvoiceItem model.
 type InvoiceItem struct {
-	ID              int
-	InvoiceHeaderID int
-	ProductID       int
+	ID              int64
+	InvoiceHeaderID int64
+	ProductID       int64
 
 	CreatedAt time.Time
 	UpdatedAt time.Time

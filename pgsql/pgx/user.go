@@ -49,7 +49,7 @@ func (r User) ByLogin(email, password string) error {
 }
 
 // ByID get a User from its id.
-func (r User) ByID(id uint) (*domain.User, error) {
+func (r User) ByID(id int64) (*domain.User, error) {
 	var updatedAtNull, deletedAtNull sql.NullTime
 
 	m := &domain.User{}
@@ -137,8 +137,8 @@ func (r User) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 }
 
 // countAll return total of Users in storage.
-func (r User) countAll() (int, error) {
-	var n int
+func (r User) countAll() (int64, error) {
+	var n int64
 
 	err := r.conn.QueryRow(context.Background(), `SELECT COUNT (*) FROM "user" WHERE deleted_at IS NULL`).Scan(&n)
 	if err != nil {
@@ -148,7 +148,7 @@ func (r User) countAll() (int, error) {
 	return n, nil
 }
 
-func (r User) Delete(id uint) error {
+func (r User) Delete(id int64) error {
 	result, err := r.conn.Exec(context.Background(), `UPDATE "user" SET deleted_at = $1 WHERE id = $2`, time.Now(), id)
 	if err != nil {
 		return err
@@ -161,7 +161,7 @@ func (r User) Delete(id uint) error {
 	return nil
 }
 
-func (r User) HardDelete(id uint) error {
+func (r User) HardDelete(id int64) error {
 	result, err := r.conn.Exec(context.Background(), `DELETE FROM "user" WHERE id = $1`)
 	if err != nil {
 		return err

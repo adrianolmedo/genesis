@@ -12,7 +12,7 @@ var ErrUserNotFound = errors.New("user not found")
 
 // User domain model.
 type User struct {
-	ID        uint
+	ID        int64
 	UUID      string
 	FirstName string
 	LastName  string

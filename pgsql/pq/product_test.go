@@ -55,7 +55,7 @@ func TestProductByID(t *testing.T) {
 
 	tt := []struct {
 		name           string
-		input          int
+		input          int64
 		wantName       string
 		errExpected    bool
 		wantErrContain string

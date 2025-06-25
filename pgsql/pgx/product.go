@@ -34,7 +34,7 @@ func (r Product) Create(m *domain.Product) error {
 }
 
 // ByID get one product by its id.
-func (r Product) ByID(id int) (*domain.Product, error) {
+func (r Product) ByID(id int64) (*domain.Product, error) {
 	var updatedAtNull, deletedAtNull sql.NullTime
 
 	m := &domain.Product{}
@@ -113,7 +113,7 @@ func (r Product) All() (domain.Products, error) {
 }
 
 // Delete product by its id.
-func (r Product) Delete(id int) error {
+func (r Product) Delete(id int64) error {
 	result, err := r.conn.Exec(context.Background(), `UPDATE "product" SET deleted_at = $1 WHERE id = $2`, time.Now(), id)
 	if err != nil {
 		return err
@@ -127,7 +127,7 @@ func (r Product) Delete(id int) error {
 }
 
 // HardDelete delete product from the storage.
-func (r Product) HardDelete(id uint) error {
+func (r Product) HardDelete(id int64) error {
 	result, err := r.conn.Exec(context.Background(), `DELETE FROM "product" WHERE id = $1`)
 	if err != nil {
 		return err

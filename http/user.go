@@ -138,7 +138,7 @@ type userSignUpForm struct {
 
 // userProfileDTO subset of User fields.
 type userProfileDTO struct {
-	ID        uint   `json:"id,omitempty" example:"1"`
+	ID        int64  `json:"id,omitempty" example:"1"`
 	FirstName string `json:"firstName" example:"John"`
 	LastName  string `json:"lastName" example:"Doe"`
 	Email     string `json:"email" example:"johndoe@aol.com"`
@@ -166,7 +166,7 @@ func findUser(s *app.Services) fiber.Handler {
 			})
 		}
 
-		user, err := s.User.Find(uint(id))
+		user, err := s.User.Find(int64(id))
 		if errors.Is(err, domain.ErrUserNotFound) {
 			return errorJSON(c, http.StatusNotFound, respDetails{
 				Code:    "003",
@@ -226,7 +226,7 @@ func updateUser(s *app.Services) fiber.Handler {
 			})
 		}
 
-		userID := uint(id)
+		userID := int64(id)
 
 		err = s.User.Update(domain.User{
 			ID:        userID,

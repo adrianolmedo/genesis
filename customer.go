@@ -8,7 +8,7 @@ var ErrCustomerNotFound = errors.New("customer not found")
 
 // Customer domain model.
 type Customer struct {
-	ID        int
+	ID        int64
 	UUID      string
 	FirstName string
 	LastName  string

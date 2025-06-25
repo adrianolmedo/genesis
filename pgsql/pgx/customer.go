@@ -78,8 +78,8 @@ func (r Customer) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 }
 
 // countAll return total of Customers in storage.
-func (r Customer) countAll() (int, error) {
-	var n int
+func (r Customer) countAll() (int64, error) {
+	var n int64
 
 	err := r.conn.QueryRow(context.Background(), `SELECT COUNT (*) FROM "customer"`).Scan(&n)
 	if err != nil {
@@ -90,7 +90,7 @@ func (r Customer) countAll() (int, error) {
 }
 
 // Delete delete Customer from its ID.
-func (r Customer) Delete(id int) error {
+func (r Customer) Delete(id int64) error {
 	result, err := r.conn.Exec(context.Background(), `UPDATE "customer" SET deleted_at = $1 WHERE id = $2`, time.Now(), id)
 	if err != nil {
 		return err
