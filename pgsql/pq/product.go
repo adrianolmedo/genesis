@@ -7,6 +7,7 @@ import (
 	"time"
 
 	domain "github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis/pgsql"
 )
 
 // Product repository.
@@ -43,27 +44,27 @@ func (r Product) ByID(id int) (*domain.Product, error) {
 
 	product, err := scanRowProduct(stmt.QueryRow(id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return &domain.Product{}, domain.ErrProductNotFound
+		return nil, domain.ErrProductNotFound
 	}
 
 	if err != nil {
-		return &domain.Product{}, err
+		return nil, err
 	}
 
 	return product, nil
 }
 
 // Update product.
-func (r Product) Update(product domain.Product) error {
+func (r Product) Update(p domain.Product) error {
 	stmt, err := r.db.Prepare(`UPDATE "product" SET name = $1, observations = $2, price = $3, updated_at = $4 WHERE id = $5`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	product.UpdatedAt = time.Now()
+	p.UpdatedAt = pgsql.PtrTime(time.Now())
 
-	result, err := stmt.Exec(product.Name, product.Observations, product.Price, timeToNull(product.UpdatedAt), product.ID)
+	result, err := stmt.Exec(p.Name, p.Observations, p.Price, p.UpdatedAt, p.ID)
 	if err != nil {
 		return err
 	}
@@ -118,7 +119,7 @@ func (r Product) Delete(id int) error {
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(timeToNull(time.Now()), id)
+	result, err := stmt.Exec(time.Now(), id)
 	if err != nil {
 		return err
 	}
@@ -193,8 +194,8 @@ func scanRowProduct(s scanner) (*domain.Product, error) {
 		return &domain.Product{}, err
 	}
 
-	p.UpdatedAt = updatedAtNull.Time
-	p.DeletedAt = deletedAtNull.Time
+	p.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
+	p.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
 
 	return p, nil
 }

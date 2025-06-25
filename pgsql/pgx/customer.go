@@ -64,8 +64,8 @@ func (r Customer) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 			return pgsql.PagerResults{}, err
 		}
 
-		m.UpdatedAt = updatedAtNull.Time
-		m.DeletedAt = deletedAtNull.Time
+		m.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
+		m.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
 
 		customers = append(customers, m)
 	}

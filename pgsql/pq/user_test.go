@@ -40,11 +40,11 @@ func TestCreateUser(t *testing.T) {
 		t.Error("expected created at")
 	}
 
-	if !got.UpdatedAt.IsZero() {
+	if got.UpdatedAt != nil {
 		t.Error("unexpected updated at")
 	}
 
-	if !got.DeletedAt.IsZero() {
+	if got.DeletedAt != nil {
 		t.Error("unexpected deleted at")
 	}
 }
@@ -133,7 +133,7 @@ func TestUpdateUser(t *testing.T) {
 		t.Error("expected updated at")
 	}
 
-	if !got.DeletedAt.IsZero() {
+	if got.DeletedAt != nil {
 		t.Error("unexpected deleted at")
 	}
 }

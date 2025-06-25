@@ -8,6 +8,7 @@ import (
 	"time"
 
 	domain "github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis/pgsql"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -48,15 +49,15 @@ func (r Product) ByID(id int) (*domain.Product, error) {
 		return nil, err
 	}
 
-	m.UpdatedAt = updatedAtNull.Time
-	m.DeletedAt = deletedAtNull.Time
+	m.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
+	m.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
 
 	return m, nil
 }
 
 // Update product.
 func (r Product) Update(m domain.Product) error {
-	m.UpdatedAt = time.Now()
+	m.UpdatedAt = pgsql.PtrTime(time.Now())
 
 	result, err := r.conn.Exec(context.Background(),
 		`UPDATE "product" SET name = $1, observations = $2, price = $3, updated_at = $4 WHERE id = $5`,
@@ -72,7 +73,7 @@ func (r Product) Update(m domain.Product) error {
 	return nil
 }
 
-// All get a collection of all prodycts.
+// All get a collection of all products.
 func (r Product) All() (domain.Products, error) {
 	rows, err := r.conn.Query(context.Background(), `SELECT * FROM "product" WHERE deleted_at IS NULL`)
 	if err != nil {
@@ -82,7 +83,7 @@ func (r Product) All() (domain.Products, error) {
 	products := make(domain.Products, 0)
 
 	for rows.Next() {
-		var updatedAtNull, createdAtNull sql.NullTime
+		var updatedAtNull, deletedAtNull sql.NullTime
 		m := &domain.Product{}
 
 		err := rows.Scan(
@@ -92,14 +93,14 @@ func (r Product) All() (domain.Products, error) {
 			&m.Observations,
 			&m.CreatedAt,
 			&updatedAtNull,
-			&createdAtNull,
+			&deletedAtNull,
 		)
 		if err != nil {
 			return domain.Products{}, err
 		}
 
-		m.UpdatedAt = updatedAtNull.Time
-		m.CreatedAt = createdAtNull.Time
+		m.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
+		m.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
 
 		products = append(products, m)
 	}

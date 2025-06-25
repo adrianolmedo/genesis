@@ -57,26 +57,26 @@ func (r User) ByID(id uint) (*domain.User, error) {
 	err := r.conn.QueryRow(context.Background(), `SELECT * FROM "user" WHERE id = $1 AND deleted_at IS NULL`, id).
 		Scan(&m.ID, &m.UUID, &m.FirstName, &m.LastName, &m.Email, &m.Password, &m.CreatedAt, &updatedAtNull, &deletedAtNull)
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
-		return nil, domain.ErrProductNotFound
+		return nil, domain.ErrUserNotFound
 	}
 
 	if err != nil {
 		return nil, err
 	}
 
-	m.UpdatedAt = updatedAtNull.Time
-	m.DeletedAt = deletedAtNull.Time
+	m.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
+	m.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
 
 	return m, nil
 }
 
-// Update update User.
-func (r User) Update(u domain.User) error {
-	u.UpdatedAt = time.Now()
+// Update user.
+func (r User) Update(m domain.User) error {
+	m.UpdatedAt = pgsql.PtrTime(time.Now())
 
 	result, err := r.conn.Exec(context.Background(),
-		`UPDATE "user" SET first_name = $1, last_name = $2, email = $3, password = $4, updated_at = $5
-		WHERE id = $6`, u.FirstName, u.LastName, u.Email, u.Password, u.UpdatedAt, u.ID)
+		`UPDATE "user" SET first_name = $1, last_name = $2, email = $3, password = $4, updated_at = $5 WHERE id = $6`,
+		m.FirstName, m.LastName, m.Email, m.Password, m.UpdatedAt, m.ID)
 	if err != nil {
 		return err
 	}
@@ -117,8 +117,8 @@ func (r User) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 			return pgsql.PagerResults{}, err
 		}
 
-		m.UpdatedAt = updatedAtNull.Time
-		m.DeletedAt = deletedAtNull.Time
+		m.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
+		m.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
 
 		users = append(users, m)
 	}

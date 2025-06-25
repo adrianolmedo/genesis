@@ -133,8 +133,8 @@ func scanRowCustomer(s scanner) (*domain.Customer, error) {
 		return nil, err
 	}
 
-	cx.UpdatedAt = updatedAtNull.Time
-	cx.DeletedAt = deletedAtNull.Time
+	cx.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
+	cx.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
 
 	return cx, nil
 }

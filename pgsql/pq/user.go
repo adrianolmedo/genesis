@@ -7,6 +7,7 @@ import (
 	"time"
 
 	domain "github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis/pgsql"
 )
 
 // User repository.
@@ -70,11 +71,11 @@ func (r User) ByID(id uint) (*domain.User, error) {
 
 	u, err := scanRowUser(stmt.QueryRow(id))
 	if errors.Is(err, sql.ErrNoRows) {
-		return &domain.User{}, domain.ErrUserNotFound
+		return nil, domain.ErrUserNotFound
 	}
 
 	if err != nil {
-		return &domain.User{}, err
+		return nil, err
 	}
 
 	return u, nil
@@ -88,9 +89,9 @@ func (r User) Update(u domain.User) error {
 	}
 	defer stmt.Close()
 
-	u.UpdatedAt = time.Now()
+	u.UpdatedAt = pgsql.PtrTime(time.Now())
 
-	result, err := stmt.Exec(u.FirstName, u.LastName, u.Email, u.Password, timeToNull(u.UpdatedAt), u.ID)
+	result, err := stmt.Exec(u.FirstName, u.LastName, u.Email, u.Password, u.UpdatedAt, u.ID)
 	if err != nil {
 		return err
 	}
@@ -124,7 +125,7 @@ func (r User) All() (domain.Users, error) {
 	users := make(domain.Users, 0)
 
 	for rows.Next() {
-		var updatedNull, deletedNull sql.NullTime
+		var updatedAtNull, deletedAtNull sql.NullTime
 		u := domain.User{}
 
 		err := rows.Scan(
@@ -135,15 +136,15 @@ func (r User) All() (domain.Users, error) {
 			&u.Email,
 			&u.Password,
 			&u.CreatedAt,
-			&updatedNull,
-			&deletedNull,
+			&updatedAtNull,
+			&deletedAtNull,
 		)
 		if err != nil {
 			return nil, err
 		}
 
-		u.UpdatedAt = updatedNull.Time
-		u.DeletedAt = deletedNull.Time
+		u.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
+		u.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
 
 		users = append(users, &u)
 	}
@@ -162,7 +163,7 @@ func (r User) Delete(id uint) error {
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(timeToNull(time.Now()), id)
+	result, err := stmt.Exec(time.Now(), id)
 	if err != nil {
 		return err
 	}
@@ -243,8 +244,8 @@ func scanRowUser(s scanner) (*domain.User, error) {
 		return &domain.User{}, err
 	}
 
-	m.UpdatedAt = updatedAtNull.Time
-	m.DeletedAt = deletedAtNull.Time
+	m.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
+	m.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
 
 	return m, nil
 }

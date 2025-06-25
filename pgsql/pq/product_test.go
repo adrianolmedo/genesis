@@ -30,16 +30,16 @@ func TestCreateProduct(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	model, err := p.ByID(input.ID)
+	got, err := p.ByID(input.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if model.CreatedAt.IsZero() {
+	if got.CreatedAt.IsZero() {
 		t.Error("expected created at")
 	}
 
-	if !model.UpdatedAt.IsZero() {
+	if got.UpdatedAt != nil {
 		t.Error("unexpected updated at")
 	}
 }
