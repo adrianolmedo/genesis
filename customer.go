@@ -2,12 +2,11 @@ package genesis
 
 import (
 	"errors"
-	"time"
 )
 
 var ErrCustomerNotFound = errors.New("customer not found")
 
-// Customer model.
+// Customer domain model.
 type Customer struct {
 	ID        int
 	UUID      string
@@ -16,9 +15,7 @@ type Customer struct {
 	Password  string
 	Email     string
 
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
+	AuditFields
 }
 
 // Validate return error if certain fields there are empty.

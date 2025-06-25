@@ -10,7 +10,7 @@ import (
 var ErrUserCantBeEmpty = errors.New("the user fields can't be empty")
 var ErrUserNotFound = errors.New("user not found")
 
-// User model.
+// User domain model.
 type User struct {
 	ID        uint
 	UUID      string
@@ -19,9 +19,7 @@ type User struct {
 	Email     string
 	Password  string
 
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
+	AuditFields
 }
 
 // Validate return error if certain fields there are empty.
@@ -44,4 +42,10 @@ func (us Users) IsEmpty() bool {
 // NextUUID generates a new UUID.
 func NextUUID() string {
 	return uuid.New()
+}
+
+type AuditFields struct {
+	CreatedAt time.Time
+	UpdatedAt *time.Time
+	DeletedAt *time.Time
 }

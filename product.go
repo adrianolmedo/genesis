@@ -2,12 +2,11 @@ package genesis
 
 import (
 	"errors"
-	"time"
 )
 
 var ErrProductNotFound = errors.New("product not found")
 
-// Product model.
+// Product domain model.
 type Product struct {
 	ID           int
 	UUID         string
@@ -15,9 +14,7 @@ type Product struct {
 	Observations string
 	Price        float64
 
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
+	AuditFields
 }
 
 // Validate check integrity of fields.
