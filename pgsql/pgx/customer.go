@@ -42,6 +42,7 @@ func (r Customer) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 	if err != nil {
 		return pgsql.PagerResults{}, err
 	}
+	defer rows.Close()
 
 	customers := make(domain.Customers, 0)
 

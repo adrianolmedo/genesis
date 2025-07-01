@@ -97,6 +97,7 @@ func (r User) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 	if err != nil {
 		return pgsql.PagerResults{}, err
 	}
+	defer rows.Close()
 
 	users := make(domain.Users, 0)
 
@@ -128,24 +129,13 @@ func (r User) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 	}
 
 	// Get total rows to calculate total pages.
-	totalRows, err := r.countAll()
+	var totalRows int64
+	err = r.conn.QueryRow(context.Background(), `SELECT COUNT (*) FROM "user" WHERE deleted_at IS NULL`).Scan(&totalRows)
 	if err != nil {
 		return pgsql.PagerResults{}, err
 	}
 
 	return p.Paginate(users, totalRows), nil
-}
-
-// countAll return total of Users in storage.
-func (r User) countAll() (int64, error) {
-	var n int64
-
-	err := r.conn.QueryRow(context.Background(), `SELECT COUNT (*) FROM "user" WHERE deleted_at IS NULL`).Scan(&n)
-	if err != nil {
-		return 0, err
-	}
-
-	return n, nil
 }
 
 func (r User) Delete(id int64) error {

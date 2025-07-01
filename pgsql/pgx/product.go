@@ -79,6 +79,7 @@ func (r Product) All() (domain.Products, error) {
 	if err != nil {
 		return domain.Products{}, err
 	}
+	defer rows.Close()
 
 	products := make(domain.Products, 0)
 
