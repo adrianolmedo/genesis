@@ -7,7 +7,7 @@ import (
 	_ "github.com/adrianolmedo/genesis/docs"
 	"github.com/adrianolmedo/genesis/http/jwt"
 	"github.com/adrianolmedo/genesis/logger"
-	"github.com/adrianolmedo/genesis/pgsql/pq"
+	storage "github.com/adrianolmedo/genesis/pgsql/pgx"
 
 	"github.com/gofiber/fiber/v2"
 	swagger "github.com/swaggo/fiber-swagger"
@@ -27,8 +27,8 @@ import (
 
 // @host		localhost:3000
 // @BasePath	/v1/
-func Router(strg *pq.Storage) *fiber.App {
-	s := app.NewServices(strg)
+func Router(s *storage.Storage) *fiber.App {
+	svc := app.NewServices(s)
 	f := fiber.New()
 
 	f.Get("/v1/test", func(c *fiber.Ctx) error {
@@ -37,26 +37,26 @@ func Router(strg *pq.Storage) *fiber.App {
 			Message: "Hello world",
 		})
 	})
-	f.Post("/v1/login", loginUser(s))
-	f.Post("/v1/users", signUpUser(s))
-	f.Get("/v1/users/:id", findUser(s))
+	f.Post("/v1/login", loginUser(svc))
+	f.Post("/v1/users", signUpUser(svc))
+	f.Get("/v1/users/:id", findUser(svc))
 
-	f.Get("/v1/users", authWare, listUsers(s))
-	f.Put("/v1/users/:id", authWare, updateUser(s))
-	f.Delete("/v1/users/:id", authWare, deleteUser(s))
+	f.Get("/v1/users", authWare, listUsers(svc))
+	f.Put("/v1/users/:id", authWare, updateUser(svc))
+	f.Delete("/v1/users/:id", authWare, deleteUser(svc))
 
-	f.Post("/v1/customers", createCustomer(s))
-	f.Get("/v1/customers", listCustomers(s))
-	f.Delete("v1/customers/:id", deleteCustomer(s))
+	f.Post("/v1/customers", createCustomer(svc))
+	f.Get("/v1/customers", listCustomers(svc))
+	f.Delete("v1/customers/:id", deleteCustomer(svc))
 
-	f.Get("/v1/products", listProducts(s))
-	f.Get("/v1/products/:id", findProduct(s))
+	f.Get("/v1/products", listProducts(svc))
+	f.Get("/v1/products/:id", findProduct(svc))
 
-	f.Post("/v1/products", authWare, addProduct(s))
-	f.Put("/v1/products/:id", authWare, updateProduct(s))
-	f.Delete("/v1/products/:id", authWare, deleteProduct(s))
+	f.Post("/v1/products", authWare, addProduct(svc))
+	f.Put("/v1/products/:id", authWare, updateProduct(svc))
+	f.Delete("/v1/products/:id", authWare, deleteProduct(svc))
 
-	f.Post("/v1/invoices", authWare, generateInvoice(s))
+	f.Post("/v1/invoices", authWare, generateInvoice(svc))
 
 	f.Get("/swagger/*", swagger.WrapHandler)
 

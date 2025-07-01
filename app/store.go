@@ -3,7 +3,7 @@ package app
 import (
 	domain "github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/pgsql"
-	storage "github.com/adrianolmedo/genesis/pgsql/pq"
+	storage "github.com/adrianolmedo/genesis/pgsql/pgx"
 )
 
 type storeService struct {
@@ -61,7 +61,7 @@ func (s storeService) ListCustomers(p *pgsql.Pager) (pgsql.PagerResults, error) 
 	return s.repoCustomer.All(p)
 }
 
-func (s storeService) RemoveCustomer(id int) error {
+func (s storeService) RemoveCustomer(id int64) error {
 	if id == 0 {
 		return domain.ErrCustomerNotFound
 	}
@@ -69,7 +69,7 @@ func (s storeService) RemoveCustomer(id int) error {
 	return s.repoCustomer.Delete(id)
 }
 
-func (s storeService) Remove(id int) error {
+func (s storeService) Remove(id int64) error {
 	if id == 0 {
 		return domain.ErrProductNotFound
 	}

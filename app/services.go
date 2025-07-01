@@ -1,6 +1,6 @@
 package app
 
-import strg "github.com/adrianolmedo/genesis/pgsql/pq"
+import storage "github.com/adrianolmedo/genesis/pgsql/pgx"
 
 // Services represents all services layers.
 type Services struct {
@@ -10,13 +10,13 @@ type Services struct {
 }
 
 // NewServices return a pointer of Services.
-func NewServices(strg *strg.Storage) *Services {
+func NewServices(s *storage.Storage) *Services {
 	return &Services{
-		User: userService{repo: strg.User},
+		User: userService{repo: s.User},
 		Store: storeService{
-			repoProduct:  strg.Product,
-			repoCustomer: strg.Customer,
+			repoProduct:  s.Product,
+			repoCustomer: s.Customer,
 		},
-		Billing: billingService{repo: strg.Invoice},
+		Billing: billingService{repo: s.Invoice},
 	}
 }

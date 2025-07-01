@@ -6,11 +6,12 @@ import (
 	"regexp"
 
 	domain "github.com/adrianolmedo/genesis"
-	strg "github.com/adrianolmedo/genesis/pgsql/pq"
+	"github.com/adrianolmedo/genesis/pgsql"
+	storage "github.com/adrianolmedo/genesis/pgsql/pgx"
 )
 
 type userService struct {
-	repo strg.User
+	repo storage.User
 }
 
 func (s userService) Login(email, password string) error {
@@ -73,12 +74,12 @@ func (s userService) Update(u domain.User) error {
 }
 
 // List get list of users.
-func (s userService) List() (domain.Users, error) {
-	return s.repo.All()
+func (s userService) List(p *pgsql.Pager) (pgsql.PagerResults, error) {
+	return s.repo.All(p)
 }
 
 // Remove delete User by its ID.
-func (s userService) Remove(id uint) error {
+func (s userService) Remove(id int64) error {
 	if id == 0 {
 		return domain.ErrUserNotFound
 	}
