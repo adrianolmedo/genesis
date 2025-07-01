@@ -3,7 +3,7 @@ sql:
   - engine: "postgresql"
     schema: "./sql/"
     queries:
-      - "./pgsql/sqlc/*/"
+      - "./pgsql/sqlc/queries/"
       - "./pgsql/sqlc/*/queries/"
     gen:
       go:
