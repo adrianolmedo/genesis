@@ -10,6 +10,7 @@ import (
 	"github.com/adrianolmedo/genesis/app"
 	"github.com/adrianolmedo/genesis/http/jwt"
 	"github.com/adrianolmedo/genesis/logger"
+	"github.com/adrianolmedo/genesis/pgsql"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -282,11 +283,32 @@ type userUpdateForm struct {
 //	@Router		/users [get]
 func listUsers(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		users, err := s.User.List()
+		p, err := pgsql.NewPager(
+			c.QueryInt("limit"),
+			c.QueryInt("page"),
+			c.Query("sort", "created_at"),
+			c.Query("direction"),
+		)
+		if err != nil {
+			return errorJSON(c, http.StatusBadRequest, respDetails{
+				Code:    "003",
+				Message: err.Error(),
+			})
+		}
+
+		pr, err := s.User.List(p)
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, respDetails{
 				Code:    "003",
 				Message: err.Error(),
+			})
+		}
+
+		users, ok := pr.Rows.(domain.Users)
+		if !ok {
+			return errorJSON(c, http.StatusInternalServerError, respDetails{
+				Code:    "003",
+				Message: "Data assertion",
 			})
 		}
 
@@ -340,7 +362,7 @@ func deleteUser(s *app.Services) fiber.Handler {
 			})
 		}
 
-		err = s.User.Remove(uint(id))
+		err = s.User.Remove(int64(id))
 		if errors.Is(err, domain.ErrUserNotFound) {
 			return errorJSON(c, http.StatusNotFound, respDetails{
 				Code:    "003",
