@@ -8,7 +8,10 @@ import (
 
 // Storage represents all repositories.
 type Storage struct {
-	User User
+	User     User
+	Product  Product
+	Customer Customer
+	Invoice  Invoice
 }
 
 // NewStorage start postgres database connection, build the Storage and return it
@@ -20,6 +23,13 @@ func NewStorage(cfg genesis.Config) (*Storage, error) {
 	}
 
 	return &Storage{
-		User: User{conn: db},
+		User:     User{conn: db},
+		Product:  Product{conn: db},
+		Customer: Customer{conn: db},
+		Invoice: Invoice{
+			conn:   db,
+			header: InvoiceHeader{conn: db},
+			items:  InvoiceItem{conn: db},
+		},
 	}, nil
 }
