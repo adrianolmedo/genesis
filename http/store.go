@@ -218,7 +218,7 @@ func deleteCustomer(s *app.Services) fiber.Handler {
 			})
 		}
 
-		err = s.Store.RemoveCustomer(id)
+		err = s.Store.RemoveCustomer(int64(id))
 		if errors.Is(err, domain.ErrProductNotFound) {
 			return errorJSON(c, http.StatusNoContent, respDetails{
 				Code:    "003",
@@ -461,7 +461,7 @@ func deleteProduct(s *app.Services) fiber.Handler {
 			})
 		}
 
-		err = s.Store.Remove(id)
+		err = s.Store.Remove(int64(id))
 		if errors.Is(err, domain.ErrProductNotFound) {
 			return errorJSON(c, http.StatusNoContent, respDetails{
 				Message: err.Error(),
