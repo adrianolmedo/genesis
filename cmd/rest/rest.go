@@ -9,7 +9,7 @@ import (
 	"github.com/adrianolmedo/genesis/http"
 	"github.com/adrianolmedo/genesis/http/jwt"
 	"github.com/adrianolmedo/genesis/logger"
-	"github.com/adrianolmedo/genesis/pgsql/pq"
+	"github.com/adrianolmedo/genesis/pgsql/pgx"
 
 	"github.com/peterbourgon/ff/v3"
 )
@@ -59,10 +59,10 @@ func run(cfg genesis.Config) error {
 		return fmt.Errorf("certificates could not be loaded: %v", err)
 	}
 
-	strg, err := pq.NewStorage(cfg)
+	s, err := pgx.NewStorage(cfg)
 	if err != nil {
 		return fmt.Errorf("error from storage: %v", err)
 	}
 
-	return http.Router(strg).Listen(cfg.Host + cfg.Port)
+	return http.Router(s).Listen(cfg.Host + cfg.Port)
 }
