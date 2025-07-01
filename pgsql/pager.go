@@ -91,9 +91,9 @@ func validateLimit(n int) (int, error) {
 // ASC or DESC.
 func normalizeDirection(dir string) string {
 	dir = strings.ToUpper(dir)
-	validDirections := map[string]bool{"ASC": true, "DESC": true}
+	validDir := map[string]bool{"ASC": true, "DESC": true}
 
-	if validDirections[dir] {
+	if validDir[dir] {
 		return dir
 	}
 	return "ASC"
