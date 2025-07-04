@@ -3,3 +3,4 @@ genesis
 app.rsa
 app.rsa.pub
 test.sql
+pgsql/sqlc/dbgen/
