@@ -65,8 +65,8 @@ func (r Customer) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 			return pgsql.PagerResults{}, err
 		}
 
-		m.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
-		m.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
+		m.UpdatedAt = pgsql.PtrFromNullTime(updatedAtNull)
+		m.DeletedAt = pgsql.PtrFromNullTime(deletedAtNull)
 
 		customers = append(customers, m)
 	}
@@ -75,22 +75,17 @@ func (r Customer) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 		return pgsql.PagerResults{}, err
 	}
 
-	return pgsql.PagerResults{}, nil
-}
-
-// countAll return total of Customers in storage.
-func (r Customer) countAll() (int64, error) {
-	var n int64
-
-	err := r.conn.QueryRow(context.Background(), `SELECT COUNT (*) FROM "customer"`).Scan(&n)
+	// Get total rows to calculate total pages.
+	var totalRows int64
+	err = r.conn.QueryRow(context.Background(), `SELECT COUNT (*) FROM "customer" WHERE deleted_at IS NULL`).Scan(&totalRows)
 	if err != nil {
-		return 0, err
+		return pgsql.PagerResults{}, err
 	}
 
-	return n, nil
+	return p.Paginate(customers, totalRows), nil
 }
 
-// Delete delete Customer from its ID.
+// Delete soft delete Customer from its ID.
 func (r Customer) Delete(id int64) error {
 	result, err := r.conn.Exec(context.Background(), `UPDATE "customer" SET deleted_at = $1 WHERE id = $2`, time.Now(), id)
 	if err != nil {

@@ -64,15 +64,15 @@ func (r User) ByID(id int64) (*domain.User, error) {
 		return nil, err
 	}
 
-	m.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
-	m.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
+	m.UpdatedAt = pgsql.PtrFromNullTime(updatedAtNull)
+	m.DeletedAt = pgsql.PtrFromNullTime(deletedAtNull)
 
 	return m, nil
 }
 
 // Update user.
 func (r User) Update(m domain.User) error {
-	m.UpdatedAt = pgsql.PtrTime(time.Now())
+	m.UpdatedAt = pgsql.TimePtr(time.Now())
 
 	result, err := r.conn.Exec(context.Background(),
 		`UPDATE "user" SET first_name = $1, last_name = $2, email = $3, password = $4, updated_at = $5 WHERE id = $6`,
@@ -118,8 +118,8 @@ func (r User) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 			return pgsql.PagerResults{}, err
 		}
 
-		m.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
-		m.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
+		m.UpdatedAt = pgsql.PtrFromNullTime(updatedAtNull)
+		m.DeletedAt = pgsql.PtrFromNullTime(deletedAtNull)
 
 		users = append(users, m)
 	}

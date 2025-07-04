@@ -89,7 +89,7 @@ func (r User) Update(u domain.User) error {
 	}
 	defer stmt.Close()
 
-	u.UpdatedAt = pgsql.PtrTime(time.Now())
+	u.UpdatedAt = pgsql.TimePtr(time.Now())
 
 	result, err := stmt.Exec(u.FirstName, u.LastName, u.Email, u.Password, u.UpdatedAt, u.ID)
 	if err != nil {
@@ -143,8 +143,8 @@ func (r User) All() (domain.Users, error) {
 			return nil, err
 		}
 
-		u.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
-		u.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
+		u.UpdatedAt = pgsql.PtrFromNullTime(updatedAtNull)
+		u.DeletedAt = pgsql.PtrFromNullTime(deletedAtNull)
 
 		users = append(users, &u)
 	}
@@ -244,8 +244,8 @@ func scanRowUser(s scanner) (*domain.User, error) {
 		return &domain.User{}, err
 	}
 
-	m.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
-	m.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
+	m.UpdatedAt = pgsql.PtrFromNullTime(updatedAtNull)
+	m.DeletedAt = pgsql.PtrFromNullTime(deletedAtNull)
 
 	return m, nil
 }

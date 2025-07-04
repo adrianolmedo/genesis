@@ -5,19 +5,19 @@ import (
 	"time"
 )
 
-// PtrTime shorcut: return pointer to time.Time.
-func PtrTime(t time.Time) *time.Time { return &t }
+// TimePtr returns a pointer to the given time.Time.
+func TimePtr(t time.Time) *time.Time { return &t }
 
-// ToNullTime convert *time.Time → sql.NullTime.
-func ToNullTime(t *time.Time) sql.NullTime {
+// NullTimeFromPtr converts *time.Time to sql.NullTime.
+func NullTimeFromPtr(t *time.Time) sql.NullTime {
 	if t != nil {
 		return sql.NullTime{Time: *t, Valid: true}
 	}
 	return sql.NullTime{}
 }
 
-// ToTimePtr convert sql.NullTime → *time.Time.
-func ToTimePtr(nt sql.NullTime) *time.Time {
+// PtrFromNullTime converts sql.NullTime to *time.Time.
+func PtrFromNullTime(nt sql.NullTime) *time.Time {
 	if nt.Valid {
 		return &nt.Time
 	}

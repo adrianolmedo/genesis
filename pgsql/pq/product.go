@@ -62,7 +62,7 @@ func (r Product) Update(p domain.Product) error {
 	}
 	defer stmt.Close()
 
-	p.UpdatedAt = pgsql.PtrTime(time.Now())
+	p.UpdatedAt = pgsql.TimePtr(time.Now())
 
 	result, err := stmt.Exec(p.Name, p.Observations, p.Price, p.UpdatedAt, p.ID)
 	if err != nil {
@@ -194,8 +194,8 @@ func scanRowProduct(s scanner) (*domain.Product, error) {
 		return &domain.Product{}, err
 	}
 
-	p.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
-	p.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
+	p.UpdatedAt = pgsql.PtrFromNullTime(updatedAtNull)
+	p.DeletedAt = pgsql.PtrFromNullTime(deletedAtNull)
 
 	return p, nil
 }

@@ -49,15 +49,15 @@ func (r Product) ByID(id int64) (*domain.Product, error) {
 		return nil, err
 	}
 
-	m.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
-	m.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
+	m.UpdatedAt = pgsql.PtrFromNullTime(updatedAtNull)
+	m.DeletedAt = pgsql.PtrFromNullTime(deletedAtNull)
 
 	return m, nil
 }
 
 // Update product.
 func (r Product) Update(m domain.Product) error {
-	m.UpdatedAt = pgsql.PtrTime(time.Now())
+	m.UpdatedAt = pgsql.TimePtr(time.Now())
 
 	result, err := r.conn.Exec(context.Background(),
 		`UPDATE "product" SET name = $1, observations = $2, price = $3, updated_at = $4 WHERE id = $5`,
@@ -100,8 +100,8 @@ func (r Product) All() (domain.Products, error) {
 			return domain.Products{}, err
 		}
 
-		m.UpdatedAt = pgsql.ToTimePtr(updatedAtNull)
-		m.DeletedAt = pgsql.ToTimePtr(deletedAtNull)
+		m.UpdatedAt = pgsql.PtrFromNullTime(updatedAtNull)
+		m.DeletedAt = pgsql.PtrFromNullTime(deletedAtNull)
 
 		products = append(products, m)
 	}
