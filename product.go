@@ -12,7 +12,7 @@ type Product struct {
 	UUID         string
 	Name         string
 	Observations string
-	Price        float64
+	Price        int64
 
 	AuditFields
 }

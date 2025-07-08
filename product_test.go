@@ -27,7 +27,7 @@ func TestProduct(t *testing.T) {
 			model: domain.Product{
 				Name:         "Protein",
 				Observations: "Lorem ipsum",
-				Price:        33.33},
+				Price:        03333},
 			errExpected: false,
 		},
 	}
