@@ -10,7 +10,9 @@ import (
 // PagerMaxLimit is the default value for the limit in a reasonable range.
 const PagerMaxLimit int = 10
 
-// Pager for filtering paginated results.
+// Pager is a struct that encapsulates pagination details.
+// It includes the limit of results per page, the current page number,
+// the field to sort by, and the direction of sorting (ASC or DESC).
 type Pager struct {
 	limit     int
 	page      int
@@ -18,7 +20,9 @@ type Pager struct {
 	direction string
 }
 
-// NewPager constructor, ensures valid defaults when creating a Pager.
+// NewPager creates a new Pager instance.
+// It validates the limit and page number, and normalizes the sort direction.
+// If the limit is 0 or exceeds PagerMaxLimit, it defaults to PagerMaxLimit.
 func NewPager(limit, page int, sort, direction string) (*Pager, error) {
 	limit, err := validateLimit(limit)
 	if err != nil {
