@@ -5,14 +5,15 @@ import (
 	"fmt"
 
 	"github.com/adrianolmedo/genesis"
+
 	"github.com/jackc/pgx/v5"
 )
 
 // Storage represents all repositories.
 type Storage struct {
-	User *User
-	//Product  Product
-	//Customer Customer
+	User     *User
+	Product  *Product
+	Customer *Customer
 	//Invoice  Invoice
 }
 
@@ -25,9 +26,9 @@ func NewStorage(cfg genesis.Config) (*Storage, error) {
 	}
 
 	return &Storage{
-		User: NewUser(conn),
-		//Product:  Product{conn: db},
-		//Customer: Customer{conn: db},
+		User:     NewUser(conn),
+		Product:  NewProduct(conn),
+		Customer: NewCustomer(conn),
 		/*Invoice: Invoice{
 			conn:   db,
 			header: InvoiceHeader{conn: db},
