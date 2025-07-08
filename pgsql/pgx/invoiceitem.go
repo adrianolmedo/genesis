@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	domain "github.com/adrianolmedo/genesis"
+
 	"github.com/jackc/pgx/v5"
 )
 
