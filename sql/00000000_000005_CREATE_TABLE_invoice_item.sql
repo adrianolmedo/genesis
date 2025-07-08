@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS invoice_item (
     id BIGSERIAL,
-    invoice_header_id INT NOT NULL,
-    product_id INT NOT NULL,
+    invoice_header_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ,
 
