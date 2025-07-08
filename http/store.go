@@ -69,17 +69,17 @@ func addProduct(s *app.Services) fiber.Handler {
 
 // addProductForm represents a subset of fields to create a Product.
 type addProductForm struct {
-	Name         string  `json:"name"`
-	Observations string  `json:"observations"`
-	Price        float64 `json:"price"`
+	Name         string `json:"name"`
+	Observations string `json:"observations"`
+	Price        int64  `json:"price"`
 }
 
 // productCardDTO subset of Product fields.
 type productCardDTO struct {
-	ID           int64   `json:"id"`
-	Name         string  `json:"name"`
-	Observations string  `json:"observations"`
-	Price        float64 `json:"price"`
+	ID           int64  `json:"id"`
+	Name         string `json:"name"`
+	Observations string `json:"observations"`
+	Price        int64  `json:"price"`
 }
 
 // listProduct godoc
@@ -432,10 +432,10 @@ func updateProduct(s *app.Services) fiber.Handler {
 
 // updateProductForm represents a subset of fields to update a Product.
 type updateProductForm struct {
-	ID           int64   `json:"id"`
-	Name         string  `json:"name"`
-	Observations string  `json:"observations"`
-	Price        float64 `json:"price"`
+	ID           int64  `json:"id"`
+	Name         string `json:"name"`
+	Observations string `json:"observations"`
+	Price        int64  `json:"price"`
 }
 
 // deleteProduct godoc
