@@ -14,7 +14,7 @@ type Storage struct {
 	User     *User
 	Product  *Product
 	Customer *Customer
-	//Invoice  Invoice
+	Invoice  *Invoice
 }
 
 // NewStorage start postgres database connection, build the Storage and return it
@@ -29,11 +29,7 @@ func NewStorage(cfg genesis.Config) (*Storage, error) {
 		User:     NewUser(conn),
 		Product:  NewProduct(conn),
 		Customer: NewCustomer(conn),
-		/*Invoice: Invoice{
-			conn:   db,
-			header: InvoiceHeader{conn: db},
-			items:  InvoiceItem{conn: db},
-		}*,*/
+		Invoice:  NewInvoice(conn),
 	}, nil
 }
 
