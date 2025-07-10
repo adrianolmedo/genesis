@@ -23,12 +23,14 @@ func (i Invoice) Create(inv *domain.Invoice) error {
 		return err
 	}
 
+	// Create invoice header
 	err = i.header.Create(tx, inv.Header)
 	if err != nil {
 		tx.Rollback(context.Background())
 		return fmt.Errorf("invoice header: %w", err)
 	}
 
+	// Create invoice items
 	err = i.items.Create(tx, inv.Header.ID, inv.Items)
 	if err != nil {
 		tx.Rollback(context.Background())

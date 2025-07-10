@@ -14,13 +14,13 @@ var ErrInvoiceItemNotFound = errors.New("invoice item not found")
 // ErrItemListCantBeEmpty indicate that an invoice must have items.
 var ErrItemListCantBeEmpty = errors.New("item list can't be empty")
 
-// Invoice model.
+// Invoice aggregate, represents an invoice with its header and items.
 type Invoice struct {
 	Header *InvoiceHeader
 	Items  ItemList
 }
 
-// InvoiceHeader model.
+// InvoiceHeader entity model.
 type InvoiceHeader struct {
 	ID       int64
 	UUID     string
@@ -30,7 +30,7 @@ type InvoiceHeader struct {
 	UpdatedAt time.Time
 }
 
-// InvoiceItem model.
+// InvoiceItem enmity model.
 type InvoiceItem struct {
 	ID              int64
 	InvoiceHeaderID int64
