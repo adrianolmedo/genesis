@@ -28,7 +28,7 @@ func TestCreateTxInvoiceHeader(t *testing.T) {
 	}
 
 	ih := NewInvoiceHeader(conn)
-	if err := ih.Create(input); err != nil {
+	if err := ih.Create(tx, input); err != nil {
 		tx.Rollback(context.Background())
 		t.Fatal(err)
 	}
