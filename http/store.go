@@ -56,7 +56,7 @@ func addProduct(s *app.Services) fiber.Handler {
 
 		logger.Debug("Product added", "product", product.UUID)
 
-		return successJSON(c, http.StatusCreated, respDetails{
+		return respJSON(c, http.StatusCreated, respDetails{
 			Message: "Product added",
 			Data: productCardDTO{
 				Name:         form.Name,
@@ -103,7 +103,7 @@ func listProducts(s *app.Services) fiber.Handler {
 		}
 
 		if products.IsEmpty() {
-			return successJSON(c, http.StatusOK, respDetails{
+			return respJSON(c, http.StatusOK, respDetails{
 				Code:    "005",
 				Message: "There are not products",
 			})
@@ -123,7 +123,7 @@ func listProducts(s *app.Services) fiber.Handler {
 			list = append(list, assemble(v))
 		}
 
-		return successJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, respDetails{
 			Message: "Ok",
 			Data:    list,
 		})
@@ -168,7 +168,7 @@ func createCustomer(s *app.Services) fiber.Handler {
 			})
 		}
 
-		return successJSON(c, http.StatusCreated, respDetails{
+		return respJSON(c, http.StatusCreated, respDetails{
 			Message: "Customer created",
 			Data: customerProfileDTO{
 				FirstName: form.FirstName,
@@ -235,7 +235,7 @@ func deleteCustomer(s *app.Services) fiber.Handler {
 
 		logger.Info("customer", fmt.Sprintf("customer with ID %d removed from DB", id))
 
-		return successJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, respDetails{
 			Message: "Customer delete",
 		})
 	}
@@ -288,7 +288,7 @@ func listCustomers(s *app.Services) fiber.Handler {
 		}
 
 		if customers.IsEmpty() {
-			return successJSON(c, http.StatusOK, respDetails{
+			return respJSON(c, http.StatusOK, respDetails{
 				Message: "There are not customers",
 			})
 		}
@@ -352,7 +352,7 @@ func findProduct(s *app.Services) fiber.Handler {
 			})
 		}
 
-		return successJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, respDetails{
 			Data: productCardDTO{
 				ID:           product.ID,
 				Name:         product.Name,
@@ -423,7 +423,7 @@ func updateProduct(s *app.Services) fiber.Handler {
 
 		logger.Debug("product", fmt.Sprintf("product ID %d updated", id))
 
-		return successJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, respDetails{
 			Message: "Product updated",
 		})
 
@@ -476,7 +476,7 @@ func deleteProduct(s *app.Services) fiber.Handler {
 
 		logger.Debug("product", fmt.Sprintf("product with ID %d removed from DB", id))
 
-		return successJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, respDetails{
 			Message: "Product deleted",
 		})
 	}

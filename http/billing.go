@@ -111,7 +111,7 @@ func generateInvoice(s *app.Services) fiber.Handler {
 
 		logger.Info("generating invoice", fmt.Sprintf("invoice ID %d generated", invoice.Header.ID))
 
-		return successJSON(c, http.StatusCreated, respDetails{
+		return respJSON(c, http.StatusCreated, respDetails{
 			Message: "Invoice generated",
 			Data: generateInvoiceForm{
 				Header: form.Header,

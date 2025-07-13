@@ -2,17 +2,17 @@ package http
 
 import "github.com/adrianolmedo/genesis/pgsql"
 
+// resp represents a standard successful API response.
+type resp struct {
+	Status string `json:"status"`
+	respDetails
+}
+
 type respDetails struct {
 	Code    string `json:"code,omitempty"`
 	Data    any    `json:"data,omitempty"`
 	Message string `json:"message"`
 	Details string `json:"details,omitempty"`
-}
-
-// successResp represents a standard successful API response.
-type successResp struct {
-	Status string `json:"status"`
-	respDetails
 }
 
 // errorResp represents a standard error API response.

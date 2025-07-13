@@ -63,7 +63,7 @@ func loginUser(s *app.Services) fiber.Handler {
 			})
 		}
 
-		return successJSON(c, http.StatusCreated, respDetails{
+		return respJSON(c, http.StatusCreated, respDetails{
 			Message: "You are logged",
 			Data:    dataTokenDTO{token},
 		})
@@ -118,7 +118,7 @@ func signUpUser(s *app.Services) fiber.Handler {
 			})
 		}
 
-		return successJSON(c, http.StatusCreated, respDetails{
+		return respJSON(c, http.StatusCreated, respDetails{
 			Message: "User created",
 			Data: userProfileDTO{
 				FirstName: form.FirstName,
@@ -182,7 +182,7 @@ func findUser(s *app.Services) fiber.Handler {
 			})
 		}
 
-		return successJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, respDetails{
 			Message: "User found",
 			Data: userProfileDTO{
 				ID:        user.ID,
@@ -251,7 +251,7 @@ func updateUser(s *app.Services) fiber.Handler {
 			})
 		}
 
-		return successJSON(c, http.StatusCreated, respDetails{
+		return respJSON(c, http.StatusCreated, respDetails{
 			Message: "User updated",
 			Data: userProfileDTO{
 				ID:        userID,
@@ -313,7 +313,7 @@ func listUsers(s *app.Services) fiber.Handler {
 		}
 
 		if users.IsEmpty() {
-			return successJSON(c, http.StatusOK, respDetails{
+			return respJSON(c, http.StatusOK, respDetails{
 				Code:    "005",
 				Message: "There are not users",
 			})
@@ -333,7 +333,7 @@ func listUsers(s *app.Services) fiber.Handler {
 			list = append(list, assemble(v))
 		}
 
-		return successJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, respDetails{
 			Message: "Ok",
 			Data:    list,
 		})
@@ -379,7 +379,7 @@ func deleteUser(s *app.Services) fiber.Handler {
 
 		logger.Debug("user", fmt.Sprintf("user ID %d deleted", id))
 
-		return successJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, respDetails{
 			Message: "User deleted",
 		})
 	}

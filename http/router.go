@@ -33,7 +33,7 @@ func Router(s *storage.Storage) *fiber.App {
 
 	f.Get("/v1/test", func(c *fiber.Ctx) error {
 		logger.Info("testing", "path", c.Path())
-		return successJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, respDetails{
 			Message: "Hello world",
 		})
 	})
@@ -63,9 +63,9 @@ func Router(s *storage.Storage) *fiber.App {
 	return f
 }
 
-// successJSON respond JSON.
-func successJSON(c *fiber.Ctx, httpStatus int, details respDetails) error {
-	return c.Status(httpStatus).JSON(successResp{
+// respJSON respond JSON.
+func respJSON(c *fiber.Ctx, httpStatus int, details respDetails) error {
+	return c.Status(httpStatus).JSON(resp{
 		Status:      "success",
 		respDetails: details,
 	})
