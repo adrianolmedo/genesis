@@ -30,7 +30,7 @@ type InvoiceHeader struct {
 	UpdatedAt time.Time
 }
 
-// InvoiceItem enmity model.
+// InvoiceItem entity model.
 type InvoiceItem struct {
 	ID              int64
 	InvoiceHeaderID int64
