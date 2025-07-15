@@ -8,7 +8,7 @@ import (
 
 func TestPager(t *testing.T) {
 	tt := []struct {
-		name        string
+		name        string // test name
 		limit       int
 		page        int
 		sort        string
@@ -16,7 +16,7 @@ func TestPager(t *testing.T) {
 		errExpected bool
 	}{
 		{
-			name:        "page-zero", // test-name
+			name:        "page-zero",
 			limit:       2,
 			page:        0,
 			sort:        "created_at",
@@ -54,7 +54,7 @@ func TestPager(t *testing.T) {
 
 func TestLimitOffset(t *testing.T) {
 	tt := []struct {
-		name  string
+		name  string // test name
 		page  int
 		limit int
 		want  string
