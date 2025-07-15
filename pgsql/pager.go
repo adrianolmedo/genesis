@@ -42,27 +42,6 @@ func NewPager(limit, page int, sort, direction string) (*Pager, error) {
 	}, nil
 }
 
-// Limit restrict to subset of results.
-func (p *Pager) Limit() int {
-	return p.limit
-}
-
-// Page indicates the page from the client.
-func (p *Pager) Page() int {
-	return p.page
-}
-
-// Sort sort results by the value of a field, e.g.: ORDER BY created_at.
-func (p *Pager) Sort() string {
-	return p.sort
-}
-
-// Direction to display the results in DESC or ASC order based on the
-// Sort value.
-func (p *Pager) Direction() string {
-	return p.direction
-}
-
 // validatePage Pager helper, ensures page number is valid.
 func validatePage(p int) (int, error) {
 	if p < 0 {
@@ -101,6 +80,27 @@ func normalizeDirection(dir string) string {
 		return dir
 	}
 	return "ASC"
+}
+
+// Limit restrict to subset of results.
+func (p *Pager) Limit() int {
+	return p.limit
+}
+
+// Page indicates the page from the client.
+func (p *Pager) Page() int {
+	return p.page
+}
+
+// Sort sort results by the value of a field, e.g.: ORDER BY created_at.
+func (p *Pager) Sort() string {
+	return p.sort
+}
+
+// Direction to display the results in DESC or ASC order based on the
+// Sort value.
+func (p *Pager) Direction() string {
+	return p.direction
 }
 
 // OrderBy generates an SQL ORDER BY clause.
