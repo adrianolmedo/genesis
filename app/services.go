@@ -1,6 +1,6 @@
 package app
 
-import storage "github.com/adrianolmedo/genesis/pgsql/pgx"
+import storage "github.com/adrianolmedo/genesis/pgsql/sqlc"
 
 // Services represents all services layers.
 type Services struct {

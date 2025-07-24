@@ -4,6 +4,7 @@
 package sqlc
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -17,8 +18,9 @@ func TestCreateProduct(t *testing.T) {
 		cleanProductsData(t)
 	})
 
-	conn := openDB(t)
-	defer closeDB(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
 
 	p := NewProduct(conn)
 
@@ -28,11 +30,11 @@ func TestCreateProduct(t *testing.T) {
 		Price:        3,
 	}
 
-	if err := p.Create(input); err != nil {
+	if err := p.Create(ctx, input); err != nil {
 		t.Fatal(err)
 	}
 
-	got, err := p.ByID(1)
+	got, err := p.ByID(ctx, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -55,9 +57,10 @@ func TestProductByID(t *testing.T) {
 		cleanProductsData(t)
 	})
 
-	conn := openDB(t)
-	defer closeDB(t, conn)
-	insertProductsData(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
+	insertProductsData(ctx, t, conn)
 
 	tt := []struct {
 		name           string
@@ -85,7 +88,7 @@ func TestProductByID(t *testing.T) {
 	p := NewProduct(conn)
 
 	for _, tc := range tt {
-		got, err := p.ByID(tc.input)
+		got, err := p.ByID(ctx, tc.input)
 		if (err != nil) != tc.errExpected {
 			t.Fatalf("%s: ByID(%d): unexpected error status: %v", tc.name, tc.input, err)
 		}
@@ -105,9 +108,10 @@ func TestUpdateProduct(t *testing.T) {
 		cleanProductsData(t)
 	})
 
-	conn := openDB(t)
-	defer closeDB(t, conn)
-	insertProductsData(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
+	insertProductsData(ctx, t, conn)
 
 	input := domain.Product{
 		ID:           1,
@@ -118,11 +122,11 @@ func TestUpdateProduct(t *testing.T) {
 
 	p := NewProduct(conn)
 
-	if err := p.Update(input); err != nil {
+	if err := p.Update(ctx, input); err != nil {
 		t.Fatal(err)
 	}
 
-	got, err := p.ByID(input.ID)
+	got, err := p.ByID(ctx, input.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -149,11 +153,13 @@ func TestUpdateProduct(t *testing.T) {
 }
 
 // insertProductsData add default `product` data.
-func insertProductsData(t *testing.T, conn *pgx.Conn) {
+func insertProductsData(ctx context.Context, t *testing.T, conn *pgx.Conn) {
+	t.Helper()
+
 	p := NewProduct(conn)
 
 	// Add first product
-	if err := p.Create(&domain.Product{
+	if err := p.Create(ctx, &domain.Product{
 		Name:         "Coca-Cola",
 		Observations: "",
 		Price:        3,
@@ -162,7 +168,7 @@ func insertProductsData(t *testing.T, conn *pgx.Conn) {
 	}
 
 	// Add second product
-	if err := p.Create(&domain.Product{
+	if err := p.Create(ctx, &domain.Product{
 		Name:         "Big-Cola",
 		Observations: "Made in Venezuela",
 		Price:        2,
@@ -173,12 +179,13 @@ func insertProductsData(t *testing.T, conn *pgx.Conn) {
 
 // cleanProductsData delete all rows of `product` table.
 func cleanProductsData(t *testing.T) {
-	conn := openDB(t)
-	defer closeDB(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
 
 	p := NewProduct(conn)
 
-	err := p.DeleteAll()
+	err := p.DeleteAll(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}

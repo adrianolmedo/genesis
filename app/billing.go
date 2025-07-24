@@ -1,21 +1,23 @@
 package app
 
 import (
+	"context"
+
 	domain "github.com/adrianolmedo/genesis"
-	storage "github.com/adrianolmedo/genesis/pgsql/pgx"
+	storage "github.com/adrianolmedo/genesis/pgsql/sqlc"
 )
 
 type billingService struct {
-	repo storage.Invoice
+	repo *storage.Invoice
 }
 
-func (s billingService) Generate(inv *domain.Invoice) error {
+func (s billingService) Generate(ctx context.Context, inv *domain.Invoice) error {
 	err := generateInvoice(inv)
 	if err != nil {
 		return err
 	}
 
-	return s.repo.Create(inv)
+	return s.repo.Create(ctx, inv)
 }
 
 func generateInvoice(inv *domain.Invoice) error {

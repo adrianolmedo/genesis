@@ -29,11 +29,11 @@ func NewProduct(db dbgen.DBTX) *Product {
 }
 
 // Create add one product to the storage.
-func (r Product) Create(m *domain.Product) error {
+func (r Product) Create(ctx context.Context, m *domain.Product) error {
 	m.UUID = domain.NextUUID()
 	m.CreatedAt = time.Now()
 
-	id, err := r.q.ProductCreate(context.Background(), dbgen.ProductCreateParams{
+	id, err := r.q.ProductCreate(ctx, dbgen.ProductCreateParams{
 		Uuid:         uuid.Parse(m.UUID),
 		Name:         m.Name,
 		Observations: m.Observations,
@@ -48,8 +48,8 @@ func (r Product) Create(m *domain.Product) error {
 	return nil
 }
 
-func (r Product) ByID(id int64) (*domain.Product, error) {
-	m, err := r.q.ProductByID(context.Background(), id)
+func (r Product) ByID(ctx context.Context, id int64) (*domain.Product, error) {
+	m, err := r.q.ProductByID(ctx, id)
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return nil, domain.ErrProductNotFound
 	}
@@ -73,10 +73,10 @@ func (r Product) ByID(id int64) (*domain.Product, error) {
 	return p, nil
 }
 
-func (r Product) Update(m domain.Product) error {
+func (r Product) Update(ctx context.Context, m domain.Product) error {
 	m.UpdatedAt = pgsql.TimePtr(time.Now())
 
-	_, err := r.q.ProductUpdate(context.Background(), dbgen.ProductUpdateParams{
+	_, err := r.q.ProductUpdate(ctx, dbgen.ProductUpdateParams{
 		ID:           m.ID,
 		Name:         m.Name,
 		Observations: m.Observations,
@@ -95,8 +95,8 @@ func (r Product) Update(m domain.Product) error {
 }
 
 // All returns all products from the storage.
-func (r Product) All() (domain.Products, error) {
-	dbProducts, err := r.q.ProductAll(context.Background())
+func (r Product) All(ctx context.Context) (domain.Products, error) {
+	dbProducts, err := r.q.ProductAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -125,8 +125,8 @@ func toDomainProducts(dbProducts []dbgen.Product) domain.Products {
 }
 
 // Delete marks a product as deleted in the storage.
-func (r Product) Delete(id int64) error {
-	_, err := r.q.ProductDelete(context.Background(), dbgen.ProductDeleteParams{
+func (r Product) Delete(ctx context.Context, id int64) error {
+	_, err := r.q.ProductDelete(ctx, dbgen.ProductDeleteParams{
 		ID:        id,
 		DeletedAt: sql.NullTime{Time: time.Now(), Valid: true},
 	})
@@ -142,8 +142,8 @@ func (r Product) Delete(id int64) error {
 }
 
 // HardDelete deletes a product from the storage (permanently).
-func (r Product) HardDelete(id int64) error {
-	_, err := r.q.ProductHardDelete(context.Background(), id)
+func (r Product) HardDelete(ctx context.Context, id int64) error {
+	_, err := r.q.ProductHardDelete(ctx, id)
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return domain.ErrProductNotFound
 	}
@@ -156,8 +156,8 @@ func (r Product) HardDelete(id int64) error {
 }
 
 // DeleteAll deletes all products from the storage (permanently).
-func (r Product) DeleteAll() error {
-	err := r.q.ProductDeleteAll(context.Background())
+func (r Product) DeleteAll(ctx context.Context) error {
+	err := r.q.ProductDeleteAll(ctx)
 	if err != nil {
 		return fmt.Errorf("can't truncate table: %v", err)
 	}

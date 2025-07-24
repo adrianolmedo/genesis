@@ -29,7 +29,9 @@ import (
 //	@Router			/products [post]
 func addProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		ctx := c.Context()
 		form := addProductForm{}
+
 		err := c.BodyParser(&form)
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
@@ -45,7 +47,7 @@ func addProduct(s *app.Services) fiber.Handler {
 			Price:        form.Price,
 		}
 
-		err = s.Store.Add(product)
+		err = s.Store.Add(ctx, product)
 
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, respDetails{
@@ -94,7 +96,9 @@ type productCardDTO struct {
 //	@Router			/products [get]
 func listProducts(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		products, err := s.Store.List()
+		ctx := c.Context()
+
+		products, err := s.Store.List(ctx)
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, respDetails{
 				Code:    "003",
@@ -144,7 +148,9 @@ func listProducts(s *app.Services) fiber.Handler {
 //	@Router			/customer [post]
 func createCustomer(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		ctx := c.Context()
 		form := createCustomerForm{}
+
 		err := c.BodyParser(&form)
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
@@ -154,7 +160,7 @@ func createCustomer(s *app.Services) fiber.Handler {
 			})
 		}
 
-		err = s.Store.AddCustomer(&domain.Customer{
+		err = s.Store.AddCustomer(ctx, &domain.Customer{
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
 			Email:     form.Email,
@@ -210,6 +216,8 @@ type createCustomerForm struct {
 //	@Router			/customers/{id} [delete]
 func deleteCustomer(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		ctx := c.Context()
+
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
@@ -218,7 +226,7 @@ func deleteCustomer(s *app.Services) fiber.Handler {
 			})
 		}
 
-		err = s.Store.RemoveCustomer(int64(id))
+		err = s.Store.RemoveCustomer(ctx, int64(id))
 		if errors.Is(err, domain.ErrProductNotFound) {
 			return errorJSON(c, http.StatusNoContent, respDetails{
 				Code:    "003",
@@ -258,6 +266,8 @@ func deleteCustomer(s *app.Services) fiber.Handler {
 //	@Router			/customers [get]
 func listCustomers(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		ctx := c.Context()
+
 		p, err := pgsql.NewPager(
 			c.QueryInt("limit"),
 			c.QueryInt("page"),
@@ -271,7 +281,7 @@ func listCustomers(s *app.Services) fiber.Handler {
 			})
 		}
 
-		pr, err := s.Store.ListCustomers(p)
+		pr, err := s.Store.ListCustomers(ctx, p)
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, respDetails{
 				Code:    "003",
@@ -329,6 +339,8 @@ func listCustomers(s *app.Services) fiber.Handler {
 //	@Router			/products/{id} [get]
 func findProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		ctx := c.Context()
+
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
@@ -337,7 +349,7 @@ func findProduct(s *app.Services) fiber.Handler {
 			})
 		}
 
-		product, err := s.Store.Find(int64(id))
+		product, err := s.Store.Find(ctx, int64(id))
 		if errors.Is(err, domain.ErrProductNotFound) {
 			return errorJSON(c, http.StatusNotFound, respDetails{
 				Code:    "003",
@@ -378,6 +390,7 @@ func findProduct(s *app.Services) fiber.Handler {
 //	@Router			/products/{id} [put]
 func updateProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		ctx := c.Context()
 		id, err := strconv.Atoi(c.Params("id"))
 
 		logger.Debug("product", fmt.Sprintf("request to update product ID %d", id))
@@ -401,7 +414,7 @@ func updateProduct(s *app.Services) fiber.Handler {
 
 		form.ID = int64(id)
 
-		err = s.Store.Update(domain.Product{
+		err = s.Store.Update(ctx, domain.Product{
 			ID:           form.ID,
 			Name:         form.Name,
 			Observations: form.Observations,
@@ -453,6 +466,8 @@ type updateProductForm struct {
 //	@Router			/products/{id} [delete]
 func deleteProduct(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		ctx := c.Context()
+
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
@@ -461,7 +476,7 @@ func deleteProduct(s *app.Services) fiber.Handler {
 			})
 		}
 
-		err = s.Store.Remove(int64(id))
+		err = s.Store.Remove(ctx, int64(id))
 		if errors.Is(err, domain.ErrProductNotFound) {
 			return errorJSON(c, http.StatusNoContent, respDetails{
 				Message: err.Error(),

@@ -25,15 +25,16 @@ func TestCreateInvoice(t *testing.T) {
 		},
 	}
 
-	conn := openDB(t)
-	defer closeDB(t, conn)
-	insertProductsData(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
+	insertProductsData(ctx, t, conn)
 
 	//ih := NewInvoiceHeader(conn)
 	//ii := NewInvoiceItem(conn)
 	in := NewInvoice(conn)
 
-	if err := in.Create(input); err != nil {
+	if err := in.Create(ctx, input); err != nil {
 		t.Fatal(err)
 	}
 
@@ -45,12 +46,13 @@ func TestCreateInvoice(t *testing.T) {
 }
 
 func cleanInvoiceItemsData(t *testing.T) {
-	conn := openDB(t)
-	defer closeDB(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
 
 	ii := NewInvoiceItem(conn)
 
-	err := ii.DeleteAll()
+	err := ii.DeleteAll(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}

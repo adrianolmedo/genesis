@@ -15,8 +15,9 @@ func TestCreateTxInvoiceHeader(t *testing.T) {
 		cleanInvoiceHeadersData(t)
 	})
 
-	conn := openDB(t)
-	defer closeDB(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
 
 	tx, err := conn.Begin(context.Background())
 	if err != nil {
@@ -28,8 +29,8 @@ func TestCreateTxInvoiceHeader(t *testing.T) {
 	}
 
 	ih := NewInvoiceHeader(conn)
-	if err := ih.Create(tx, input); err != nil {
-		tx.Rollback(context.Background())
+	if err := ih.Create(ctx, tx, input); err != nil {
+		tx.Rollback(ctx)
 		t.Fatal(err)
 	}
 
@@ -37,18 +38,19 @@ func TestCreateTxInvoiceHeader(t *testing.T) {
 		t.Fatal("invoice header not created")
 	}
 
-	if err := tx.Commit(context.Background()); err != nil {
+	if err := tx.Commit(ctx); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func cleanInvoiceHeadersData(t *testing.T) {
-	conn := openDB(t)
-	defer closeDB(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
 
 	ih := NewInvoiceHeader(conn)
 
-	err := ih.DeleteAll()
+	err := ih.DeleteAll(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}

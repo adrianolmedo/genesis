@@ -27,11 +27,11 @@ func NewCustomer(db dbgen.DBTX) *Customer {
 }
 
 // Create creates a new customer in the database.
-func (r Customer) Create(m *domain.Customer) error {
+func (r Customer) Create(ctx context.Context, m *domain.Customer) error {
 	m.UUID = domain.NextUUID()
 	m.CreatedAt = time.Now()
 
-	id, err := r.q.CustomerCreate(context.Background(), dbgen.CustomerCreateParams{
+	id, err := r.q.CustomerCreate(ctx, dbgen.CustomerCreateParams{
 		Uuid:      uuid.Parse(m.UUID),
 		FirstName: m.FirstName,
 		LastName:  m.LastName,
@@ -48,8 +48,8 @@ func (r Customer) Create(m *domain.Customer) error {
 }
 
 // List retrieves a paginated list of customers from the database.
-func (r Customer) List(p *pgsql.Pager) (pgsql.PagerResults, error) {
-	customers, err := r.q.CustomerListAsc(context.Background(), dbgen.CustomerListAscParams{
+func (r Customer) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, error) {
+	customers, err := r.q.CustomerListAsc(ctx, dbgen.CustomerListAscParams{
 		Sort:   p.Sort(),
 		Offset: int32(p.Offset()),
 		Limit:  int32(p.Limit()),
@@ -67,8 +67,8 @@ func (r Customer) List(p *pgsql.Pager) (pgsql.PagerResults, error) {
 }
 
 // Delete soft deletes a customer by setting the DeletedAt field.
-func (r Customer) Delete(id int64) error {
-	_, err := r.q.CustomerDelete(context.Background(), dbgen.CustomerDeleteParams{
+func (r Customer) Delete(ctx context.Context, id int64) error {
+	_, err := r.q.CustomerDelete(ctx, dbgen.CustomerDeleteParams{
 		ID:        id,
 		DeletedAt: sql.NullTime{Time: time.Now(), Valid: true},
 	})

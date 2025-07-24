@@ -1,15 +1,19 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis/app"
 	"github.com/adrianolmedo/genesis/http"
 	"github.com/adrianolmedo/genesis/http/jwt"
 	"github.com/adrianolmedo/genesis/logger"
-	"github.com/adrianolmedo/genesis/pgsql/pgx"
+	"github.com/adrianolmedo/genesis/pgsql/sqlc"
 
 	"github.com/peterbourgon/ff/v3"
 )
@@ -59,10 +63,14 @@ func run(cfg genesis.Config) error {
 		return fmt.Errorf("certificates could not be loaded: %v", err)
 	}
 
-	s, err := pgx.NewStorage(cfg)
+	// Context que se cancela al recibir SIGINT/SIGTERM.
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	s, err := sqlc.NewStorage(ctx, cfg)
 	if err != nil {
 		return fmt.Errorf("error from storage: %v", err)
 	}
 
-	return http.Router(s).Listen(cfg.Host + cfg.Port)
+	return http.Router(app.NewServices(s)).Listen(cfg.Host + cfg.Port)
 }

@@ -19,7 +19,7 @@ type Invoice struct {
 }
 
 // NewInvoice creates a new Invoice repository instance.
-// Since InvoiceHader, Invoice Item (or any other repository in question)
+// Since [InvoiceHader], [InvoiceItem] (or any other repository in question)
 // are closely related to Invoice, they are created as part of the Invoice structure.
 func NewInvoice(db *pgx.Conn) *Invoice {
 	q := dbgen.New(db)
@@ -31,9 +31,7 @@ func NewInvoice(db *pgx.Conn) *Invoice {
 	}
 }
 
-func (i Invoice) Create(inv *domain.Invoice) error {
-	ctx := context.Background()
-
+func (i Invoice) Create(ctx context.Context, inv *domain.Invoice) error {
 	tx, err := i.db.Begin(ctx)
 	if err != nil {
 		return err
@@ -45,12 +43,12 @@ func (i Invoice) Create(inv *domain.Invoice) error {
 	}()
 
 	// Create invoice header
-	if err := i.header.Create(tx, inv.Header); err != nil {
+	if err := i.header.Create(ctx, tx, inv.Header); err != nil {
 		return fmt.Errorf("invoice header: %w", err)
 	}
 
 	// Create invoice items
-	if err := i.items.Create(tx, inv.Header.ID, inv.Items); err != nil {
+	if err := i.items.Create(ctx, tx, inv.Header.ID, inv.Items); err != nil {
 		return fmt.Errorf("invoice items: %w", err)
 	}
 

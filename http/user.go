@@ -30,6 +30,8 @@ import (
 //	@Router			/login [post]
 func loginUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		ctx := c.Context()
+
 		form := userLoginForm{}
 		err := c.BodyParser(&form)
 		if err != nil {
@@ -40,7 +42,7 @@ func loginUser(s *app.Services) fiber.Handler {
 			})
 		}
 
-		err = s.User.Login(form.Email, form.Password)
+		err = s.User.Login(ctx, form.Email, form.Password)
 		if errors.Is(err, domain.ErrUserNotFound) {
 			return errorJSON(c, http.StatusUnauthorized, respDetails{
 				Code:    "003",
@@ -94,6 +96,8 @@ type dataTokenDTO struct {
 //	@Router			/users [post]
 func signUpUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		ctx := c.Context()
+
 		form := userSignUpForm{}
 		err := c.BodyParser(&form)
 		if err != nil {
@@ -104,7 +108,7 @@ func signUpUser(s *app.Services) fiber.Handler {
 			})
 		}
 
-		err = s.User.SignUp(&domain.User{
+		err = s.User.SignUp(ctx, &domain.User{
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
 			Email:     form.Email,
@@ -159,6 +163,8 @@ type userProfileDTO struct {
 //	@Router			/users/{id} [get]
 func findUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		ctx := c.Context()
+
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
@@ -167,7 +173,7 @@ func findUser(s *app.Services) fiber.Handler {
 			})
 		}
 
-		user, err := s.User.Find(int64(id))
+		user, err := s.User.Find(ctx, int64(id))
 		if errors.Is(err, domain.ErrUserNotFound) {
 			return errorJSON(c, http.StatusNotFound, respDetails{
 				Code:    "003",
@@ -209,6 +215,8 @@ func findUser(s *app.Services) fiber.Handler {
 //	@Router			/users/{id} [put]
 func updateUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		ctx := c.Context()
+
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
@@ -229,7 +237,7 @@ func updateUser(s *app.Services) fiber.Handler {
 
 		userID := int64(id)
 
-		err = s.User.Update(domain.User{
+		err = s.User.Update(ctx, domain.User{
 			ID:        userID,
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
@@ -283,6 +291,8 @@ type userUpdateForm struct {
 //	@Router		/users [get]
 func listUsers(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		ctx := c.Context()
+
 		p, err := pgsql.NewPager(
 			c.QueryInt("limit"),
 			c.QueryInt("page"),
@@ -296,7 +306,7 @@ func listUsers(s *app.Services) fiber.Handler {
 			})
 		}
 
-		pr, err := s.User.List(p)
+		pr, err := s.User.List(ctx, p)
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, respDetails{
 				Code:    "003",
@@ -354,6 +364,8 @@ func listUsers(s *app.Services) fiber.Handler {
 //	@Router			/users/{id} [delete]
 func deleteUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		ctx := c.Context()
+
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
@@ -362,7 +374,7 @@ func deleteUser(s *app.Services) fiber.Handler {
 			})
 		}
 
-		err = s.User.Remove(int64(id))
+		err = s.User.Remove(ctx, int64(id))
 		if errors.Is(err, domain.ErrUserNotFound) {
 			return errorJSON(c, http.StatusNotFound, respDetails{
 				Code:    "003",

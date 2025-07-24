@@ -23,9 +23,9 @@ func NewInvoiceItem(db dbgen.DBTX) *InvoiceItem {
 }
 
 // Create creates items associated with a header and product for the invoice.
-func (ii InvoiceItem) Create(tx pgx.Tx, headerID int64, items domain.ItemList) error {
+func (ii InvoiceItem) Create(ctx context.Context, tx pgx.Tx, headerID int64, items domain.ItemList) error {
 	for _, item := range items {
-		row, err := ii.q.WithTx(tx).InvoiceItemCreate(context.Background(), dbgen.InvoiceItemCreateParams{
+		row, err := ii.q.WithTx(tx).InvoiceItemCreate(ctx, dbgen.InvoiceItemCreateParams{
 			InvoiceHeaderID: headerID,
 			ProductID:       item.ProductID,
 		})
@@ -42,8 +42,8 @@ func (ii InvoiceItem) Create(tx pgx.Tx, headerID int64, items domain.ItemList) e
 
 // DeleteAll deletes all invoice items.
 // This is used for testing purposes to reset the state of the invoice items table.
-func (ii InvoiceItem) DeleteAll() error {
-	err := ii.q.InvoiceItemDeleteAll(context.Background())
+func (ii InvoiceItem) DeleteAll(ctx context.Context) error {
+	err := ii.q.InvoiceItemDeleteAll(ctx)
 	if err != nil {
 		return fmt.Errorf("can't truncate table: %v", err)
 	}

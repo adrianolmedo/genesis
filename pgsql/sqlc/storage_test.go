@@ -7,6 +7,7 @@ import (
 	"context"
 	"flag"
 	"testing"
+	"time"
 
 	config "github.com/adrianolmedo/genesis"
 
@@ -24,11 +25,18 @@ var (
 
 // TestDB test for open & close database.
 func TestDB(t *testing.T) {
-	conn := openDB(t)
-	closeDB(t, conn)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	conn := openDB(ctx, t)
+	closeDB(ctx, t, conn)
 }
 
-func openDB(t *testing.T) *pgx.Conn {
+// openDB creates a new database connection using the provided context and test.
+// It returns the connection or fails the test if an error occurs.
+func openDB(ctx context.Context, t *testing.T) *pgx.Conn {
+	t.Helper()
+
 	dbcfg := config.Config{
 		DBHost:     *dbhost,
 		DBPort:     *dbport,
@@ -37,7 +45,7 @@ func openDB(t *testing.T) *pgx.Conn {
 		DBName:     *dbname,
 	}
 
-	conn, err := newConn(dbcfg)
+	conn, err := newConn(ctx, dbcfg)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,8 +53,13 @@ func openDB(t *testing.T) *pgx.Conn {
 	return conn
 }
 
-func closeDB(t *testing.T, db *pgx.Conn) {
-	if err := db.Close(context.Background()); err != nil {
+// closeDB closes the database connection and fails the test if an error occurs.
+// It is a helper function to ensure proper cleanup after tests.
+// It should be deferred after opening a connection.
+func closeDB(ctx context.Context, t *testing.T, db *pgx.Conn) {
+	t.Helper()
+
+	if err := db.Close(ctx); err != nil {
 		t.Fatal(err)
 	}
 }

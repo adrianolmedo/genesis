@@ -27,6 +27,7 @@ import (
 //	@Router			/invoices [post]
 func generateInvoice(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		ctx := c.Context()
 		form := generateInvoiceForm{}
 
 		err := c.BodyParser(&form)
@@ -40,7 +41,7 @@ func generateInvoice(s *app.Services) fiber.Handler {
 
 		clientID := form.Header.ClientID
 
-		_, err = s.User.Find(clientID)
+		_, err = s.User.Find(ctx, clientID)
 		if errors.Is(err, domain.ErrUserNotFound) {
 			logger.Error("generating invoice", fmt.Sprintf("user ID %d not found to generate invoice", clientID))
 
@@ -68,7 +69,7 @@ func generateInvoice(s *app.Services) fiber.Handler {
 		items := make(domain.ItemList, 0, len(form.Items))
 		for _, item := range form.Items {
 
-			_, err := s.Store.Find(item.ProductID)
+			_, err := s.Store.Find(ctx, item.ProductID)
 
 			if errors.Is(err, domain.ErrProductNotFound) {
 				logger.Debug("generating invoice", fmt.Sprintf("product ID %d not found to add the invoice", item.ProductID))
@@ -99,7 +100,7 @@ func generateInvoice(s *app.Services) fiber.Handler {
 			Items: items,
 		}
 
-		err = s.Billing.Generate(invoice)
+		err = s.Billing.Generate(ctx, invoice)
 		if err != nil {
 			logger.Error("generating invoice", err.Error())
 

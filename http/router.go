@@ -7,7 +7,6 @@ import (
 	_ "github.com/adrianolmedo/genesis/docs"
 	"github.com/adrianolmedo/genesis/http/jwt"
 	"github.com/adrianolmedo/genesis/logger"
-	storage "github.com/adrianolmedo/genesis/pgsql/pgx"
 
 	"github.com/gofiber/fiber/v2"
 	swagger "github.com/swaggo/fiber-swagger"
@@ -27,8 +26,7 @@ import (
 
 // @host		localhost:3000
 // @BasePath	/v1/
-func Router(s *storage.Storage) *fiber.App {
-	svc := app.NewServices(s)
+func Router(svc *app.Services) *fiber.App {
 	f := fiber.New()
 
 	f.Get("/v1/test", func(c *fiber.Ctx) error {
@@ -37,6 +35,7 @@ func Router(s *storage.Storage) *fiber.App {
 			Message: "Hello world",
 		})
 	})
+
 	f.Post("/v1/login", loginUser(svc))
 	f.Post("/v1/users", signUpUser(svc))
 	f.Get("/v1/users/:id", findUser(svc))

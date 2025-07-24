@@ -31,11 +31,11 @@ func NewUser(conn dbgen.DBTX) *User {
 // Create a User to the storage.
 // It sets the UUID and CreatedAt fields of the User model before inserting
 // it into the database.
-func (r User) Create(m *domain.User) error {
+func (r User) Create(ctx context.Context, m *domain.User) error {
 	m.UUID = domain.NextUUID()
 	m.CreatedAt = time.Now()
 
-	id, err := r.q.UserCreate(context.Background(), dbgen.UserCreateParams{
+	id, err := r.q.UserCreate(ctx, dbgen.UserCreateParams{
 		Uuid:      uuid.Parse(m.UUID),
 		FirstName: m.FirstName,
 		LastName:  m.LastName,
@@ -53,8 +53,8 @@ func (r User) Create(m *domain.User) error {
 }
 
 // ByLogin get a User from its login data.
-func (r User) ByLogin(email, pass string) error {
-	id, err := r.q.UserByLogin(context.Background(), dbgen.UserByLoginParams{
+func (r User) ByLogin(ctx context.Context, email, pass string) error {
+	id, err := r.q.UserByLogin(ctx, dbgen.UserByLoginParams{
 		Email:    email,
 		Password: pass,
 	})
@@ -70,8 +70,8 @@ func (r User) ByLogin(email, pass string) error {
 }
 
 // ByID get a User from its id.
-func (r User) ByID(id int64) (*domain.User, error) {
-	m, err := r.q.UserByID(context.Background(), id)
+func (r User) ByID(ctx context.Context, id int64) (*domain.User, error) {
+	m, err := r.q.UserByID(ctx, id)
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return nil, domain.ErrUserNotFound
 	}
@@ -97,10 +97,10 @@ func (r User) ByID(id int64) (*domain.User, error) {
 }
 
 // Update updates a user in the database.
-func (r User) Update(m domain.User) error {
+func (r User) Update(ctx context.Context, m domain.User) error {
 	m.UpdatedAt = pgsql.TimePtr(time.Now())
 
-	_, err := r.q.UserUpdate(context.Background(), dbgen.UserUpdateParams{
+	_, err := r.q.UserUpdate(ctx, dbgen.UserUpdateParams{
 		ID:        m.ID,
 		FirstName: m.FirstName,
 		LastName:  m.LastName,
@@ -122,8 +122,8 @@ func (r User) Update(m domain.User) error {
 // List returns a paginated list of users.
 // It returns a pgsql.PagerResults containing the paginated users and total rows.
 // If an error occurs during the query, it returns an empty PagerResults and the error.
-func (r User) List(p *pgsql.Pager) (pgsql.PagerResults, error) {
-	users, err := r.q.UserListAsc(context.Background(), dbgen.UserListAscParams{
+func (r User) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, error) {
+	users, err := r.q.UserListAsc(ctx, dbgen.UserListAscParams{
 		Sort:   p.Sort(),
 		Offset: int32(p.Offset()),
 		Limit:  int32(p.Limit()),
@@ -132,7 +132,7 @@ func (r User) List(p *pgsql.Pager) (pgsql.PagerResults, error) {
 		return pgsql.PagerResults{}, err
 	}
 
-	totalRows, err := r.q.UserListCount(context.Background())
+	totalRows, err := r.q.UserListCount(ctx)
 	if err != nil {
 		return pgsql.PagerResults{}, err
 	}
@@ -141,12 +141,12 @@ func (r User) List(p *pgsql.Pager) (pgsql.PagerResults, error) {
 }
 
 // All is like List but with custom SQL.
-/*func (r User) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
+/*func (r User) All(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, error) {
 	query := `SELECT id, uuid, first_name, last_name, email, password, created_at, updated_at, deleted_at FROM "user" WHERE deleted_at IS NULL`
 	query += " " + p.OrderBy()
 	query += " " + p.LimitOffset()
 
-	rows, err := r.db.Query(context.Background(), query)
+	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return pgsql.PagerResults{}, err
 	}
@@ -183,7 +183,7 @@ func (r User) List(p *pgsql.Pager) (pgsql.PagerResults, error) {
 
 	// Get total rows to calculate total pages.
 	var totalRows int64
-	err = r.db.QueryRow(context.Background(), `SELECT COUNT (*) FROM "user" WHERE deleted_at IS NULL`).Scan(&totalRows)
+	err = r.db.QueryRow(ctx, `SELECT COUNT (*) FROM "user" WHERE deleted_at IS NULL`).Scan(&totalRows)
 	if err != nil {
 		return pgsql.PagerResults{}, err
 	}
@@ -194,8 +194,8 @@ func (r User) List(p *pgsql.Pager) (pgsql.PagerResults, error) {
 // Delete marks a user as deleted in the storage.
 // It sets the DeletedAt field to the current time, effectively
 // soft-deleting the user.
-func (r User) Delete(id int64) error {
-	_, err := r.q.UserDelete(context.Background(), dbgen.UserDeleteParams{
+func (r User) Delete(ctx context.Context, id int64) error {
+	_, err := r.q.UserDelete(ctx, dbgen.UserDeleteParams{
 		ID:        id,
 		DeletedAt: sql.NullTime{Time: time.Now(), Valid: true},
 	})
@@ -210,8 +210,8 @@ func (r User) Delete(id int64) error {
 }
 
 // HardDelete deletes a user from the storage (permanently).
-func (r User) HardDelete(id int64) error {
-	_, err := r.q.UserHardDelete(context.Background(), id)
+func (r User) HardDelete(ctx context.Context, id int64) error {
+	_, err := r.q.UserHardDelete(ctx, id)
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return domain.ErrUserNotFound
 	}
@@ -223,8 +223,8 @@ func (r User) HardDelete(id int64) error {
 }
 
 // DeleteAll deletes all users from the storage (permanently).
-func (r User) DeleteAll() error {
-	err := r.q.UserDeleteAll(context.Background())
+func (r User) DeleteAll(ctx context.Context) error {
+	err := r.q.UserDeleteAll(ctx)
 	if err != nil {
 		return fmt.Errorf("can't truncate table: %v", err)
 	}

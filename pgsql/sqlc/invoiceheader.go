@@ -23,10 +23,10 @@ func NewInvoiceHeader(db dbgen.DBTX) *InvoiceHeader {
 	}
 }
 
-func (ih InvoiceHeader) Create(tx pgx.Tx, m *domain.InvoiceHeader) error {
+func (ih InvoiceHeader) Create(ctx context.Context, tx pgx.Tx, m *domain.InvoiceHeader) error {
 	m.UUID = domain.NextUUID()
 
-	row, err := ih.q.WithTx(tx).InvoiceHeaderCreate(context.Background(), dbgen.InvoiceHeaderCreateParams{
+	row, err := ih.q.WithTx(tx).InvoiceHeaderCreate(ctx, dbgen.InvoiceHeaderCreateParams{
 		Uuid:     uuid.Parse(m.UUID),
 		ClientID: m.ClientID,
 	})
@@ -39,8 +39,8 @@ func (ih InvoiceHeader) Create(tx pgx.Tx, m *domain.InvoiceHeader) error {
 }
 
 // DeleteAll delete all invoice headers (permanantly).
-func (ih InvoiceHeader) DeleteAll() error {
-	err := ih.q.InvoiceHeaderDeleteAll(context.Background())
+func (ih InvoiceHeader) DeleteAll(ctx context.Context) error {
+	err := ih.q.InvoiceHeaderDeleteAll(ctx)
 	if err != nil {
 		return fmt.Errorf("can't truncate table: %v", err)
 	}
