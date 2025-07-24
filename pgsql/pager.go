@@ -22,7 +22,7 @@ type Pager struct {
 
 // NewPager creates a new Pager instance.
 // It validates the limit and page number, and normalizes the sort direction.
-// If the limit is 0 or exceeds PagerMaxLimit, it defaults to PagerMaxLimit.
+// If the limit is 0 or exceeds [PagerMaxLimit], it defaults to PagerMaxLimit.
 func NewPager(limit, page int, sort, direction string) (*Pager, error) {
 	limit, err := validateLimit(limit)
 	if err != nil {
@@ -56,7 +56,7 @@ func validatePage(p int) (int, error) {
 }
 
 // validateLimit Pager helper, ensures limit is within a reasonable
-// range (by default value check PagerMaxLimit const).
+// range (by default value check [PagerMaxLimit] const).
 func validateLimit(n int) (int, error) {
 	if n < 0 {
 		return n, errors.New("positive number expected for limit")
