@@ -17,11 +17,11 @@ type Customer struct {
 }
 
 // Create return one Customer or SQL error.
-func (r Customer) Create(m *domain.Customer) error {
+func (r Customer) Create(ctx context.Context, m *domain.Customer) error {
 	m.UUID = domain.NextUUID()
 	m.CreatedAt = time.Now()
 
-	err := r.conn.QueryRow(context.Background(),
+	err := r.conn.QueryRow(ctx,
 		`INSERT INTO "customer" (uuid, first_name, last_name, email, password, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
 		m.UUID, m.FirstName, m.LastName, m.Email).Scan(&m.ID)
 	if err != nil {
@@ -33,12 +33,12 @@ func (r Customer) Create(m *domain.Customer) error {
 
 // All return filtered results by limit, offset and order for the pagination
 // or return a SQL error.
-func (r Customer) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
+func (r Customer) All(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, error) {
 	query := `SELECT * FROM "customer"`
 	query += " " + p.OrderBy()
 	query += " " + p.LimitOffset()
 
-	rows, err := r.conn.Query(context.Background(), query)
+	rows, err := r.conn.Query(ctx, query)
 	if err != nil {
 		return pgsql.PagerResults{}, err
 	}
@@ -77,7 +77,7 @@ func (r Customer) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 
 	// Get total rows to calculate total pages.
 	var totalRows int64
-	err = r.conn.QueryRow(context.Background(), `SELECT COUNT (*) FROM "customer" WHERE deleted_at IS NULL`).Scan(&totalRows)
+	err = r.conn.QueryRow(ctx, `SELECT COUNT (*) FROM "customer" WHERE deleted_at IS NULL`).Scan(&totalRows)
 	if err != nil {
 		return pgsql.PagerResults{}, err
 	}
@@ -86,8 +86,8 @@ func (r Customer) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 }
 
 // Delete soft delete Customer from its ID.
-func (r Customer) Delete(id int64) error {
-	result, err := r.conn.Exec(context.Background(), `UPDATE "customer" SET deleted_at = $1 WHERE id = $2`, time.Now(), id)
+func (r Customer) Delete(ctx context.Context, id int64) error {
+	result, err := r.conn.Exec(ctx, `UPDATE "customer" SET deleted_at = $1 WHERE id = $2`, time.Now(), id)
 	if err != nil {
 		return err
 	}

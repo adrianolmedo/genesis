@@ -17,25 +17,25 @@ type Invoice struct {
 }
 
 // Create generate a full Invoice.
-func (i Invoice) Create(inv *domain.Invoice) error {
-	tx, err := i.conn.Begin(context.Background())
+func (i Invoice) Create(ctx context.Context, inv *domain.Invoice) error {
+	tx, err := i.conn.Begin(ctx)
 	if err != nil {
 		return err
 	}
 
 	// Create invoice header
-	err = i.header.Create(tx, inv.Header)
+	err = i.header.Create(ctx, tx, inv.Header)
 	if err != nil {
-		tx.Rollback(context.Background())
+		tx.Rollback(ctx)
 		return fmt.Errorf("invoice header: %w", err)
 	}
 
 	// Create invoice items
-	err = i.items.Create(tx, inv.Header.ID, inv.Items)
+	err = i.items.Create(ctx, tx, inv.Header.ID, inv.Items)
 	if err != nil {
-		tx.Rollback(context.Background())
+		tx.Rollback(ctx)
 		return fmt.Errorf("invoice items: %w", err)
 	}
 
-	return tx.Commit(context.Background())
+	return tx.Commit(ctx)
 }

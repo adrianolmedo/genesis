@@ -1,9 +1,7 @@
-//go:build integration
-// +build integration
-
 package pgx
 
 import (
+	"context"
 	"testing"
 
 	domain "github.com/adrianolmedo/genesis"
@@ -16,8 +14,9 @@ func TestCreateUser(t *testing.T) {
 		cleanUsersData(t)
 	})
 
-	conn := openDB(t)
-	defer closeDB(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
 
 	u := User{conn: conn}
 
@@ -28,11 +27,11 @@ func TestCreateUser(t *testing.T) {
 		Password:  "1234567a",
 	}
 
-	if err := u.Create(input); err != nil {
+	if err := u.Create(ctx, input); err != nil {
 		t.Fatal(err)
 	}
 
-	got, err := u.ByID(1)
+	got, err := u.ByID(ctx, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -55,9 +54,10 @@ func TestUserByLogin(t *testing.T) {
 		cleanUsersData(t)
 	})
 
-	conn := openDB(t)
-	defer closeDB(t, conn)
-	insertUsersData(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
+	insertUsersData(ctx, t, conn)
 
 	tt := []struct {
 		name        string
@@ -82,7 +82,7 @@ func TestUserByLogin(t *testing.T) {
 	u := User{conn: conn}
 
 	for _, tc := range tt {
-		err := u.ByLogin(tc.inputEmail, tc.inputPass)
+		err := u.ByLogin(ctx, tc.inputEmail, tc.inputPass)
 		if (err != nil) != tc.errExpected {
 			t.Errorf("%s: ByLogin(%s, %s): unexpected error status: %v",
 				tc.name, tc.inputEmail, tc.inputPass, err)
@@ -95,9 +95,10 @@ func TestUpdateUser(t *testing.T) {
 		cleanUsersData(t)
 	})
 
-	conn := openDB(t)
-	defer closeDB(t, conn)
-	insertUsersData(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
+	insertUsersData(ctx, t, conn)
 
 	input := domain.User{
 		ID:        1,
@@ -109,11 +110,11 @@ func TestUpdateUser(t *testing.T) {
 
 	u := User{conn: conn}
 
-	if err := u.Update(input); err != nil {
+	if err := u.Update(ctx, input); err != nil {
 		t.Fatal(err)
 	}
 
-	got, err := u.ByID(input.ID)
+	got, err := u.ByID(ctx, input.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -140,23 +141,23 @@ func TestUpdateUser(t *testing.T) {
 }
 
 func cleanUsersData(t *testing.T) {
-	conn := openDB(t)
-	defer closeDB(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
 
 	u := User{conn}
-	err := u.DeleteAll()
+	err := u.DeleteAll(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func insertUsersData(t *testing.T, conn *pgx.Conn) {
-	//conn := openDB(t)
-	//defer closeDB(t, conn)
+func insertUsersData(ctx context.Context, t *testing.T, conn *pgx.Conn) {
+	t.Helper()
 
 	u := User{conn: conn}
 
-	if err := u.Create(&domain.User{
+	if err := u.Create(ctx, &domain.User{
 		FirstName: "John",
 		LastName:  "Doe",
 		Email:     "example@gmail.com",
@@ -165,7 +166,7 @@ func insertUsersData(t *testing.T, conn *pgx.Conn) {
 		t.Fatal(err)
 	}
 
-	if err := u.Create(&domain.User{
+	if err := u.Create(ctx, &domain.User{
 		FirstName: "Jane",
 		LastName:  "Roe",
 		Email:     "qwerty@hotmail.com",

@@ -1,6 +1,7 @@
 package pgx
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/adrianolmedo/genesis"
@@ -16,8 +17,8 @@ type Storage struct {
 
 // NewStorage start postgres database connection, build the Storage and return it
 // its pointer.
-func NewStorage(cfg genesis.Config) (*Storage, error) {
-	db, err := newDB(cfg)
+func NewStorage(ctx context.Context, cfg genesis.Config) (*Storage, error) {
+	db, err := newDB(ctx, cfg)
 	if err != nil {
 		return nil, fmt.Errorf("postgres: %v", err)
 	}

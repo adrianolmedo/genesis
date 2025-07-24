@@ -19,11 +19,11 @@ type User struct {
 }
 
 // Create a User to the storage.
-func (r User) Create(u *domain.User) error {
+func (r User) Create(ctx context.Context, u *domain.User) error {
 	u.UUID = domain.NextUUID()
 	u.CreatedAt = time.Now()
 
-	err := r.conn.QueryRow(context.Background(),
+	err := r.conn.QueryRow(ctx,
 		`INSERT INTO "user" (uuid, first_name, last_name, email, password, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
 		u.UUID, u.FirstName, u.LastName, u.Email, u.Password, u.CreatedAt).Scan(&u.ID)
@@ -35,8 +35,8 @@ func (r User) Create(u *domain.User) error {
 }
 
 // ByLogin get a User from its login data.
-func (r User) ByLogin(email, password string) error {
-	result, err := r.conn.Exec(context.Background(), `SELECT id FROM "user" WHERE email = $1 AND password = $2 AND deleted_at IS NULL`, email, password)
+func (r User) ByLogin(ctx context.Context, email, password string) error {
+	result, err := r.conn.Exec(ctx, `SELECT id FROM "user" WHERE email = $1 AND password = $2 AND deleted_at IS NULL`, email, password)
 	if err != nil {
 		return err
 	}
@@ -49,12 +49,12 @@ func (r User) ByLogin(email, password string) error {
 }
 
 // ByID get a User from its id.
-func (r User) ByID(id int64) (*domain.User, error) {
+func (r User) ByID(ctx context.Context, id int64) (*domain.User, error) {
 	var updatedAtNull, deletedAtNull sql.NullTime
 
 	m := &domain.User{}
 
-	err := r.conn.QueryRow(context.Background(), `SELECT * FROM "user" WHERE id = $1 AND deleted_at IS NULL`, id).
+	err := r.conn.QueryRow(ctx, `SELECT * FROM "user" WHERE id = $1 AND deleted_at IS NULL`, id).
 		Scan(&m.ID, &m.UUID, &m.FirstName, &m.LastName, &m.Email, &m.Password, &m.CreatedAt, &updatedAtNull, &deletedAtNull)
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return nil, domain.ErrUserNotFound
@@ -71,10 +71,10 @@ func (r User) ByID(id int64) (*domain.User, error) {
 }
 
 // Update user.
-func (r User) Update(m domain.User) error {
+func (r User) Update(ctx context.Context, m domain.User) error {
 	m.UpdatedAt = pgsql.TimePtr(time.Now())
 
-	result, err := r.conn.Exec(context.Background(),
+	result, err := r.conn.Exec(ctx,
 		`UPDATE "user" SET first_name = $1, last_name = $2, email = $3, password = $4, updated_at = $5 WHERE id = $6`,
 		m.FirstName, m.LastName, m.Email, m.Password, m.UpdatedAt, m.ID)
 	if err != nil {
@@ -88,12 +88,12 @@ func (r User) Update(m domain.User) error {
 	return nil
 }
 
-func (r User) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
+func (r User) All(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, error) {
 	query := `SELECT id, uuid, first_name, last_name, email, password, created_at, updated_at, deleted_at FROM "user" WHERE deleted_at IS NULL`
 	query += " " + p.OrderBy()
 	query += " " + p.LimitOffset()
 
-	rows, err := r.conn.Query(context.Background(), query)
+	rows, err := r.conn.Query(ctx, query)
 	if err != nil {
 		return pgsql.PagerResults{}, err
 	}
@@ -130,7 +130,7 @@ func (r User) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 
 	// Get total rows to calculate total pages.
 	var totalRows int64
-	err = r.conn.QueryRow(context.Background(), `SELECT COUNT (*) FROM "user" WHERE deleted_at IS NULL`).Scan(&totalRows)
+	err = r.conn.QueryRow(ctx, `SELECT COUNT (*) FROM "user" WHERE deleted_at IS NULL`).Scan(&totalRows)
 	if err != nil {
 		return pgsql.PagerResults{}, err
 	}
@@ -138,8 +138,8 @@ func (r User) All(p *pgsql.Pager) (pgsql.PagerResults, error) {
 	return p.Paginate(users, totalRows), nil
 }
 
-func (r User) Delete(id int64) error {
-	result, err := r.conn.Exec(context.Background(), `UPDATE "user" SET deleted_at = $1 WHERE id = $2`, time.Now(), id)
+func (r User) Delete(ctx context.Context, id int64) error {
+	result, err := r.conn.Exec(ctx, `UPDATE "user" SET deleted_at = $1 WHERE id = $2`, time.Now(), id)
 	if err != nil {
 		return err
 	}
@@ -151,8 +151,8 @@ func (r User) Delete(id int64) error {
 	return nil
 }
 
-func (r User) HardDelete(id int64) error {
-	result, err := r.conn.Exec(context.Background(), `DELETE FROM "user" WHERE id = $1`)
+func (r User) HardDelete(ctx context.Context, id int64) error {
+	result, err := r.conn.Exec(ctx, `DELETE FROM "user" WHERE id = $1`)
 	if err != nil {
 		return err
 	}
@@ -164,8 +164,8 @@ func (r User) HardDelete(id int64) error {
 	return nil
 }
 
-func (r User) DeleteAll() error {
-	_, err := r.conn.Exec(context.Background(), `TRUNCATE TABLE "user" RESTART IDENTITY`)
+func (r User) DeleteAll(ctx context.Context) error {
+	_, err := r.conn.Exec(ctx, `TRUNCATE TABLE "user" RESTART IDENTITY`)
 	if err != nil {
 		return fmt.Errorf("can't truncate table: %v", err)
 	}

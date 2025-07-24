@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package pgx
 
 import (
@@ -25,15 +22,16 @@ func TestCreateInvoice(t *testing.T) {
 		},
 	}
 
-	conn := openDB(t)
-	defer closeDB(t, conn)
-	insertProductsData(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
+	insertProductsData(ctx, t, conn)
 
 	ih := InvoiceHeader{conn: conn}
 	ii := InvoiceItem{conn: conn}
 	in := Invoice{conn: conn, header: ih, items: ii}
 
-	if err := in.Create(input); err != nil {
+	if err := in.Create(ctx, input); err != nil {
 		t.Fatal(err)
 	}
 
@@ -45,12 +43,13 @@ func TestCreateInvoice(t *testing.T) {
 }
 
 func cleanInvoiceItemsData(t *testing.T) {
-	conn := openDB(t)
-	defer closeDB(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
 
 	ii := InvoiceItem{conn: conn}
 
-	err := ii.DeleteAll()
+	err := ii.DeleteAll(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}

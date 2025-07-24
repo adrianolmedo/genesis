@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package pgx
 
 import (
@@ -15,10 +12,11 @@ func TestCreateTxInvoiceHeader(t *testing.T) {
 		cleanInvoiceHeadersData(t)
 	})
 
-	conn := openDB(t)
-	defer closeDB(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
 
-	tx, err := conn.Begin(context.Background())
+	tx, err := conn.Begin(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -28,8 +26,8 @@ func TestCreateTxInvoiceHeader(t *testing.T) {
 	}
 
 	ih := InvoiceHeader{conn: conn}
-	if err := ih.Create(tx, input); err != nil {
-		tx.Rollback(context.Background())
+	if err := ih.Create(ctx, tx, input); err != nil {
+		tx.Rollback(ctx)
 		t.Fatal(err)
 	}
 
@@ -43,12 +41,13 @@ func TestCreateTxInvoiceHeader(t *testing.T) {
 }
 
 func cleanInvoiceHeadersData(t *testing.T) {
-	conn := openDB(t)
-	defer closeDB(t, conn)
+	ctx := testCtx(t)
+	conn := openDB(ctx, t)
+	defer closeDB(ctx, t, conn)
 
 	ih := InvoiceHeader{conn: conn}
 
-	err := ih.DeleteAll()
+	err := ih.DeleteAll(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}

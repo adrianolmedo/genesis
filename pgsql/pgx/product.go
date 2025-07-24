@@ -19,11 +19,11 @@ type Product struct {
 }
 
 // Create add one product to the storage.
-func (r Product) Create(m *domain.Product) error {
+func (r Product) Create(ctx context.Context, m *domain.Product) error {
 	m.UUID = domain.NextUUID()
 	m.CreatedAt = time.Now()
 
-	err := r.conn.QueryRow(context.Background(),
+	err := r.conn.QueryRow(ctx,
 		`INSERT INTO "product" (uuid, name, observations, price, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING id`,
 		m.UUID, m.Name, m.Observations, m.Price, m.CreatedAt).Scan(&m.ID)
 	if err != nil {
@@ -34,12 +34,12 @@ func (r Product) Create(m *domain.Product) error {
 }
 
 // ByID get one product by its id.
-func (r Product) ByID(id int64) (*domain.Product, error) {
+func (r Product) ByID(ctx context.Context, id int64) (*domain.Product, error) {
 	var updatedAtNull, deletedAtNull sql.NullTime
 
 	m := &domain.Product{}
 
-	err := r.conn.QueryRow(context.Background(), `SELECT * FROM "product" WHERE id = $1 AND deleted_at IS NULL`, id).Scan(
+	err := r.conn.QueryRow(ctx, `SELECT * FROM "product" WHERE id = $1 AND deleted_at IS NULL`, id).Scan(
 		&m.ID, &m.UUID, &m.Name, &m.Observations, &m.Price, &m.CreatedAt, &updatedAtNull, &deletedAtNull)
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return nil, domain.ErrProductNotFound
@@ -56,10 +56,10 @@ func (r Product) ByID(id int64) (*domain.Product, error) {
 }
 
 // Update product.
-func (r Product) Update(m domain.Product) error {
+func (r Product) Update(ctx context.Context, m domain.Product) error {
 	m.UpdatedAt = pgsql.TimePtr(time.Now())
 
-	result, err := r.conn.Exec(context.Background(),
+	result, err := r.conn.Exec(ctx,
 		`UPDATE "product" SET name = $1, observations = $2, price = $3, updated_at = $4 WHERE id = $5`,
 		m.Name, m.Observations, m.Price, m.UpdatedAt, m.ID)
 	if err != nil {
@@ -74,8 +74,8 @@ func (r Product) Update(m domain.Product) error {
 }
 
 // All get a collection of all products.
-func (r Product) All() (domain.Products, error) {
-	rows, err := r.conn.Query(context.Background(), `SELECT * FROM "product" WHERE deleted_at IS NULL`)
+func (r Product) All(ctx context.Context) (domain.Products, error) {
+	rows, err := r.conn.Query(ctx, `SELECT * FROM "product" WHERE deleted_at IS NULL`)
 	if err != nil {
 		return domain.Products{}, err
 	}
@@ -114,8 +114,8 @@ func (r Product) All() (domain.Products, error) {
 }
 
 // Delete product by its id.
-func (r Product) Delete(id int64) error {
-	result, err := r.conn.Exec(context.Background(), `UPDATE "product" SET deleted_at = $1 WHERE id = $2`, time.Now(), id)
+func (r Product) Delete(ctx context.Context, id int64) error {
+	result, err := r.conn.Exec(ctx, `UPDATE "product" SET deleted_at = $1 WHERE id = $2`, time.Now(), id)
 	if err != nil {
 		return err
 	}
@@ -128,8 +128,8 @@ func (r Product) Delete(id int64) error {
 }
 
 // HardDelete delete product from the storage.
-func (r Product) HardDelete(id int64) error {
-	result, err := r.conn.Exec(context.Background(), `DELETE FROM "product" WHERE id = $1`)
+func (r Product) HardDelete(ctx context.Context, id int64) error {
+	result, err := r.conn.Exec(ctx, `DELETE FROM "product" WHERE id = $1`)
 	if err != nil {
 		return err
 	}
@@ -142,8 +142,8 @@ func (r Product) HardDelete(id int64) error {
 }
 
 // DeleteAll delete all products.
-func (r Product) DeleteAll() error {
-	_, err := r.conn.Exec(context.Background(), `TRUNCATE TABLE "product" RESTART IDENTITY CASCADE`)
+func (r Product) DeleteAll(ctx context.Context) error {
+	_, err := r.conn.Exec(ctx, `TRUNCATE TABLE "product" RESTART IDENTITY CASCADE`)
 	if err != nil {
 		return fmt.Errorf("can't truncate table: %v", err)
 	}
