@@ -21,10 +21,9 @@ type User struct {
 }
 
 // NewUser creates a new User repository instance.
-// It initializes the dbgen.Queries with the provided database connection.
-func NewUser(conn dbgen.DBTX) *User {
+func NewUser(db dbgen.DBTX) *User {
 	return &User{
-		q: dbgen.New(conn),
+		q: dbgen.New(db),
 	}
 }
 

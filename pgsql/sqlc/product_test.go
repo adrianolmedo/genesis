@@ -9,8 +9,7 @@ import (
 	"testing"
 
 	domain "github.com/adrianolmedo/genesis"
-
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func TestCreateProduct(t *testing.T) {
@@ -19,10 +18,10 @@ func TestCreateProduct(t *testing.T) {
 	})
 
 	ctx := testCtx(t)
-	conn := openDB(ctx, t)
-	defer closeDB(ctx, t, conn)
+	db := openDB(ctx, t)
+	defer db.Close()
 
-	p := NewProduct(conn)
+	p := NewProduct(db)
 
 	input := &domain.Product{
 		Name:         "Coca-Cola",
@@ -58,9 +57,9 @@ func TestProductByID(t *testing.T) {
 	})
 
 	ctx := testCtx(t)
-	conn := openDB(ctx, t)
-	defer closeDB(ctx, t, conn)
-	insertProductsData(ctx, t, conn)
+	db := openDB(ctx, t)
+	defer db.Close()
+	insertProductsData(ctx, t, db)
 
 	tt := []struct {
 		name           string
@@ -85,7 +84,7 @@ func TestProductByID(t *testing.T) {
 		},
 	}
 
-	p := NewProduct(conn)
+	p := NewProduct(db)
 
 	for _, tc := range tt {
 		got, err := p.ByID(ctx, tc.input)
@@ -109,9 +108,9 @@ func TestUpdateProduct(t *testing.T) {
 	})
 
 	ctx := testCtx(t)
-	conn := openDB(ctx, t)
-	defer closeDB(ctx, t, conn)
-	insertProductsData(ctx, t, conn)
+	db := openDB(ctx, t)
+	defer db.Close()
+	insertProductsData(ctx, t, db)
 
 	input := domain.Product{
 		ID:           1,
@@ -120,7 +119,7 @@ func TestUpdateProduct(t *testing.T) {
 		Price:        3,
 	}
 
-	p := NewProduct(conn)
+	p := NewProduct(db)
 
 	if err := p.Update(ctx, input); err != nil {
 		t.Fatal(err)
@@ -153,10 +152,10 @@ func TestUpdateProduct(t *testing.T) {
 }
 
 // insertProductsData add default `product` data.
-func insertProductsData(ctx context.Context, t *testing.T, conn *pgx.Conn) {
+func insertProductsData(ctx context.Context, t *testing.T, db *pgxpool.Pool) {
 	t.Helper()
 
-	p := NewProduct(conn)
+	p := NewProduct(db)
 
 	// Add first product
 	if err := p.Create(ctx, &domain.Product{
@@ -180,10 +179,10 @@ func insertProductsData(ctx context.Context, t *testing.T, conn *pgx.Conn) {
 // cleanProductsData delete all rows of `product` table.
 func cleanProductsData(t *testing.T) {
 	ctx := testCtx(t)
-	conn := openDB(ctx, t)
-	defer closeDB(ctx, t, conn)
+	db := openDB(ctx, t)
+	defer db.Close()
 
-	p := NewProduct(conn)
+	p := NewProduct(db)
 
 	err := p.DeleteAll(ctx)
 	if err != nil {

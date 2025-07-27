@@ -9,8 +9,7 @@ import (
 	"time"
 
 	domain "github.com/adrianolmedo/genesis"
-
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func TestCreateUser(t *testing.T) {
@@ -19,10 +18,10 @@ func TestCreateUser(t *testing.T) {
 	})
 
 	ctx := testCtx(t)
-	conn := openDB(ctx, t)
-	defer closeDB(ctx, t, conn)
+	db := openDB(ctx, t)
+	defer db.Close()
 
-	u := NewUser(conn)
+	u := NewUser(db)
 
 	input := &domain.User{
 		FirstName: "John",
@@ -59,9 +58,9 @@ func TestUserByLogin(t *testing.T) {
 	})
 
 	ctx := testCtx(t)
-	conn := openDB(ctx, t)
-	defer closeDB(ctx, t, conn)
-	insertUsersData(ctx, t, conn)
+	db := openDB(ctx, t)
+	defer db.Close()
+	insertUsersData(ctx, t, db)
 
 	tt := []struct {
 		name        string
@@ -83,7 +82,7 @@ func TestUserByLogin(t *testing.T) {
 		},
 	}
 
-	u := NewUser(conn)
+	u := NewUser(pool)
 
 	for _, tc := range tt {
 		err := u.ByLogin(ctx, tc.inputEmail, tc.inputPass)
@@ -100,9 +99,9 @@ func TestUpdateUser(t *testing.T) {
 	})
 
 	ctx := testCtx(t)
-	conn := openDB(ctx, t)
-	defer closeDB(ctx, t, conn)
-	insertUsersData(ctx, t, conn)
+	db := openDB(ctx, t)
+	defer db.Close()
+	insertUsersData(ctx, t, db)
 
 	input := domain.User{
 		ID:        1,
@@ -112,7 +111,7 @@ func TestUpdateUser(t *testing.T) {
 		Password:  "1234567a",
 	}
 
-	u := NewUser(conn)
+	u := NewUser(db)
 
 	if err := u.Update(ctx, input); err != nil {
 		t.Fatal(err)
@@ -154,20 +153,20 @@ func testCtx(t *testing.T) context.Context {
 // cleanUsersData removes all user data from the database.
 func cleanUsersData(t *testing.T) {
 	ctx := testCtx(t)
-	conn := openDB(ctx, t)
-	defer closeDB(ctx, t, conn)
+	db := openDB(ctx, t)
+	defer db.Close()
 
-	u := NewUser(conn)
+	u := NewUser(db)
 	err := u.DeleteAll(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
-func insertUsersData(ctx context.Context, t *testing.T, conn *pgx.Conn) {
+func insertUsersData(ctx context.Context, t *testing.T, db *pgxpool.Pool) {
 	t.Helper()
 
-	u := NewUser(conn)
+	u := NewUser(db)
 
 	if err := u.Create(ctx, &domain.User{
 		FirstName: "John",

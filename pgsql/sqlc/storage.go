@@ -6,11 +6,12 @@ import (
 
 	"github.com/adrianolmedo/genesis"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // Storage represents all repositories.
 type Storage struct {
+	db       *pgxpool.Pool
 	User     *User
 	Product  *Product
 	Customer *Customer
@@ -20,35 +21,41 @@ type Storage struct {
 // NewStorage start postgres database connection, build the Storage and return it
 // its pointer.
 func NewStorage(ctx context.Context, cfg genesis.Config) (*Storage, error) {
-	conn, err := newConn(ctx, cfg)
+	db, err := newPool(ctx, cfg)
 	if err != nil {
 		return nil, fmt.Errorf("postgres: %v", err)
 	}
 
 	return &Storage{
-		User:     NewUser(conn),
-		Product:  NewProduct(conn),
-		Customer: NewCustomer(conn),
-		Invoice:  NewInvoice(conn),
+		User:     NewUser(db),
+		Product:  NewProduct(db),
+		Customer: NewCustomer(db),
+		Invoice:  NewInvoice(db),
 	}, nil
 }
 
-// newConn return a postgres database connection from cfg params.
-func newConn(ctx context.Context, cfg genesis.Config) (*pgx.Conn, error) {
+// Close releases the storage db connection resources.
+// main function should call this method before exiting.
+func (s *Storage) Close() {
+	s.db.Close()
+}
+
+// newPool return a postgres database connection from cfg params.
+func newPool(ctx context.Context, cfg genesis.Config) (*pgxpool.Pool, error) {
 	// postgres://user:password@host:port/dbname?sslmode=disable
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
 
-	conn, err := pgx.Connect(ctx, connStr)
+	pool, err := pgxpool.New(ctx, connStr)
 	if err != nil {
 		return nil, err
 	}
 
-	err = conn.Ping(ctx)
+	// Optional: test connection.
+	err = pool.Ping(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("can't do ping %v", err)
 	}
 
-	//defer conn.Close(ctx)
-	return conn, nil
+	return pool, nil
 }

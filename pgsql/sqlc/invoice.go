@@ -7,12 +7,12 @@ import (
 	domain "github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/pgsql/sqlc/dbgen"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // Invoice repository.
 type Invoice struct {
-	db     *pgx.Conn      // or *pgxpool.Pool
+	db     *pgxpool.Pool
 	q      *dbgen.Queries // for non-tx operations
 	header *InvoiceHeader
 	items  *InvoiceItem
@@ -21,7 +21,7 @@ type Invoice struct {
 // NewInvoice creates a new Invoice repository instance.
 // Since [InvoiceHader], [InvoiceItem] (or any other repository in question)
 // are closely related to Invoice, they are created as part of the Invoice structure.
-func NewInvoice(db *pgx.Conn) *Invoice {
+func NewInvoice(db *pgxpool.Pool) *Invoice {
 	q := dbgen.New(db)
 	return &Invoice{
 		db:     db,

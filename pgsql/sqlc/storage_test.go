@@ -11,7 +11,7 @@ import (
 
 	config "github.com/adrianolmedo/genesis"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // $ go test -v -tags integration -args -dbengine postgres -dbhost 127.0.0.1 -dbport 5432 -dbuser username -dbname foodb -dbpass 12345
@@ -28,13 +28,13 @@ func TestDB(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	conn := openDB(ctx, t)
-	closeDB(ctx, t, conn)
+	db := openDB(ctx, t)
+	db.Close()
 }
 
 // openDB creates a new database connection using the provided context and test.
 // It returns the connection or fails the test if an error occurs.
-func openDB(ctx context.Context, t *testing.T) *pgx.Conn {
+func openDB(ctx context.Context, t *testing.T) *pgxpool.Pool {
 	t.Helper()
 
 	dbcfg := config.Config{
@@ -45,21 +45,10 @@ func openDB(ctx context.Context, t *testing.T) *pgx.Conn {
 		DBName:     *dbname,
 	}
 
-	conn, err := newConn(ctx, dbcfg)
+	db, err := newPool(ctx, dbcfg)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	return conn
-}
-
-// closeDB closes the database connection and fails the test if an error occurs.
-// It is a helper function to ensure proper cleanup after tests.
-// It should be deferred after opening a connection.
-func closeDB(ctx context.Context, t *testing.T, db *pgx.Conn) {
-	t.Helper()
-
-	if err := db.Close(ctx); err != nil {
-		t.Fatal(err)
-	}
+	return db
 }
