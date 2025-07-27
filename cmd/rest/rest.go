@@ -72,5 +72,7 @@ func run(cfg genesis.Config) error {
 		return fmt.Errorf("error from storage: %v", err)
 	}
 
+	defer s.Close()
+
 	return http.Router(app.NewServices(s)).Listen(cfg.Host + cfg.Port)
 }
