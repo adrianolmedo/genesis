@@ -82,7 +82,7 @@ func TestUserByLogin(t *testing.T) {
 		},
 	}
 
-	u := NewUser(pool)
+	u := NewUser(db)
 
 	for _, tc := range tt {
 		err := u.ByLogin(ctx, tc.inputEmail, tc.inputPass)
