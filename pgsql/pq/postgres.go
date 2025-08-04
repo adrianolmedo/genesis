@@ -12,11 +12,7 @@ import (
 
 // newDB return a postgres database connection from dbcfg params.
 func newDB(cfg genesis.Config) (db *sql.DB, err error) {
-	// postgres://user:password@host:port/dbname?sslmode=disable
-	conn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
-
-	db, err = sql.Open("postgres", conn)
+	db, err = sql.Open("postgres", cfg.DBURL)
 	if err != nil {
 		return nil, fmt.Errorf("can't open the data base %v", err)
 	}

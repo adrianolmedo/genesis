@@ -1,0 +1,4 @@
+CREATE USER johndoe WITH CREATEDB;
+ALTER USER johndoe WITH password '1234567b';
+CREATE DATABASE "genesis";
+GRANT ALL PRIVILEGES ON DATABASE "genesis" TO "johndoe";

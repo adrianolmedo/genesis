@@ -1,3 +1,5 @@
+-- +goose Up
+-- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS "user" (
     id BIGSERIAL,
     uuid UUID NOT NULL,
@@ -11,3 +13,10 @@ CREATE TABLE IF NOT EXISTS "user" (
 
     CONSTRAINT user_id_pk PRIMARY KEY (id)
 );
+-- +goose StatementEnd
+
+-- +goose Down
+-- +goose StatementBegin
+ALTER TABLE "user" DROP CONSTRAINT IF EXISTS user_id_pk;
+DROP TABLE IF EXISTS "user";
+-- +goose StatementEnd

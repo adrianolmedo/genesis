@@ -48,7 +48,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -190,7 +190,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -254,7 +254,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -318,7 +318,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -368,7 +368,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -421,7 +421,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -483,7 +483,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -535,7 +535,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.successResp"
+                            "$ref": "#/definitions/http.resp"
                         }
                     },
                     "204": {
@@ -583,7 +583,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.successResp"
+                            "$ref": "#/definitions/http.resp"
                         }
                     },
                     "204": {
@@ -625,7 +625,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -678,7 +678,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -734,7 +734,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -797,7 +797,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -849,7 +849,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.successResp"
+                            "$ref": "#/definitions/http.resp"
                         }
                     },
                     "400": {
@@ -879,7 +879,7 @@
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 }
             }
         },
@@ -1003,7 +1003,25 @@
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
+                }
+            }
+        },
+        "http.resp": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "data": {},
+                "details": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         },
@@ -1018,24 +1036,6 @@
                     "type": "string"
                 },
                 "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.successResp": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "data": {},
-                "details": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
                     "type": "string"
                 }
             }

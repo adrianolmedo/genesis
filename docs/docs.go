@@ -54,7 +54,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -196,7 +196,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -260,7 +260,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -324,7 +324,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -374,7 +374,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -427,7 +427,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -489,7 +489,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -541,7 +541,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.successResp"
+                            "$ref": "#/definitions/http.resp"
                         }
                     },
                     "204": {
@@ -589,7 +589,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.successResp"
+                            "$ref": "#/definitions/http.resp"
                         }
                     },
                     "204": {
@@ -631,7 +631,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -684,7 +684,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -740,7 +740,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -803,7 +803,7 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/http.successResp"
+                                    "$ref": "#/definitions/http.resp"
                                 },
                                 {
                                     "type": "object",
@@ -855,7 +855,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.successResp"
+                            "$ref": "#/definitions/http.resp"
                         }
                     },
                     "400": {
@@ -885,7 +885,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
                 }
             }
         },
@@ -1009,7 +1009,25 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "number"
+                    "type": "integer"
+                }
+            }
+        },
+        "http.resp": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "data": {},
+                "details": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         },
@@ -1024,24 +1042,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "http.successResp": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "data": {},
-                "details": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "status": {
                     "type": "string"
                 }
             }

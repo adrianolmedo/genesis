@@ -1,10 +1,41 @@
+include .env.development
+
 # Binary file name.
 BINARY = genesis
+
+help:
+	@echo "Commands availables:"
+	@echo "  make genrsa         - Generate RSA keys for JWT auth"
+	@echo "  make goose-up       - Execute migrations up"
+	@echo "  make goose-down     - Revert last migration"
+	@echo "  make goose-status   - Show status of migrations"
+	@echo "  make goose-to       - Execute migrations up to a specific version"
+	@echo "  make reset-db       - Reset the database to a clean state"
+	@echo "  make test           - Execute tests"
+	@echo "  make swagger        - Generate Swagger documentation"
+	@echo "  make debug          - Compiling for debugging with IDE"
+	@echo "  make build          - Compiling binary"
+	@echo "  make clean          - Remove the binary file generated"
 
 # Generate the RSA files needed to create the user credentials.
 genrsa:
 	openssl genrsa -out app.rsa 1024
 	openssl rsa -in app.rsa -pubout > app.rsa.pub
+
+goose-up:
+	goose -dir migrations $(DBENGINE) "$(DBURL)" up
+
+goose-down:
+	goose -dir migrations $(DBENGINE) "$(DBURL)" down
+
+goose-status:
+	goose -dir migrations $(DBENGINE) "$(DBURL)" status
+
+goose-to:
+	goose -dir migrations $(DBENGINE) "$(DBURL)" up-to $(version)
+
+reset-db:
+	bash scripts/reset-db.sh
 
 # Execute Go test command.
 test:
@@ -30,3 +61,8 @@ build: swagger
 # Execute rm command to delete binary file.
 clean:
 	if [ -f $(BINARY) ] ; then rm $(BINARY) ; fi
+
+# PHONY is for commands that are not files.
+# This prevents make from looking for a file with the same name as the target.
+# It ensures that the command is always executed when called.
+.PHONY: help genrsa goose-up goose-down goose-status goose-to test swagger debug build clean

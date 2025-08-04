@@ -7,43 +7,11 @@ package dbgen
 
 import (
 	"context"
+	"database/sql"
+	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/pborman/uuid"
 )
-
-const userAll = `-- name: UserAll :many
-SELECT id, uuid, first_name, last_name, email, password, created_at, updated_at, deleted_at FROM "user" WHERE deleted_at IS NULL
-`
-
-func (q *Queries) UserAll(ctx context.Context) ([]User, error) {
-	rows, err := q.db.Query(ctx, userAll)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []User
-	for rows.Next() {
-		var i User
-		if err := rows.Scan(
-			&i.ID,
-			&i.Uuid,
-			&i.FirstName,
-			&i.LastName,
-			&i.Email,
-			&i.Password,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
 
 const userByID = `-- name: UserByID :one
 SELECT id, uuid, first_name, last_name, email, password, created_at, updated_at, deleted_at FROM "user" WHERE id = $1 AND deleted_at IS NULL
@@ -89,12 +57,12 @@ VALUES ($1, $2, $3, $4, $5, $6) RETURNING id
 `
 
 type UserCreateParams struct {
-	Uuid      pgtype.UUID
+	Uuid      uuid.UUID
 	FirstName string
 	LastName  string
 	Email     string
 	Password  string
-	CreatedAt pgtype.Timestamp
+	CreatedAt time.Time
 }
 
 func (q *Queries) UserCreate(ctx context.Context, arg UserCreateParams) (int64, error) {
@@ -111,18 +79,20 @@ func (q *Queries) UserCreate(ctx context.Context, arg UserCreateParams) (int64, 
 	return id, err
 }
 
-const userDelete = `-- name: UserDelete :exec
-UPDATE "user" SET deleted_at = $1 WHERE id = $2
+const userDelete = `-- name: UserDelete :one
+UPDATE "user" SET deleted_at = $1 WHERE id = $2 RETURNING id
 `
 
 type UserDeleteParams struct {
-	DeletedAt pgtype.Timestamp
+	DeletedAt sql.NullTime
 	ID        int64
 }
 
-func (q *Queries) UserDelete(ctx context.Context, arg UserDeleteParams) error {
-	_, err := q.db.Exec(ctx, userDelete, arg.DeletedAt, arg.ID)
-	return err
+func (q *Queries) UserDelete(ctx context.Context, arg UserDeleteParams) (int64, error) {
+	row := q.db.QueryRow(ctx, userDelete, arg.DeletedAt, arg.ID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
 
 const userDeleteAll = `-- name: UserDeleteAll :exec
@@ -134,17 +104,69 @@ func (q *Queries) UserDeleteAll(ctx context.Context) error {
 	return err
 }
 
-const userHardDelete = `-- name: UserHardDelete :exec
-DELETE FROM "user" WHERE id = $1
+const userHardDelete = `-- name: UserHardDelete :one
+DELETE FROM "user" WHERE id = $1 RETURNING id
 `
 
-func (q *Queries) UserHardDelete(ctx context.Context, id int64) error {
-	_, err := q.db.Exec(ctx, userHardDelete, id)
-	return err
+func (q *Queries) UserHardDelete(ctx context.Context, id int64) (int64, error) {
+	row := q.db.QueryRow(ctx, userHardDelete, id)
+	err := row.Scan(&id)
+	return id, err
 }
 
-const userUpdate = `-- name: UserUpdate :exec
-UPDATE "user" SET first_name = $1, last_name = $2, email = $3, password = $4, updated_at = $5 WHERE id = $6
+const userListAsc = `-- name: UserListAsc :many
+SELECT id, uuid, first_name, last_name, email, password, created_at, updated_at, deleted_at FROM "user" WHERE deleted_at IS NULL ORDER BY $3::text ASC LIMIT $1 OFFSET $2
+`
+
+type UserListAscParams struct {
+	Limit  int32
+	Offset int32
+	Sort   string
+}
+
+func (q *Queries) UserListAsc(ctx context.Context, arg UserListAscParams) ([]User, error) {
+	rows, err := q.db.Query(ctx, userListAsc, arg.Limit, arg.Offset, arg.Sort)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Uuid,
+			&i.FirstName,
+			&i.LastName,
+			&i.Email,
+			&i.Password,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const userListCount = `-- name: UserListCount :one
+SELECT COUNT (*) FROM "user" WHERE deleted_at IS NULL
+`
+
+func (q *Queries) UserListCount(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, userListCount)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const userUpdate = `-- name: UserUpdate :one
+UPDATE "user" SET first_name = $1, last_name = $2, email = $3, password = $4, updated_at = $5 WHERE id = $6 RETURNING id
 `
 
 type UserUpdateParams struct {
@@ -152,12 +174,12 @@ type UserUpdateParams struct {
 	LastName  string
 	Email     string
 	Password  string
-	UpdatedAt pgtype.Timestamp
+	UpdatedAt sql.NullTime
 	ID        int64
 }
 
-func (q *Queries) UserUpdate(ctx context.Context, arg UserUpdateParams) error {
-	_, err := q.db.Exec(ctx, userUpdate,
+func (q *Queries) UserUpdate(ctx context.Context, arg UserUpdateParams) (int64, error) {
+	row := q.db.QueryRow(ctx, userUpdate,
 		arg.FirstName,
 		arg.LastName,
 		arg.Email,
@@ -165,5 +187,7 @@ func (q *Queries) UserUpdate(ctx context.Context, arg UserUpdateParams) error {
 		arg.UpdatedAt,
 		arg.ID,
 	)
-	return err
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }

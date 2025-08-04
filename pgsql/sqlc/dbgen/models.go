@@ -5,55 +5,59 @@
 package dbgen
 
 import (
-	"github.com/jackc/pgx/v5/pgtype"
+	"database/sql"
+	"time"
+
+	"github.com/pborman/uuid"
 )
 
 type Customer struct {
 	ID        int64
-	Uuid      pgtype.UUID
+	Uuid      uuid.UUID
 	FirstName string
 	LastName  string
 	Email     string
 	Password  string
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
-	DeletedAt pgtype.Timestamp
+	CreatedAt time.Time
+	UpdatedAt sql.NullTime
+	DeletedAt sql.NullTime
 }
 
 type InvoiceHeader struct {
 	ID        int64
-	Uuid      pgtype.UUID
-	ClientID  string
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
+	Uuid      uuid.UUID
+	ClientID  int64
+	CreatedAt time.Time
+	UpdatedAt sql.NullTime
 }
 
 type InvoiceItem struct {
 	ID              int64
-	InvoiceHeaderID int32
-	ProductID       int32
-	CreatedAt       pgtype.Timestamp
-	UpdatedAt       pgtype.Timestamp
+	InvoiceHeaderID int64
+	ProductID       int64
+	CreatedAt       time.Time
+	UpdatedAt       sql.NullTime
 }
 
 type Product struct {
 	ID           int64
-	Uuid         pgtype.UUID
+	Uuid         uuid.UUID
 	Name         string
-	Observations pgtype.Text
-	Price        int32
-	CreatedAt    pgtype.Timestamp
-	UpdatedAt    pgtype.Timestamp
+	Observations string
+	Price        int64
+	CreatedAt    time.Time
+	UpdatedAt    sql.NullTime
+	DeletedAt    sql.NullTime
 }
 
 type User struct {
 	ID        int64
-	Uuid      pgtype.UUID
+	Uuid      uuid.UUID
 	FirstName string
 	LastName  string
 	Email     string
 	Password  string
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
-	DeletedAt pgtype.Timestamp
+	CreatedAt time.Time
+	UpdatedAt sql.NullTime
+	DeletedAt sql.NullTime
 }

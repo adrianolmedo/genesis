@@ -11,11 +11,7 @@ import (
 
 // newDB return a postgres database connection from dbcfg params.
 func newDB(ctx context.Context, cfg genesis.Config) (*pgx.Conn, error) {
-	// postgres://user:password@host:port/dbname?sslmode=disable
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
-
-	conn, err := pgx.Connect(ctx, connStr)
+	conn, err := pgx.Connect(ctx, cfg.DBURL)
 	if err != nil {
 		return nil, err
 	}

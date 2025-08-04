@@ -7,7 +7,7 @@ definitions:
       observations:
         type: string
       price:
-        type: number
+        type: integer
     type: object
   http.createCustomerForm:
     properties:
@@ -84,19 +84,9 @@ definitions:
       observations:
         type: string
       price:
-        type: number
+        type: integer
     type: object
-  http.respDetails:
-    properties:
-      code:
-        type: string
-      data: {}
-      details:
-        type: string
-      message:
-        type: string
-    type: object
-  http.successResp:
+  http.resp:
     properties:
       code:
         type: string
@@ -106,6 +96,16 @@ definitions:
       message:
         type: string
       status:
+        type: string
+    type: object
+  http.respDetails:
+    properties:
+      code:
+        type: string
+      data: {}
+      details:
+        type: string
+      message:
         type: string
     type: object
   http.userLoginForm:
@@ -221,7 +221,7 @@ paths:
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/http.successResp'
+            - $ref: '#/definitions/http.resp'
             - properties:
                 data:
                   $ref: '#/definitions/http.customerProfileDTO'
@@ -310,7 +310,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/http.successResp'
+            - $ref: '#/definitions/http.resp'
             - properties:
                 data:
                   $ref: '#/definitions/http.customerProfileDTO'
@@ -349,7 +349,7 @@ paths:
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/http.successResp'
+            - $ref: '#/definitions/http.resp'
             - properties:
                 data:
                   $ref: '#/definitions/http.generateInvoiceForm'
@@ -388,7 +388,7 @@ paths:
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/http.successResp'
+            - $ref: '#/definitions/http.resp'
             - properties:
                 data:
                   $ref: '#/definitions/http.dataTokenDTO'
@@ -418,7 +418,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/http.successResp'
+            - $ref: '#/definitions/http.resp'
             - properties:
                 data:
                   items:
@@ -450,7 +450,7 @@ paths:
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/http.successResp'
+            - $ref: '#/definitions/http.resp'
             - properties:
                 data:
                   $ref: '#/definitions/http.productCardDTO'
@@ -487,7 +487,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/http.successResp'
+            $ref: '#/definitions/http.resp'
         "204":
           description: No Content
           schema:
@@ -520,7 +520,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/http.successResp'
+            - $ref: '#/definitions/http.resp'
             - properties:
                 data:
                   $ref: '#/definitions/http.productCardDTO'
@@ -552,7 +552,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/http.successResp'
+            $ref: '#/definitions/http.resp'
         "204":
           description: No Content
           schema:
@@ -579,7 +579,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/http.successResp'
+            - $ref: '#/definitions/http.resp'
             - properties:
                 data:
                   items:
@@ -611,7 +611,7 @@ paths:
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/http.successResp'
+            - $ref: '#/definitions/http.resp'
             - properties:
                 data:
                   $ref: '#/definitions/http.userProfileDTO'
@@ -644,7 +644,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/http.successResp'
+            $ref: '#/definitions/http.resp'
         "400":
           description: Bad Request
           schema:
@@ -673,7 +673,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/http.successResp'
+            - $ref: '#/definitions/http.resp'
             - properties:
                 data:
                   $ref: '#/definitions/http.userProfileDTO'
@@ -712,7 +712,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/http.successResp'
+            - $ref: '#/definitions/http.resp'
             - properties:
                 data:
                   $ref: '#/definitions/http.userProfileDTO'

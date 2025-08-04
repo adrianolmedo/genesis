@@ -27,6 +27,7 @@ func NewStorage(ctx context.Context, cfg genesis.Config) (*Storage, error) {
 	}
 
 	return &Storage{
+		db:       db,
 		User:     NewUser(db),
 		Product:  NewProduct(db),
 		Customer: NewCustomer(db),
@@ -42,11 +43,7 @@ func (s *Storage) Close() {
 
 // newPool return a postgres database connection from cfg params.
 func newPool(ctx context.Context, cfg genesis.Config) (*pgxpool.Pool, error) {
-	// postgres://user:password@host:port/dbname?sslmode=disable
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		cfg.DBUser, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
-
-	pool, err := pgxpool.New(ctx, connStr)
+	pool, err := pgxpool.New(ctx, cfg.DBURL)
 	if err != nil {
 		return nil, err
 	}

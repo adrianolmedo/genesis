@@ -11,13 +11,9 @@ import (
 	config "github.com/adrianolmedo/genesis"
 )
 
-// $ go test -v -tags integration -args -dbengine postgres -dbhost 127.0.0.1 -dbport 5432 -dbuser username -dbname foodb -dbpass 12345
+// $ go test -v -tags integration -args -dburl postgres://user:password@host:port/dbname?sslmode=disable
 var (
-	dbhost = flag.String("dbhost", "", "Database host.")
-	dbport = flag.String("dbport", "", "Database port.")
-	dbuser = flag.String("dbuser", "", "Database user.")
-	dbpass = flag.String("dbpass", "", "Database password.")
-	dbname = flag.String("dbname", "", "Database name.")
+	dburl = flag.String("dburl", "", "Database URL. (example \"postgres://user:password@host:port/dbname?sslmode=disable\"")
 )
 
 // TestDB test for open & close database.
@@ -28,11 +24,7 @@ func TestDB(t *testing.T) {
 
 func openDB(t *testing.T) *sql.DB {
 	dbcfg := config.Config{
-		DBHost:     *dbhost,
-		DBPort:     *dbport,
-		DBUser:     *dbuser,
-		DBPassword: *dbpass,
-		DBName:     *dbname,
+		DBURL: *dburl,
 	}
 
 	db, err := newDB(dbcfg)

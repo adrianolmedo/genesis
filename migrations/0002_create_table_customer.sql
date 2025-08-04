@@ -1,3 +1,5 @@
+-- +goose Up
+-- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS customer (
     id BIGSERIAL,
     uuid UUID NOT NULL,
@@ -11,3 +13,10 @@ CREATE TABLE IF NOT EXISTS customer (
 
     CONSTRAINT customer_id_pk PRIMARY KEY (id)
 );
+-- +goose StatementEnd
+
+-- +goose Down
+-- +goose StatementBegin
+ALTER TABLE customer DROP CONSTRAINT IF EXISTS customer_id_pk;
+DROP TABLE IF EXISTS customer;
+-- +goose StatementEnd
