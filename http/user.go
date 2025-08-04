@@ -25,7 +25,7 @@ import (
 //	@Failure		400				{object}	errorResp
 //	@Failure		401				{object}	errorResp
 //	@Failure		500				{object}	errorResp
-//	@Success		201				{object}	successResp{data=dataTokenDTO}
+//	@Success		201				{object}	resp{data=dataTokenDTO}
 //	@Param			userLoginForm	body		userLoginForm	true	"application/json"
 //	@Router			/login [post]
 func loginUser(s *app.Services) fiber.Handler {
@@ -91,7 +91,7 @@ type dataTokenDTO struct {
 //	@Produce		json
 //	@Failure		400				{object}	errorResp
 //	@Failure		500				{object}	errorResp
-//	@Success		201				{object}	successResp{data=userProfileDTO}
+//	@Success		201				{object}	resp{data=userProfileDTO}
 //	@Param			userSignUpForm	body		userSignUpForm	true	"application/json"
 //	@Router			/users [post]
 func signUpUser(s *app.Services) fiber.Handler {
@@ -159,7 +159,7 @@ type userProfileDTO struct {
 //	@Param			id	path		int	true	"User id"
 //	@Failure		400	{object}	errorResp
 //	@Failure		404	{object}	errorResp
-//	@Success		200	{object}	successResp{data=userProfileDTO}
+//	@Success		200	{object}	resp{data=userProfileDTO}
 //	@Router			/users/{id} [get]
 func findUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -210,7 +210,7 @@ func findUser(s *app.Services) fiber.Handler {
 //	@Param			id				path		int	true	"User id"
 //	@Failure		400				{object}	errorResp
 //	@Failure		404				{object}	errorResp
-//	@Success		200				{object}	successResp{data=userProfileDTO}
+//	@Success		200				{object}	resp{data=userProfileDTO}
 //	@Param			userUpdateForm	body		userUpdateForm	true	"application/json"
 //	@Router			/users/{id} [put]
 func updateUser(s *app.Services) fiber.Handler {
@@ -286,8 +286,8 @@ type userUpdateForm struct {
 //	@Accept		json
 //	@Produce	json
 //	@Failure	500	{object}	errorResp
-//	@Success	200	{object}	successResp
-//	@Success	200	{object}	successResp{data=[]userProfileDTO}
+//	@Success	200	{object}	resp
+//	@Success	200	{object}	resp{data=[]userProfileDTO}
 //	@Router		/users [get]
 func listUsers(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -360,7 +360,7 @@ func listUsers(s *app.Services) fiber.Handler {
 //	@Param			id	path		int	true	"User id"
 //	@Failure		400	{object}	errorResp
 //	@Failure		404	{object}	errorResp
-//	@Success		200	{object}	successResp
+//	@Success		200	{object}	resp
 //	@Router			/users/{id} [delete]
 func deleteUser(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {

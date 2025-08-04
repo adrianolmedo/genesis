@@ -22,7 +22,7 @@ import (
 //	@Failure		400					{object}	errorResp
 //	@Failure		404					{object}	errorResp
 //	@Failure		500					{object}	errorResp
-//	@Success		201					{object}	successResp{data=generateInvoiceForm}
+//	@Success		201					{object}	resp{data=generateInvoiceForm}
 //	@Param			generateInvoiceForm	body		generateInvoiceForm	true	"application/json"
 //	@Router			/invoices [post]
 func generateInvoice(s *app.Services) fiber.Handler {

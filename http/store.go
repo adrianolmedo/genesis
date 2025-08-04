@@ -24,7 +24,7 @@ import (
 //	@Failure		400				{object}	errorResp
 //	@Failure		401				{object}	errorResp
 //	@Failure		500				{object}	errorResp
-//	@Success		201				{object}	successResp{data=productCardDTO}
+//	@Success		201				{object}	resp{data=productCardDTO}
 //	@Param			addProductForm	body		addProductForm	true	"application/json"
 //	@Router			/products [post]
 func addProduct(s *app.Services) fiber.Handler {
@@ -91,8 +91,8 @@ type productCardDTO struct {
 //	@Tags			products
 //	@Produce		json
 //	@Failure		500	{object}	errorResp
-//	@Success		200	{object}	successResp
-//	@Success		200	{object}	successResp{data=[]productCardDTO}
+//	@Success		200	{object}	resp
+//	@Success		200	{object}	resp{data=[]productCardDTO}
 //	@Router			/products [get]
 func listProducts(s *app.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -143,7 +143,7 @@ func listProducts(s *app.Services) fiber.Handler {
 //	@Produce		json
 //	@Failure		400					{object}	errorResp
 //	@Failure		500					{object}	errorResp
-//	@Success		201					{object}	successResp{data=customerProfileDTO}
+//	@Success		201					{object}	resp{data=customerProfileDTO}
 //	@Param			createCustomerForm	body		createCustomerForm	true	"application/json"
 //	@Router			/customer [post]
 func createCustomer(s *app.Services) fiber.Handler {
@@ -211,7 +211,7 @@ type createCustomerForm struct {
 //	@Failure		400	{object}	errorResp
 //	@Failure		204	{object}	errorResp
 //	@Failure		500	{object}	errorResp
-//	@Success		200	{object}	successResp{data=customerProfileDTO}
+//	@Success		200	{object}	resp{data=customerProfileDTO}
 //	@Param			id	path		int	true	"Customer id"
 //	@Router			/customers/{id} [delete]
 func deleteCustomer(s *app.Services) fiber.Handler {
@@ -334,7 +334,7 @@ func listCustomers(s *app.Services) fiber.Handler {
 //	@Produce		json
 //	@Failure		400	{object}	errorResp
 //	@Failure		404	{object}	errorResp
-//	@Success		200	{object}	successResp{data=productCardDTO}
+//	@Success		200	{object}	resp{data=productCardDTO}
 //	@Param			id	path		int	true	"Product id"
 //	@Router			/products/{id} [get]
 func findProduct(s *app.Services) fiber.Handler {
@@ -385,7 +385,7 @@ func findProduct(s *app.Services) fiber.Handler {
 //	@Failure		400	{object}	errorResp
 //	@Failure		204	{object}	errorResp
 //	@Failure		500	{object}	errorResp
-//	@Success		200	{object}	successResp
+//	@Success		200	{object}	resp
 //	@Param			id	path		int	true	"Product id"
 //	@Router			/products/{id} [put]
 func updateProduct(s *app.Services) fiber.Handler {
@@ -461,7 +461,7 @@ type updateProductForm struct {
 //	@Failure		400	{object}	errorResp
 //	@Failure		204	{object}	errorResp
 //	@Failure		500	{object}	errorResp
-//	@Success		200	{object}	successResp
+//	@Success		200	{object}	resp
 //	@Param			id	path		int	true	"Product id"
 //	@Router			/products/{id} [delete]
 func deleteProduct(s *app.Services) fiber.Handler {
