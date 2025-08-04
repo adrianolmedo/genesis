@@ -1,5 +1,7 @@
 package genesis
 
+import "fmt"
+
 // Config server RESTful API.
 type Config struct {
 	// Host where is running the app.
@@ -8,21 +10,20 @@ type Config struct {
 	// Port for address server, if it is empty by default it will be 80.
 	Port string
 
-	// CORS directive. Add address separated by comma. Example, "127.0.0.1,172.17.0.1".
-	CORS string
+	// DBURL is the database URL connection string.
+	// Example: "postgres://user:password@host:port/dbname?sslmode=disable".
+	DBURL string
+}
 
-	// Host where is running the database Engine.
-	DBHost string
+// Validate checks if the configuration is valid.
+func (c Config) Validate() error {
+	if c.Host == "" || c.Port == "" {
+		return fmt.Errorf("host and port must be specified")
+	}
 
-	// Port of database Engine server.
-	DBPort string
+	if c.DBURL == "" {
+		return fmt.Errorf("database URL is required")
+	}
 
-	// User of database, eg.: "root".
-	DBUser string
-
-	// Password of User database.
-	DBPassword string
-
-	// Name of SQL database.
-	DBName string
+	return nil
 }

@@ -18,26 +18,21 @@ services:
         - USER_UID=${USER_UID}
     container_name: app
     environment:
-      - DBENGINE=${DBENGINE}
-      - DBHOST=${DBHOST}
-      - DBPORT=${DBPORT}
-      - DBUSER=${DBUSER}
-      - DBPASS=${DBPASS}
-      - DBNAME=${DBNAME}
+      - DBURL=${DBURL}
     ports:
-      - ${APP_EXTERNAL_PORT}:80
+      - ${GOAPP_EXTERNAL_PORT}:80
     networks:
       - backend
 
   postgres:
-    image: postgres:${POSTGRES_VERSION}
+    image: postgres:${DB_DOCKER_VERSION}
     container_name: postgres
     environment:
       - POSTGRES_DB=${DBNAME}
       - POSTGRES_USER=${DBUSER}
       - POSTGRES_PASSWORD=${DBPASS}
     ports:
-      - ${POSTGRES_EXTERNAL_PORT}:${DBPORT}
+      - ${DB_EXTERNAL_PORT}:${DBPORT}
     volumes:
       - postgres:/var/lib/postgresql/data
     networks:
