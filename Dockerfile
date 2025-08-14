@@ -3,7 +3,7 @@ FROM golang:1.21-alpine AS build
 WORKDIR /src/
 COPY . .
 RUN go mod download
-RUN CGO_ENABLED=0 go install cmd/rest/rest.go
+RUN CGO_ENABLED=0 go install cmd/main/main.go
 
 ARG USERNAME
 ARG USER_UID
@@ -15,6 +15,6 @@ FROM scratch
 
 COPY app.sra .
 COPY app.sra.pub .
-COPY --from=build /go/bin/rest /bin/rest
+COPY --from=build /go/bin/main /bin/main
 USER ${USERNAME}
-ENTRYPOINT ["/bin/rest"]
+ENTRYPOINT ["/bin/main"]

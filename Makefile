@@ -56,7 +56,7 @@ debug:
 # Execute the Go build command to compile and generate the binary in the root.
 build: swagger
 	sqlc generate
-	go build -o $(BINARY) cmd/rest/*.go
+	go build -o $(BINARY) cmd/main/*.go
 
 # Execute rm command to delete binary file.
 clean:

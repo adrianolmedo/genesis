@@ -26,7 +26,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fs := flag.NewFlagSet("rest", flag.ExitOnError)
+	fs := flag.NewFlagSet("main", flag.ExitOnError)
 	var (
 		host  = fs.String("host", ":", "Internal container IP.")
 		port  = fs.String("port", "80", "Internal container port.")
