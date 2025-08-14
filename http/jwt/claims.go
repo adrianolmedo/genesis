@@ -28,7 +28,7 @@ func Generate(userEmail string) (string, error) {
 		Email: userEmail,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 2)),
-			Issuer:    "go-restapi",
+			Issuer:    "genesis",
 		},
 	}
 
