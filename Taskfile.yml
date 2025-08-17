@@ -1,0 +1,65 @@
+version: "3"
+
+dotenv: [".env.development"]
+
+vars:
+  BINARY: genesis
+
+tasks:
+  genrsa:
+    desc: Generate RSA keys for JWT auth
+    cmds:
+      - openssl genrsa -out app.rsa 1024
+      - openssl rsa -in app.rsa -pubout > app.rsa.pub
+
+  goose-up:
+    desc: Execute migrations up
+    cmds:
+      - goose -dir migrations {{.DBENGINE}} "{{.DBURL}}" up
+
+  goose-down:
+    desc: Revert last migration
+    cmds:
+      - goose -dir migrations {{.DBENGINE}} "{{.DBURL}}" down
+
+  goose-status:
+    desc: Show status of migrations
+    cmds:
+      - goose -dir migrations {{.DBENGINE}} "{{.DBURL}}" status
+
+  goose-to:
+    desc: Execute migrations up to a specific version
+    vars:
+      version: '{{.version | default ""}}'
+    cmds:
+      - goose -dir migrations {{.DBENGINE}} "{{.DBURL}}" up-to {{.version}}
+
+  test:
+    desc: Execute tests
+    cmds:
+      - sqlc generate
+      - go test ./...
+
+  swagger:
+    desc: Generate Swagger documentation
+    cmds:
+      - swag fmt -d http/
+      - swag init -g http/router.go
+
+  debug:
+    desc: Build binary for debugging with IDE
+    cmds:
+      - sqlc generate
+      - go build -gcflags "-N -l" -o {{.BINARY}} .
+
+  build:
+    desc: Build binary
+    deps: [swagger]
+    cmds:
+      - sqlc generate
+      - go build -o {{.BINARY}} cmd/main/*.go
+
+  clean:
+    desc: Remove the binary file generated
+    cmds:
+      - rm -f {{.BINARY}}

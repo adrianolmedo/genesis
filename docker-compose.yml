@@ -28,11 +28,11 @@ services:
     image: postgres:${DB_DOCKER_VERSION}
     container_name: postgres
     environment:
-      - POSTGRES_DB=${DBNAME}
-      - POSTGRES_USER=${DBUSER}
-      - POSTGRES_PASSWORD=${DBPASS}
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=genesis
     ports:
-      - ${DB_EXTERNAL_PORT}:${DBPORT}
+      - 5433:5432
     volumes:
       - postgres:/var/lib/postgresql/data
     networks:

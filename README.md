@@ -1,6 +1,6 @@
 # Genesis
 
-REST API of CRM, architecture based on the main objective of Hexagonal Architecture: to isolate business logic from external dependencies.
+REST API architecture based on the main objective of Hexagonal Architecture: to isolate business logic from external dependencies.
 
 ## Architecture
 
@@ -18,12 +18,6 @@ REST API of CRM, architecture based on the main objective of Hexagonal Architect
 $ git clone https://github.com/adrianolmedo/genesis.git
 $ cp .env.example .env
 $ docker-compose up -d --build postgres
-```
-
-**Run migrations**
-
-```bash
-./migrate.sh
 ```
 
 **Up application service:**
