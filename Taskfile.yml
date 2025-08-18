@@ -12,27 +12,18 @@ tasks:
       - openssl genrsa -out app.rsa 1024
       - openssl rsa -in app.rsa -pubout > app.rsa.pub
 
-  goose-up:
-    desc: Execute migrations up
-    cmds:
-      - goose -dir migrations {{.DBENGINE}} "{{.DBURL}}" up
-
-  goose-down:
-    desc: Revert last migration
-    cmds:
-      - goose -dir migrations {{.DBENGINE}} "{{.DBURL}}" down
-
-  goose-status:
-    desc: Show status of migrations
-    cmds:
-      - goose -dir migrations {{.DBENGINE}} "{{.DBURL}}" status
-
-  goose-to:
-    desc: Execute migrations up to a specific version
+  goose:
+    desc: Run goose migrations (usage, task goose -- cmd=up|down|status|up-to|down-to version=123)
     vars:
+      cmd: '{{.cmd | default "status"}}'
       version: '{{.version | default ""}}'
     cmds:
-      - goose -dir migrations {{.DBENGINE}} "{{.DBURL}}" up-to {{.version}}
+      - |
+        if [ -n "{{.version}}" ]; then
+          goose -dir migrations {{.DBENGINE}} "{{.DBURL}}" {{.cmd}} {{.version}}
+        else
+          goose -dir migrations {{.DBENGINE}} "{{.DBURL}}" {{.cmd}}
+        fi
 
   test:
     desc: Execute tests
