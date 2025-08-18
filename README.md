@@ -23,7 +23,7 @@ $ docker-compose up -d --build postgres
 **Up application service:**
 
 ```bash
-$ make genrsa
-$ make swagger
+$ task genrsa
+$ task swagger
 $ docker-compose up -d --build app
 ```
