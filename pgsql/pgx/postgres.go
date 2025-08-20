@@ -11,7 +11,7 @@ import (
 
 // newDB return a postgres database connection from dbcfg params.
 func newDB(ctx context.Context, cfg genesis.Config) (*pgx.Conn, error) {
-	conn, err := pgx.Connect(ctx, cfg.DBURL)
+	conn, err := pgx.Connect(ctx, cfg.DatabaseURL)
 	if err != nil {
 		return nil, err
 	}

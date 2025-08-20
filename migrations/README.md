@@ -3,17 +3,17 @@
 ## How to run migrations
 
 ```bash
-goose -dir ./migrations postgres "$DBURL" up
+goose -dir ./migrations postgres "$DATABASE_URL" up
 ```
 
 ## How to rollback the last migration
 
 ```bash
-goose -dir ./migrations postgres "$DBURL" down
+goose -dir ./migrations postgres "$DATABASE_URL" down
 ```
 
 ## How to reset local dev database
 
 ```bash
-psql "$DBURL" -f scripts/reset-db.sql
+psql "$DATABASE_URL" -f scripts/reset-db.sql
 ```

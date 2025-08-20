@@ -20,9 +20,9 @@ tasks:
     cmds:
       - |
         if [ -n "{{.version}}" ]; then
-          goose -dir migrations {{.DBENGINE}} "{{.DBURL}}" {{.cmd}} {{.version}}
+          goose -dir migrations {{.DBENGINE}} "{{.DATABASE_URL}}" {{.cmd}} {{.version}}
         else
-          goose -dir migrations {{.DBENGINE}} "{{.DBURL}}" {{.cmd}}
+          goose -dir migrations {{.DBENGINE}} "{{.DATABASE_URL}}" {{.cmd}}
         fi
 
   test:

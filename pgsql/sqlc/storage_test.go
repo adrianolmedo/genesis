@@ -14,9 +14,9 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// $ go test -v -tags integration -args -dburl postgres://user:password@host:port/dbname?sslmode=disable
+// $ go test -v -tags integration -args -database-url postgres://user:password@host:port/dbname?sslmode=disable
 var (
-	dburl = flag.String("dburl", "", "Database URL. (example \"postgres://user:password@host:port/dbname?sslmode=disable\"")
+	dburl = flag.String("database-url", "", "Database URL. (example \"postgres://user:password@host:port/dbname?sslmode=disable\"")
 )
 
 // TestDB test for open and close database.
@@ -34,7 +34,7 @@ func openDB(ctx context.Context, t *testing.T) *pgxpool.Pool {
 	t.Helper()
 
 	dbcfg := config.Config{
-		DBURL: *dburl,
+		DatabaseURL: *dburl,
 	}
 
 	db, err := newPool(ctx, dbcfg)

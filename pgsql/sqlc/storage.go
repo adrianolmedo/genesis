@@ -43,7 +43,7 @@ func (s *Storage) Close() {
 
 // newPool return a postgres database connection from cfg params.
 func newPool(ctx context.Context, cfg genesis.Config) (*pgxpool.Pool, error) {
-	pool, err := pgxpool.New(ctx, cfg.DBURL)
+	pool, err := pgxpool.New(ctx, cfg.DatabaseURL)
 	if err != nil {
 		return nil, err
 	}

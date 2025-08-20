@@ -1,3 +1,6 @@
+//go:build integration
+// +build integration
+
 package pgx
 
 import (
@@ -11,9 +14,9 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// $ go test -v -tags integration -args -dburl postgres://user:password@host:port/dbname?sslmode=disable
+// $ go test -v -tags integration -args -database-url postgres://user:password@host:port/dbname?sslmode=disable
 var (
-	dburl = flag.String("dburl", "", "Database URL. (example \"postgres://user:password@host:port/dbname?sslmode=disable\"")
+	dburl = flag.String("database-url", "", "Database URL. (example \"postgres://user:password@host:port/dbname?sslmode=disable\"")
 )
 
 // TestDB test for open & close database.
@@ -30,7 +33,7 @@ func openDB(ctx context.Context, t *testing.T) *pgx.Conn {
 	t.Helper()
 
 	dbcfg := config.Config{
-		DBURL: *dburl,
+		DatabaseURL: *dburl,
 	}
 
 	conn, err := newDB(ctx, dbcfg)

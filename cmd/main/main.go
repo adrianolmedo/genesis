@@ -30,7 +30,7 @@ func main() {
 	var (
 		host  = fs.String("host", ":", "Internal container IP.")
 		port  = fs.String("port", "80", "Internal container port.")
-		dburl = fs.String("dburl", "", "Database URL. (example \"postgres://user:password@host:port/dbname?sslmode=disable\")")
+		dburl = fs.String("database-url", "", "Database URL. (example \"postgres://user:password@host:port/dbname?sslmode=disable\")")
 	)
 
 	// With ff we can parse flags and environment variables.
@@ -43,7 +43,7 @@ func main() {
 	cfg := genesis.Config{
 		Host:  *host,
 		Port:  *port,
-		DBURL: *dburl,
+		DatabaseURL: *dburl,
 	}
 
 	if err := run(cfg); err != nil {

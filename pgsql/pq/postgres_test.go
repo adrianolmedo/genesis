@@ -11,9 +11,9 @@ import (
 	config "github.com/adrianolmedo/genesis"
 )
 
-// $ go test -v -tags integration -args -dburl postgres://user:password@host:port/dbname?sslmode=disable
+// $ go test -v -tags integration -args -database-url postgres://user:password@host:port/dbname?sslmode=disable
 var (
-	dburl = flag.String("dburl", "", "Database URL. (example \"postgres://user:password@host:port/dbname?sslmode=disable\"")
+	dburl = flag.String("database-url", "", "Database URL. (example \"postgres://user:password@host:port/dbname?sslmode=disable\"")
 )
 
 // TestDB test for open & close database.
@@ -24,7 +24,7 @@ func TestDB(t *testing.T) {
 
 func openDB(t *testing.T) *sql.DB {
 	dbcfg := config.Config{
-		DBURL: *dburl,
+		DatabaseURL: *dburl,
 	}
 
 	db, err := newDB(dbcfg)

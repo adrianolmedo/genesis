@@ -10,9 +10,9 @@ type Config struct {
 	// Port for address server, if it is empty by default it will be 80.
 	Port string
 
-	// DBURL is the database URL connection string.
+	// DatabaseURL is the database connection string.
 	// Example: "postgres://user:password@host:port/dbname?sslmode=disable".
-	DBURL string
+	DatabaseURL string
 }
 
 // Validate checks if the configuration is valid.
@@ -21,7 +21,7 @@ func (c Config) Validate() error {
 		return fmt.Errorf("host and port must be specified")
 	}
 
-	if c.DBURL == "" {
+	if c.DatabaseURL == "" {
 		return fmt.Errorf("database URL is required")
 	}
 

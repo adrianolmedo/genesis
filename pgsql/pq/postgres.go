@@ -12,7 +12,7 @@ import (
 
 // newDB return a postgres database connection from dbcfg params.
 func newDB(cfg genesis.Config) (db *sql.DB, err error) {
-	db, err = sql.Open("postgres", cfg.DBURL)
+	db, err = sql.Open("postgres", cfg.DatabaseURL)
 	if err != nil {
 		return nil, fmt.Errorf("can't open the data base %v", err)
 	}
