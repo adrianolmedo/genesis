@@ -1,4 +1,4 @@
-package app
+package user
 
 import (
 	"context"
@@ -8,14 +8,21 @@ import (
 
 	domain "github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/pgsql"
-	storage "github.com/adrianolmedo/genesis/pgsql/sqlc"
 )
 
-type userService struct {
-	repo *storage.User
+// Service provides User application operations.
+type Service struct {
+	repo *Repo
 }
 
-func (s userService) Login(ctx context.Context, email, password string) error {
+// NewService creates a new User service instance.
+func NewService(repo *Repo) *Service {
+	return &Service{
+		repo: repo,
+	}
+}
+
+func (s Service) Login(ctx context.Context, email, password string) error {
 	if err := validateEmail(email); err != nil {
 		return err
 	}
@@ -24,7 +31,7 @@ func (s userService) Login(ctx context.Context, email, password string) error {
 }
 
 // SignUp to register a User.
-func (s userService) SignUp(ctx context.Context, u *domain.User) error {
+func (s Service) SignUp(ctx context.Context, u *User) error {
 	err := signUp(u)
 	if err != nil {
 		return err
@@ -36,7 +43,7 @@ func (s userService) SignUp(ctx context.Context, u *domain.User) error {
 // signUp applicaction logic for regitser a User. Has been split into
 // a smaller function for unit testing purposes, and it should do so for
 // the other methods of the Service.
-func signUp(u *domain.User) error {
+func signUp(u *User) error {
 	err := u.Validate()
 	if err != nil {
 		return err
@@ -51,16 +58,16 @@ func signUp(u *domain.User) error {
 }
 
 // Find a User by its ID.
-func (s userService) Find(ctx context.Context, id int64) (*domain.User, error) {
+func (s Service) Find(ctx context.Context, id int64) (*User, error) {
 	if id == 0 {
-		return &domain.User{}, domain.ErrUserNotFound
+		return &User{}, ErrNotFound
 	}
 
 	return s.repo.ByID(ctx, id)
 }
 
 // Update application logic for update a User.
-func (s userService) Update(ctx context.Context, u domain.User) error {
+func (s Service) Update(ctx context.Context, u User) error {
 	err := u.Validate()
 	if err != nil {
 		return err
@@ -75,12 +82,12 @@ func (s userService) Update(ctx context.Context, u domain.User) error {
 }
 
 // List get list of users.
-func (s userService) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, error) {
+func (s Service) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, error) {
 	return s.repo.List(ctx, p)
 }
 
 // Remove delete User by its ID.
-func (s userService) Remove(ctx context.Context, id int64) error {
+func (s Service) Remove(ctx context.Context, id int64) error {
 	if id == 0 {
 		return domain.ErrUserNotFound
 	}

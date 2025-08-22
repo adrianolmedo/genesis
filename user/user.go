@@ -1,11 +1,15 @@
-package genesis
+package user
 
 import (
 	"errors"
+
+	"github.com/adrianolmedo/genesis"
+
+	"github.com/pborman/uuid"
 )
 
-var ErrUserCantBeEmpty = errors.New("the user fields can't be empty")
-var ErrUserNotFound = errors.New("user not found")
+var ErrCantBeEmpty = errors.New("the user fields can't be empty")
+var ErrNotFound = errors.New("user not found")
 
 // User domain model.
 type User struct {
@@ -16,7 +20,7 @@ type User struct {
 	Email     string
 	Password  string
 
-	AuditFields
+	genesis.AuditFields
 }
 
 // Validate return error if certain fields there are empty.
@@ -34,4 +38,9 @@ type Users []*User
 // IsEmpty return true if is empty.
 func (us Users) IsEmpty() bool {
 	return len(us) == 0
+}
+
+// NextUUID generates a new UUID.
+func NextUUID() string {
+	return uuid.New()
 }

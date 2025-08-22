@@ -1,22 +1,20 @@
-package app
+package store
 
 import (
 	"strings"
 	"testing"
-
-	domain "github.com/adrianolmedo/genesis"
 )
 
 func TestAddProduct(t *testing.T) {
 	tt := []struct {
 		name           string
-		input          *domain.Product
+		input          *Product
 		errExpected    bool
 		wantErrContain string
 	}{
 		{
 			name: "successful-test", // test name
-			input: &domain.Product{
+			input: &Product{
 				Name:         "Coca-Cola",
 				Observations: "",
 				Price:        3,
@@ -26,7 +24,7 @@ func TestAddProduct(t *testing.T) {
 		},
 		{
 			name: "empty-field-test",
-			input: &domain.Product{
+			input: &Product{
 				Name:         "",
 				Observations: "Made in Venezuela",
 				Price:        2,

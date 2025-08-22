@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package sqlc
 
 import (
@@ -8,6 +5,7 @@ import (
 	"testing"
 
 	domain "github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis/testhelper"
 )
 
 func TestCreateTxInvoiceHeader(t *testing.T) {
@@ -15,8 +13,8 @@ func TestCreateTxInvoiceHeader(t *testing.T) {
 		cleanInvoiceHeadersData(t)
 	})
 
-	ctx := testCtx(t)
-	db := openDB(ctx, t)
+	ctx := testhelper.Ctx(t)
+	db := OpenDB(ctx, t)
 	defer db.Close()
 
 	tx, err := db.Begin(context.Background())
@@ -44,8 +42,8 @@ func TestCreateTxInvoiceHeader(t *testing.T) {
 }
 
 func cleanInvoiceHeadersData(t *testing.T) {
-	ctx := testCtx(t)
-	db := openDB(ctx, t)
+	ctx := testhelper.Ctx(t)
+	db := OpenDB(ctx, t)
 	defer db.Close()
 
 	ih := NewInvoiceHeader(db)

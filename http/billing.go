@@ -7,6 +7,7 @@ import (
 
 	domain "github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/app"
+	"github.com/adrianolmedo/genesis/billing"
 	"github.com/adrianolmedo/genesis/logger"
 
 	"github.com/gofiber/fiber/v2"
@@ -25,7 +26,7 @@ import (
 //	@Success		201					{object}	resp{data=generateInvoiceForm}
 //	@Param			generateInvoiceForm	body		generateInvoiceForm	true	"application/json"
 //	@Router			/invoices [post]
-func generateInvoice(s *app.Services) fiber.Handler {
+func generateInvoice(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 		form := generateInvoiceForm{}
@@ -60,13 +61,13 @@ func generateInvoice(s *app.Services) fiber.Handler {
 			})
 		}
 
-		assemble := func(i invoiceItemForm) *domain.InvoiceItem {
-			return &domain.InvoiceItem{
+		assemble := func(i invoiceItemForm) *billing.InvoiceItem {
+			return &billing.InvoiceItem{
 				ProductID: i.ProductID,
 			}
 		}
 
-		items := make(domain.ItemList, 0, len(form.Items))
+		items := make(billing.ItemList, 0, len(form.Items))
 		for _, item := range form.Items {
 
 			_, err := s.Store.Find(ctx, item.ProductID)
@@ -93,8 +94,8 @@ func generateInvoice(s *app.Services) fiber.Handler {
 
 		}
 
-		invoice := &domain.Invoice{
-			Header: &domain.InvoiceHeader{
+		invoice := &billing.Invoice{
+			Header: &billing.InvoiceHeader{
 				ClientID: clientID,
 			},
 			Items: items,

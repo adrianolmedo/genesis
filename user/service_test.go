@@ -1,4 +1,4 @@
-package app
+package user
 
 import (
 	"strings"
@@ -10,13 +10,13 @@ import (
 func TestSignUp(t *testing.T) {
 	tt := []struct {
 		name           string
-		input          *domain.User
+		input          *User
 		errExpected    bool
 		wantErrContain string
 	}{
 		{
 			name: "successful-test",
-			input: &domain.User{
+			input: &User{
 				FirstName: "John",
 				LastName:  "Doe",
 				Email:     "example@gmail.com",
@@ -27,7 +27,7 @@ func TestSignUp(t *testing.T) {
 		},
 		{
 			name: "empty-field-test",
-			input: &domain.User{
+			input: &User{
 				FirstName: "",
 				LastName:  "Doe",
 				Email:     "example@gmail.com",
@@ -38,7 +38,7 @@ func TestSignUp(t *testing.T) {
 		},
 		{
 			name: "bad-email-test",
-			input: &domain.User{
+			input: &User{
 				FirstName: "John",
 				LastName:  "Doe",
 				Email:     "examplegmailcom",

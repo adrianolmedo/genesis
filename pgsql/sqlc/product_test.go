@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package sqlc
 
 import (
@@ -9,6 +6,7 @@ import (
 	"testing"
 
 	domain "github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis/testhelper"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -17,8 +15,8 @@ func TestCreateProduct(t *testing.T) {
 		cleanProductsData(t)
 	})
 
-	ctx := testCtx(t)
-	db := openDB(ctx, t)
+	ctx := testhelper.Ctx(t)
+	db := OpenDB(ctx, t)
 	defer db.Close()
 
 	p := NewProduct(db)
@@ -56,8 +54,8 @@ func TestProductByID(t *testing.T) {
 		cleanProductsData(t)
 	})
 
-	ctx := testCtx(t)
-	db := openDB(ctx, t)
+	ctx := testhelper.Ctx(t)
+	db := OpenDB(ctx, t)
 	defer db.Close()
 	insertProductsData(ctx, t, db)
 
@@ -107,8 +105,8 @@ func TestUpdateProduct(t *testing.T) {
 		cleanProductsData(t)
 	})
 
-	ctx := testCtx(t)
-	db := openDB(ctx, t)
+	ctx := testhelper.Ctx(t)
+	db := OpenDB(ctx, t)
 	defer db.Close()
 	insertProductsData(ctx, t, db)
 
@@ -178,8 +176,8 @@ func insertProductsData(ctx context.Context, t *testing.T, db *pgxpool.Pool) {
 
 // cleanProductsData delete all rows of `product` table.
 func cleanProductsData(t *testing.T) {
-	ctx := testCtx(t)
-	db := openDB(ctx, t)
+	ctx := testhelper.Ctx(t)
+	db := OpenDB(ctx, t)
 	defer db.Close()
 
 	p := NewProduct(db)

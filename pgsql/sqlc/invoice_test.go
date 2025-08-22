@@ -1,12 +1,10 @@
-//go:build integration
-// +build integration
-
 package sqlc
 
 import (
 	"testing"
 
 	domain "github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis/testhelper"
 )
 
 func TestCreateInvoice(t *testing.T) {
@@ -25,8 +23,8 @@ func TestCreateInvoice(t *testing.T) {
 		},
 	}
 
-	ctx := testCtx(t)
-	db := openDB(ctx, t)
+	ctx := testhelper.Ctx(t)
+	db := OpenDB(ctx, t)
 	defer db.Close()
 	insertProductsData(ctx, t, db)
 
@@ -46,8 +44,8 @@ func TestCreateInvoice(t *testing.T) {
 }
 
 func cleanInvoiceItemsData(t *testing.T) {
-	ctx := testCtx(t)
-	db := openDB(ctx, t)
+	ctx := testhelper.Ctx(t)
+	db := OpenDB(ctx, t)
 	defer db.Close()
 
 	ii := NewInvoiceItem(db)

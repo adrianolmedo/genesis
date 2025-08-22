@@ -11,6 +11,7 @@ import (
 	"github.com/adrianolmedo/genesis/http/jwt"
 	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/pgsql"
+	"github.com/adrianolmedo/genesis/user"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -28,7 +29,7 @@ import (
 //	@Success		201				{object}	resp{data=dataTokenDTO}
 //	@Param			userLoginForm	body		userLoginForm	true	"application/json"
 //	@Router			/login [post]
-func loginUser(s *app.Services) fiber.Handler {
+func loginUser(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -43,7 +44,7 @@ func loginUser(s *app.Services) fiber.Handler {
 		}
 
 		err = s.User.Login(ctx, form.Email, form.Password)
-		if errors.Is(err, domain.ErrUserNotFound) {
+		if errors.Is(err, user.ErrNotFound) {
 			return errorJSON(c, http.StatusUnauthorized, respDetails{
 				Code:    "003",
 				Message: err.Error(),
@@ -94,7 +95,7 @@ type dataTokenDTO struct {
 //	@Success		201				{object}	resp{data=userProfileDTO}
 //	@Param			userSignUpForm	body		userSignUpForm	true	"application/json"
 //	@Router			/users [post]
-func signUpUser(s *app.Services) fiber.Handler {
+func signUpUser(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -108,7 +109,7 @@ func signUpUser(s *app.Services) fiber.Handler {
 			})
 		}
 
-		err = s.User.SignUp(ctx, &domain.User{
+		err = s.User.SignUp(ctx, &user.User{
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
 			Email:     form.Email,
@@ -161,7 +162,7 @@ type userProfileDTO struct {
 //	@Failure		404	{object}	errorResp
 //	@Success		200	{object}	resp{data=userProfileDTO}
 //	@Router			/users/{id} [get]
-func findUser(s *app.Services) fiber.Handler {
+func findUser(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -213,7 +214,7 @@ func findUser(s *app.Services) fiber.Handler {
 //	@Success		200				{object}	resp{data=userProfileDTO}
 //	@Param			userUpdateForm	body		userUpdateForm	true	"application/json"
 //	@Router			/users/{id} [put]
-func updateUser(s *app.Services) fiber.Handler {
+func updateUser(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -237,7 +238,7 @@ func updateUser(s *app.Services) fiber.Handler {
 
 		userID := int64(id)
 
-		err = s.User.Update(ctx, domain.User{
+		err = s.User.Update(ctx, user.User{
 			ID:        userID,
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
@@ -289,7 +290,7 @@ type userUpdateForm struct {
 //	@Success	200	{object}	resp
 //	@Success	200	{object}	resp{data=[]userProfileDTO}
 //	@Router		/users [get]
-func listUsers(s *app.Services) fiber.Handler {
+func listUsers(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -362,7 +363,7 @@ func listUsers(s *app.Services) fiber.Handler {
 //	@Failure		404	{object}	errorResp
 //	@Success		200	{object}	resp
 //	@Router			/users/{id} [delete]
-func deleteUser(s *app.Services) fiber.Handler {
+func deleteUser(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 

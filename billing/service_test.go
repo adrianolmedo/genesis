@@ -1,27 +1,25 @@
-package app
+package billing
 
 import (
 	"strings"
 	"testing"
-
-	domain "github.com/adrianolmedo/genesis"
 )
 
 func TestGenerateInvoice(t *testing.T) {
 	tt := []struct {
 		name           string
-		input          *domain.Invoice
+		input          *Invoice
 		errExpected    bool
 		wantErrContain string
 	}{
 		{
 			name: "successful",
-			input: &domain.Invoice{
-				Header: &domain.InvoiceHeader{
+			input: &Invoice{
+				Header: &InvoiceHeader{
 					ClientID: 1,
 				},
-				Items: domain.ItemList{
-					&domain.InvoiceItem{ProductID: 1},
+				Items: ItemList{
+					&InvoiceItem{ProductID: 1},
 				},
 			},
 			errExpected:    false,
@@ -29,19 +27,19 @@ func TestGenerateInvoice(t *testing.T) {
 		},
 		{
 			name: "empty-item-list",
-			input: &domain.Invoice{
-				Header: &domain.InvoiceHeader{
+			input: &Invoice{
+				Header: &InvoiceHeader{
 					ClientID: 1,
 				},
-				Items: domain.ItemList{},
+				Items: ItemList{},
 			},
 			errExpected:    true,
 			wantErrContain: "item list can't be empty",
 		},
 		{
 			name: "nil-item-list",
-			input: &domain.Invoice{
-				Header: &domain.InvoiceHeader{
+			input: &Invoice{
+				Header: &InvoiceHeader{
 					ClientID: 1,
 				},
 			},

@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
-	domain "github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/app"
 	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/pgsql"
+	"github.com/adrianolmedo/genesis/store"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -27,7 +27,7 @@ import (
 //	@Success		201				{object}	resp{data=productCardDTO}
 //	@Param			addProductForm	body		addProductForm	true	"application/json"
 //	@Router			/products [post]
-func addProduct(s *app.Services) fiber.Handler {
+func addProduct(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 		form := addProductForm{}
@@ -41,7 +41,7 @@ func addProduct(s *app.Services) fiber.Handler {
 			})
 		}
 
-		product := &domain.Product{
+		product := &store.Product{
 			Name:         form.Name,
 			Observations: form.Observations,
 			Price:        form.Price,
@@ -94,7 +94,7 @@ type productCardDTO struct {
 //	@Success		200	{object}	resp
 //	@Success		200	{object}	resp{data=[]productCardDTO}
 //	@Router			/products [get]
-func listProducts(s *app.Services) fiber.Handler {
+func listProducts(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -114,7 +114,7 @@ func listProducts(s *app.Services) fiber.Handler {
 		}
 
 		list := make([]productCardDTO, 0, len(products))
-		assemble := func(p *domain.Product) productCardDTO {
+		assemble := func(p *store.Product) productCardDTO {
 			return productCardDTO{
 				ID:           p.ID,
 				Name:         p.Name,
@@ -146,7 +146,7 @@ func listProducts(s *app.Services) fiber.Handler {
 //	@Success		201					{object}	resp{data=customerProfileDTO}
 //	@Param			createCustomerForm	body		createCustomerForm	true	"application/json"
 //	@Router			/customer [post]
-func createCustomer(s *app.Services) fiber.Handler {
+func createCustomer(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 		form := createCustomerForm{}
@@ -160,7 +160,7 @@ func createCustomer(s *app.Services) fiber.Handler {
 			})
 		}
 
-		err = s.Store.AddCustomer(ctx, &domain.Customer{
+		err = s.Store.AddCustomer(ctx, &store.Customer{
 			FirstName: form.FirstName,
 			LastName:  form.LastName,
 			Email:     form.Email,
@@ -214,7 +214,7 @@ type createCustomerForm struct {
 //	@Success		200	{object}	resp{data=customerProfileDTO}
 //	@Param			id	path		int	true	"Customer id"
 //	@Router			/customers/{id} [delete]
-func deleteCustomer(s *app.Services) fiber.Handler {
+func deleteCustomer(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -227,7 +227,7 @@ func deleteCustomer(s *app.Services) fiber.Handler {
 		}
 
 		err = s.Store.RemoveCustomer(ctx, int64(id))
-		if errors.Is(err, domain.ErrProductNotFound) {
+		if errors.Is(err, store.ErrProductNotFound) {
 			return errorJSON(c, http.StatusNoContent, respDetails{
 				Code:    "003",
 				Message: err.Error(),
@@ -264,7 +264,7 @@ func deleteCustomer(s *app.Services) fiber.Handler {
 //	@Param			sort		query		string	false	"Sort results by a value"			example(created_at)
 //	@Param			direction	query		string	false	"Order by ascendent o descendent"	example(desc)
 //	@Router			/customers [get]
-func listCustomers(s *app.Services) fiber.Handler {
+func listCustomers(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -289,7 +289,7 @@ func listCustomers(s *app.Services) fiber.Handler {
 			})
 		}
 
-		customers, ok := pr.Rows.(domain.Customers)
+		customers, ok := pr.Rows.(store.Customers)
 		if !ok {
 			return errorJSON(c, http.StatusInternalServerError, respDetails{
 				Code:    "003",
@@ -303,7 +303,7 @@ func listCustomers(s *app.Services) fiber.Handler {
 			})
 		}
 
-		assemble := func(cx *domain.Customer) customerProfileDTO {
+		assemble := func(cx *store.Customer) customerProfileDTO {
 			return customerProfileDTO{
 				ID:        cx.ID,
 				FirstName: cx.FirstName,
@@ -337,7 +337,7 @@ func listCustomers(s *app.Services) fiber.Handler {
 //	@Success		200	{object}	resp{data=productCardDTO}
 //	@Param			id	path		int	true	"Product id"
 //	@Router			/products/{id} [get]
-func findProduct(s *app.Services) fiber.Handler {
+func findProduct(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -350,7 +350,7 @@ func findProduct(s *app.Services) fiber.Handler {
 		}
 
 		product, err := s.Store.Find(ctx, int64(id))
-		if errors.Is(err, domain.ErrProductNotFound) {
+		if errors.Is(err, store.ErrProductNotFound) {
 			return errorJSON(c, http.StatusNotFound, respDetails{
 				Code:    "003",
 				Message: err.Error(),
@@ -388,7 +388,7 @@ func findProduct(s *app.Services) fiber.Handler {
 //	@Success		200	{object}	resp
 //	@Param			id	path		int	true	"Product id"
 //	@Router			/products/{id} [put]
-func updateProduct(s *app.Services) fiber.Handler {
+func updateProduct(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 		id, err := strconv.Atoi(c.Params("id"))
@@ -414,13 +414,13 @@ func updateProduct(s *app.Services) fiber.Handler {
 
 		form.ID = int64(id)
 
-		err = s.Store.Update(ctx, domain.Product{
+		err = s.Store.Update(ctx, store.Product{
 			ID:           form.ID,
 			Name:         form.Name,
 			Observations: form.Observations,
 			Price:        form.Price,
 		})
-		if errors.Is(err, domain.ErrProductNotFound) {
+		if errors.Is(err, store.ErrProductNotFound) {
 			return errorJSON(c, http.StatusNoContent, respDetails{
 				Code:    "002",
 				Message: err.Error(),
@@ -464,7 +464,7 @@ type updateProductForm struct {
 //	@Success		200	{object}	resp
 //	@Param			id	path		int	true	"Product id"
 //	@Router			/products/{id} [delete]
-func deleteProduct(s *app.Services) fiber.Handler {
+func deleteProduct(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -477,7 +477,7 @@ func deleteProduct(s *app.Services) fiber.Handler {
 		}
 
 		err = s.Store.Remove(ctx, int64(id))
-		if errors.Is(err, domain.ErrProductNotFound) {
+		if errors.Is(err, store.ErrProductNotFound) {
 			return errorJSON(c, http.StatusNoContent, respDetails{
 				Message: err.Error(),
 			})

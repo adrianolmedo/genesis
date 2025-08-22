@@ -1,6 +1,3 @@
-//go:build integration
-// +build integration
-
 package sqlc
 
 import (
@@ -24,20 +21,20 @@ func TestDB(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	db := openDB(ctx, t)
+	db := OpenDB(ctx, t)
 	db.Close()
 }
 
-// openDB creates a new database connection using the provided context and test.
+// OpenDB creates a new database connection using the provided context and test.
 // It returns the connection or fails the test if an error occurs.
-func openDB(ctx context.Context, t *testing.T) *pgxpool.Pool {
+func OpenDB(ctx context.Context, t *testing.T) *pgxpool.Pool {
 	t.Helper()
 
 	dbcfg := config.Config{
 		DatabaseURL: *dburl,
 	}
 
-	db, err := newPool(ctx, dbcfg)
+	db, err := NewPool(ctx, dbcfg)
 	if err != nil {
 		t.Fatal(err)
 	}

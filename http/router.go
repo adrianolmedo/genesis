@@ -26,7 +26,7 @@ import (
 
 // @host		localhost:3000
 // @BasePath	/v1/
-func Router(svc *app.Services) *fiber.App {
+func Router(svc *app.App) *fiber.App {
 	f := fiber.New()
 
 	f.Get("/v1/test", func(c *fiber.Ctx) error {
