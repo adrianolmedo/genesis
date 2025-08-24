@@ -34,8 +34,8 @@ tasks:
   swagger:
     desc: Generate Swagger documentation
     cmds:
-      - swag fmt -d http/
-      - swag init -g http/router.go
+      - swag fmt -d rest/
+      - swag init -g rest/router.go
 
   debug:
     desc: Build binary for debugging with IDE
