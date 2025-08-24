@@ -25,14 +25,14 @@ import (
 //	@Failure		401				{object}	errorResp
 //	@Failure		500				{object}	errorResp
 //	@Success		201				{object}	resp{data=productCardDTO}
-//	@Param			addProductForm	body		addProductForm	true	"application/json"
+//	@Param			addProductCommand	body		addProductCommand	true	"application/json"
 //	@Router			/products [post]
 func addProduct(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
-		form := addProductForm{}
+		command := addProductCommand{}
 
-		err := c.BodyParser(&form)
+		err := c.BodyParser(&command)
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
 				Code:    "002",
@@ -42,9 +42,9 @@ func addProduct(s *app.App) fiber.Handler {
 		}
 
 		product := &store.Product{
-			Name:         form.Name,
-			Observations: form.Observations,
-			Price:        form.Price,
+			Name:         command.Name,
+			Observations: command.Observations,
+			Price:        command.Price,
 		}
 
 		err = s.Store.Add(ctx, product)
@@ -61,16 +61,16 @@ func addProduct(s *app.App) fiber.Handler {
 		return respJSON(c, http.StatusCreated, respDetails{
 			Message: "Product added",
 			Data: productCardDTO{
-				Name:         form.Name,
-				Observations: form.Observations,
-				Price:        form.Price,
+				Name:         command.Name,
+				Observations: command.Observations,
+				Price:        command.Price,
 			},
 		})
 	}
 }
 
-// addProductForm represents a subset of fields to create a Product.
-type addProductForm struct {
+// addProductCommand represents a subset of fields to create a Product.
+type addProductCommand struct {
 	Name         string `json:"name"`
 	Observations string `json:"observations"`
 	Price        int64  `json:"price"`
@@ -144,14 +144,14 @@ func listProducts(s *app.App) fiber.Handler {
 //	@Failure		400					{object}	errorResp
 //	@Failure		500					{object}	errorResp
 //	@Success		201					{object}	resp{data=customerProfileDTO}
-//	@Param			createCustomerForm	body		createCustomerForm	true	"application/json"
+//	@Param			createCustomerCommand	body		createCustomerCommand	true	"application/json"
 //	@Router			/customer [post]
 func createCustomer(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
-		form := createCustomerForm{}
+		command := createCustomerCommand{}
 
-		err := c.BodyParser(&form)
+		err := c.BodyParser(&command)
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
 				Code:    "002",
@@ -161,10 +161,10 @@ func createCustomer(s *app.App) fiber.Handler {
 		}
 
 		err = s.Store.AddCustomer(ctx, &store.Customer{
-			FirstName: form.FirstName,
-			LastName:  form.LastName,
-			Email:     form.Email,
-			Password:  form.Password,
+			FirstName: command.FirstName,
+			LastName:  command.LastName,
+			Email:     command.Email,
+			Password:  command.Password,
 		})
 
 		if err != nil {
@@ -177,9 +177,9 @@ func createCustomer(s *app.App) fiber.Handler {
 		return respJSON(c, http.StatusCreated, respDetails{
 			Message: "Customer created",
 			Data: customerProfileDTO{
-				FirstName: form.FirstName,
-				LastName:  form.LastName,
-				Email:     form.Email,
+				FirstName: command.FirstName,
+				LastName:  command.LastName,
+				Email:     command.Email,
 			},
 		})
 	}
@@ -193,8 +193,8 @@ type customerProfileDTO struct {
 	Email     string `json:"email"`
 }
 
-// createCustomerForm subset of fields to request to create a Customer.
-type createCustomerForm struct {
+// createCustomerCommand subset of fields to request to create a Customer.
+type createCustomerCommand struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
@@ -402,8 +402,8 @@ func updateProduct(s *app.App) fiber.Handler {
 			})
 		}
 
-		form := updateProductForm{}
-		err = c.BodyParser(&form)
+		command := updateProductCommand{}
+		err = c.BodyParser(&command)
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
 				Code:    "002",
@@ -412,13 +412,13 @@ func updateProduct(s *app.App) fiber.Handler {
 			})
 		}
 
-		form.ID = int64(id)
+		command.ID = int64(id)
 
 		err = s.Store.Update(ctx, store.Product{
-			ID:           form.ID,
-			Name:         form.Name,
-			Observations: form.Observations,
-			Price:        form.Price,
+			ID:           command.ID,
+			Name:         command.Name,
+			Observations: command.Observations,
+			Price:        command.Price,
 		})
 		if errors.Is(err, store.ErrProductNotFound) {
 			return errorJSON(c, http.StatusNoContent, respDetails{
@@ -443,8 +443,8 @@ func updateProduct(s *app.App) fiber.Handler {
 	}
 }
 
-// updateProductForm represents a subset of fields to update a Product.
-type updateProductForm struct {
+// updateProductCommand represents a subset of fields to update a Product.
+type updateProductCommand struct {
 	ID           int64  `json:"id"`
 	Name         string `json:"name"`
 	Observations string `json:"observations"`

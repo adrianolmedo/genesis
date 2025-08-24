@@ -8,6 +8,7 @@ type resp struct {
 	respDetails
 }
 
+// respDetails holds the details of the response, including code, data, message, and optional details.
 type respDetails struct {
 	Code    string `json:"code,omitempty"`
 	Data    any    `json:"data,omitempty"`

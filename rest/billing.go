@@ -24,15 +24,15 @@ import (
 //	@Failure		400					{object}	errorResp
 //	@Failure		404					{object}	errorResp
 //	@Failure		500					{object}	errorResp
-//	@Success		201					{object}	resp{data=generateInvoiceForm}
-//	@Param			generateInvoiceForm	body		generateInvoiceForm	true	"application/json"
+//	@Success		201					{object}	resp{data=generateInvoiceCommand}
+//	@Param			generateInvoiceCommand	body		generateInvoiceCommand	true	"application/json"
 //	@Router			/invoices [post]
 func generateInvoice(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
-		form := generateInvoiceForm{}
+		Command := generateInvoiceCommand{}
 
-		err := c.BodyParser(&form)
+		err := c.BodyParser(&Command)
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
 				Code:    "002",
@@ -41,7 +41,7 @@ func generateInvoice(s *app.App) fiber.Handler {
 			})
 		}
 
-		clientID := form.Header.ClientID
+		clientID := Command.Header.ClientID
 
 		_, err = s.User.Find(ctx, clientID)
 		if errors.Is(err, user.ErrNotFound) {
@@ -62,15 +62,15 @@ func generateInvoice(s *app.App) fiber.Handler {
 			})
 		}
 
-		// assmble is like a mapper to convert invoiceItemForm to billing.InvoiceItem.
-		assemble := func(i invoiceItemForm) *billing.InvoiceItem {
+		// assmble is like a mapper to convert invoiceItemCommand to billing.InvoiceItem.
+		assemble := func(i invoiceItemCommand) *billing.InvoiceItem {
 			return &billing.InvoiceItem{
 				ProductID: i.ProductID,
 			}
 		}
 
-		items := make(billing.ItemList, 0, len(form.Items))
-		for _, item := range form.Items {
+		items := make(billing.ItemList, 0, len(Command.Items))
+		for _, item := range Command.Items {
 
 			_, err := s.Store.Find(ctx, item.ProductID)
 
@@ -117,31 +117,31 @@ func generateInvoice(s *app.App) fiber.Handler {
 
 		return respJSON(c, http.StatusCreated, respDetails{
 			Message: "Invoice generated",
-			Data: generateInvoiceForm{
-				Header: form.Header,
-				Items:  form.Items,
+			Data: generateInvoiceCommand{
+				Header: Command.Header,
+				Items:  Command.Items,
 			},
 		})
 	}
 }
 
-// generateInvoiceForm models of fields to request to generate an invoice.
-type generateInvoiceForm struct {
-	Header invoiceHeaderForm `json:"header"`
-	Items  []invoiceItemForm `json:"items"`
+// generateInvoiceCommand models of fields to request to generate an invoice.
+type generateInvoiceCommand struct {
+	Header invoiceHeaderCommand `json:"header"`
+	Items  []invoiceItemCommand `json:"items"`
 }
 
-// invoiceItemForm represents a form to generate invoice item as product.
-type invoiceItemForm struct {
+// invoiceItemCommand represents a Command to generate invoice item as product.
+type invoiceItemCommand struct {
 	ProductID int64 `json:"productId"`
 }
 
-type invoiceHeaderForm struct {
+type invoiceHeaderCommand struct {
 	ClientID int64 `json:"clientId"`
 }
 
 // InvoiceReportDTO represent a view of a invoice.
 type InvoiceReportDTO struct {
-	Header invoiceHeaderForm  `json:"header"`
-	Items  []*invoiceItemForm `json:"items"`
+	Header invoiceHeaderCommand  `json:"header"`
+	Items  []*invoiceItemCommand `json:"items"`
 }
