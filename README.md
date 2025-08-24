@@ -10,8 +10,8 @@ REST API architecture based on the main objective of Hexagonal Architecture: to 
 │       └── main.go
 ├── commons.go                      <-- root as shared package
 ├── config.go
-├── app/                            <-- wiring container as mediator betwen features and servers
-│   └── app.go
+├── app/                            <-- wiring container as mediator betwen
+│   └── app.go                          features and servers
 ├── user/                           <-- user (feature)
 │    ├── user.go                        <-- domain models, entities
 │    ├── service.go                     <-- service layer
@@ -29,9 +29,9 @@ REST API architecture based on the main objective of Hexagonal Architecture: to 
 │   │   ├── claims.go
 │   │   └── claims_test.go
 │   ├── router.go
-│   ├── billing.go                      <-- handlers
-│   ├── store.go                        <-- handlers
-│   ├── user.go                         <-- handlers
+│   ├── billing.go                      <-- handlers, dtos
+│   ├── store.go                        <-- handlers, dtos
+│   ├── user.go                         <-- handlers, dtos
 │   └── ...
 ├── grpc/                           <-- grpc server (infra) [TODO]
 ├── pgsql/                          <-- postgres storage (infra)
