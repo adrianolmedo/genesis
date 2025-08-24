@@ -3,7 +3,7 @@ package jwt_test
 import (
 	"testing"
 
-	"github.com/adrianolmedo/genesis/http/jwt"
+	"github.com/adrianolmedo/genesis/rest/jwt"
 )
 
 const (
