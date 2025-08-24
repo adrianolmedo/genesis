@@ -10,10 +10,10 @@ import (
 
 	"github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/app"
-	"github.com/adrianolmedo/genesis/http"
-	"github.com/adrianolmedo/genesis/http/jwt"
 	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/pgsql/sqlc"
+	"github.com/adrianolmedo/genesis/rest"
+	"github.com/adrianolmedo/genesis/rest/jwt"
 
 	"github.com/joho/godotenv"
 	"github.com/peterbourgon/ff/v3"
@@ -41,8 +41,8 @@ func main() {
 	}
 
 	cfg := genesis.Config{
-		Host:  *host,
-		Port:  *port,
+		Host:        *host,
+		Port:        *port,
 		DatabaseURL: *dburl,
 	}
 
@@ -68,14 +68,19 @@ func run(cfg genesis.Config) error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	s, err := sqlc.NewStorage(ctx, cfg)
+	db, err := sqlc.NewPool(ctx, cfg)
 	if err != nil {
 		return fmt.Errorf("error from storage: %v", err)
 	}
-	defer s.Close()
+	defer db.Close()
+
+	s, err := sqlc.NewStorage(ctx, db, cfg)
+	if err != nil {
+		return fmt.Errorf("error from storage: %v", err)
+	}
 
 	// Initialize the services with the storage.
-	srv := http.Router(app.NewServices(s))
+	srv := rest.Router(app.NewApp(s))
 
 	go func() {
 		if err := srv.Listen(cfg.Host + cfg.Port); err != nil {

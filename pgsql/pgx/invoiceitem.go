@@ -4,8 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	domain "github.com/adrianolmedo/genesis"
-
+	"github.com/adrianolmedo/genesis/billing"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -15,7 +14,7 @@ type InvoiceItem struct {
 }
 
 // Create create item asociated to a header and product for the invoice.
-func (InvoiceItem) Create(ctx context.Context, tx pgx.Tx, headerID int64, items domain.ItemList) error {
+func (InvoiceItem) Create(ctx context.Context, tx pgx.Tx, headerID int64, items billing.ItemList) error {
 	for _, item := range items {
 		err := tx.QueryRow(ctx,
 			`INSERT INTO "invoice_item" (invoice_header_id, product_id) VALUES ($1, $2) RETURNING id, created_at`,

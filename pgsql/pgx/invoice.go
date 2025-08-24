@@ -4,8 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	domain "github.com/adrianolmedo/genesis"
-
+	"github.com/adrianolmedo/genesis/billing"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -17,7 +16,7 @@ type Invoice struct {
 }
 
 // Create generate a full Invoice.
-func (i Invoice) Create(ctx context.Context, inv *domain.Invoice) error {
+func (i Invoice) Create(ctx context.Context, inv *billing.Invoice) error {
 	tx, err := i.conn.Begin(ctx)
 	if err != nil {
 		return err

@@ -1,16 +1,13 @@
-//go:build integration
-// +build integration
-
-package pgx
+package sqlc
 
 import (
 	"context"
 	"strings"
 	"testing"
 
-	domain "github.com/adrianolmedo/genesis"
-
-	"github.com/jackc/pgx/v5"
+	"github.com/adrianolmedo/genesis/store"
+	"github.com/adrianolmedo/genesis/test"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func TestCreateProduct(t *testing.T) {
@@ -18,13 +15,13 @@ func TestCreateProduct(t *testing.T) {
 		cleanProductsData(t)
 	})
 
-	ctx := testCtx(t)
-	conn := openDB(ctx, t)
-	defer closeDB(ctx, t, conn)
+	ctx := test.Ctx(t)
+	db := openDB(ctx, t)
+	defer db.Close()
 
-	p := Product{conn: conn}
+	p := store.NewProductRepo(db)
 
-	input := &domain.Product{
+	input := &store.Product{
 		Name:         "Coca-Cola",
 		Observations: "",
 		Price:        3,
@@ -57,10 +54,10 @@ func TestProductByID(t *testing.T) {
 		cleanProductsData(t)
 	})
 
-	ctx := testCtx(t)
-	conn := openDB(ctx, t)
-	defer closeDB(ctx, t, conn)
-	insertProductsData(ctx, t, conn)
+	ctx := test.Ctx(t)
+	db := openDB(ctx, t)
+	defer db.Close()
+	insertProductsData(ctx, t, db)
 
 	tt := []struct {
 		name           string
@@ -85,7 +82,7 @@ func TestProductByID(t *testing.T) {
 		},
 	}
 
-	p := Product{conn: conn}
+	p := store.NewProductRepo(db)
 
 	for _, tc := range tt {
 		got, err := p.ByID(ctx, tc.input)
@@ -108,19 +105,19 @@ func TestUpdateProduct(t *testing.T) {
 		cleanProductsData(t)
 	})
 
-	ctx := testCtx(t)
-	conn := openDB(ctx, t)
-	defer closeDB(ctx, t, conn)
-	insertProductsData(ctx, t, conn)
+	ctx := test.Ctx(t)
+	db := openDB(ctx, t)
+	defer db.Close()
+	insertProductsData(ctx, t, db)
 
-	input := domain.Product{
+	input := store.Product{
 		ID:           1,
 		Name:         "Coca-Cola",
 		Observations: "",
 		Price:        3,
 	}
 
-	p := Product{conn: conn}
+	p := store.NewProductRepo(db)
 
 	if err := p.Update(ctx, input); err != nil {
 		t.Fatal(err)
@@ -153,11 +150,13 @@ func TestUpdateProduct(t *testing.T) {
 }
 
 // insertProductsData add default `product` data.
-func insertProductsData(ctx context.Context, t *testing.T, conn *pgx.Conn) {
-	p := Product{conn: conn}
+func insertProductsData(ctx context.Context, t *testing.T, db *pgxpool.Pool) {
+	t.Helper()
+
+	p := store.NewProductRepo(db)
 
 	// Add first product
-	if err := p.Create(ctx, &domain.Product{
+	if err := p.Create(ctx, &store.Product{
 		Name:         "Coca-Cola",
 		Observations: "",
 		Price:        3,
@@ -166,7 +165,7 @@ func insertProductsData(ctx context.Context, t *testing.T, conn *pgx.Conn) {
 	}
 
 	// Add second product
-	if err := p.Create(ctx, &domain.Product{
+	if err := p.Create(ctx, &store.Product{
 		Name:         "Big-Cola",
 		Observations: "Made in Venezuela",
 		Price:        2,
@@ -177,11 +176,11 @@ func insertProductsData(ctx context.Context, t *testing.T, conn *pgx.Conn) {
 
 // cleanProductsData delete all rows of `product` table.
 func cleanProductsData(t *testing.T) {
-	ctx := testCtx(t)
-	conn := openDB(ctx, t)
-	defer closeDB(ctx, t, conn)
+	ctx := test.Ctx(t)
+	db := openDB(ctx, t)
+	defer db.Close()
 
-	p := Product{conn: conn}
+	p := store.NewProductRepo(db)
 
 	err := p.DeleteAll(ctx)
 	if err != nil {

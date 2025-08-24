@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	domain "github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis/billing"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -14,8 +15,8 @@ type InvoiceHeader struct {
 	conn *pgx.Conn
 }
 
-func (InvoiceHeader) Create(ctx context.Context, tx pgx.Tx, m *domain.InvoiceHeader) error {
-	m.UUID = domain.NextUUID()
+func (InvoiceHeader) Create(ctx context.Context, tx pgx.Tx, m *billing.InvoiceHeader) error {
+	m.UUID = genesis.NextUUID()
 
 	err := tx.QueryRow(ctx,
 		`INSERT INTO "invoice_header" (uuid, client_id) VALUES ($1, $2) RETURNING id, created_at`,

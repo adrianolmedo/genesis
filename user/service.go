@@ -1,0 +1,109 @@
+package user
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"regexp"
+
+	"github.com/adrianolmedo/genesis/pgsql"
+)
+
+// Service provides User application operations.
+type Service struct {
+	repo *Repo
+}
+
+// NewService creates a new User service instance.
+func NewService(repo *Repo) *Service {
+	return &Service{
+		repo: repo,
+	}
+}
+
+func (s Service) Login(ctx context.Context, email, password string) error {
+	if err := validateEmail(email); err != nil {
+		return err
+	}
+
+	return s.repo.ByLogin(ctx, email, password)
+}
+
+// SignUp to register a User.
+func (s Service) SignUp(ctx context.Context, u *User) error {
+	err := signUp(u)
+	if err != nil {
+		return err
+	}
+
+	return s.repo.Create(ctx, u)
+}
+
+// signUp applicaction logic for regitser a User. Has been split into
+// a smaller function for unit testing purposes, and it should do so for
+// the other methods of the Service.
+func signUp(u *User) error {
+	err := u.Validate()
+	if err != nil {
+		return err
+	}
+
+	err = validateEmail(u.Email)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Find a User by its ID.
+func (s Service) Find(ctx context.Context, id int64) (*User, error) {
+	if id == 0 {
+		return &User{}, ErrNotFound
+	}
+
+	return s.repo.ByID(ctx, id)
+}
+
+// Update application logic for update a User.
+func (s Service) Update(ctx context.Context, u User) error {
+	err := u.Validate()
+	if err != nil {
+		return err
+	}
+
+	err = validateEmail(u.Email)
+	if err != nil {
+		return err
+	}
+
+	return s.repo.Update(ctx, u)
+}
+
+// List get list of users.
+func (s Service) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, error) {
+	return s.repo.List(ctx, p)
+}
+
+// Remove delete User by its ID.
+func (s Service) Remove(ctx context.Context, id int64) error {
+	if id == 0 {
+		return ErrNotFound
+	}
+
+	return s.repo.Delete(ctx, id)
+}
+
+// validateEmail helper to check email pattern.
+func validateEmail(email string) error {
+	validEmail, err := regexp.MatchString(`^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$`, email)
+	if err != nil {
+		return fmt.Errorf("email pattern: %v", err)
+	}
+
+	if !validEmail {
+		return errors.New("invalid email")
+	}
+
+	return nil
+}
