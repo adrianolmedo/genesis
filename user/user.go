@@ -8,8 +8,10 @@ import (
 	"github.com/pborman/uuid"
 )
 
-var ErrCantBeEmpty = errors.New("the user fields can't be empty")
-var ErrNotFound = errors.New("user not found")
+var (
+	ErrCantBeEmpty = errors.New("the user fields can't be empty")
+	ErrNotFound    = errors.New("user not found")
+)
 
 // User domain model.
 type User struct {

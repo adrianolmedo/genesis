@@ -24,15 +24,15 @@ import (
 //	@Failure		400				{object}	errorResp
 //	@Failure		401				{object}	errorResp
 //	@Failure		500				{object}	errorResp
-//	@Success		201				{object}	resp{data=productCardDTO}
-//	@Param			addProductCommand	body		addProductCommand	true	"application/json"
+//	@Success		201				{object}	resp{data=productCardResp}
+//	@Param			addProductReq	body		addProductReq	true	"application/json"
 //	@Router			/products [post]
 func addProduct(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
-		command := addProductCommand{}
+		req := addProductReq{}
 
-		err := c.BodyParser(&command)
+		err := c.BodyParser(&req)
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
 				Code:    "002",
@@ -42,9 +42,9 @@ func addProduct(s *app.App) fiber.Handler {
 		}
 
 		product := &store.Product{
-			Name:         command.Name,
-			Observations: command.Observations,
-			Price:        command.Price,
+			Name:         req.Name,
+			Observations: req.Observations,
+			Price:        req.Price,
 		}
 
 		err = s.Store.Add(ctx, product)
@@ -60,24 +60,24 @@ func addProduct(s *app.App) fiber.Handler {
 
 		return respJSON(c, http.StatusCreated, respDetails{
 			Message: "Product added",
-			Data: productCardDTO{
-				Name:         command.Name,
-				Observations: command.Observations,
-				Price:        command.Price,
+			Data: productCardResp{
+				Name:         req.Name,
+				Observations: req.Observations,
+				Price:        req.Price,
 			},
 		})
 	}
 }
 
-// addProductCommand represents a subset of fields to create a Product.
-type addProductCommand struct {
+// addProductReq represents a subset of fields to create a Product.
+type addProductReq struct {
 	Name         string `json:"name"`
 	Observations string `json:"observations"`
 	Price        int64  `json:"price"`
 }
 
-// productCardDTO subset of Product fields.
-type productCardDTO struct {
+// productCardResp subset of Product fields.
+type productCardResp struct {
 	ID           int64  `json:"id"`
 	Name         string `json:"name"`
 	Observations string `json:"observations"`
@@ -92,7 +92,7 @@ type productCardDTO struct {
 //	@Produce		json
 //	@Failure		500	{object}	errorResp
 //	@Success		200	{object}	resp
-//	@Success		200	{object}	resp{data=[]productCardDTO}
+//	@Success		200	{object}	resp{data=[]productCardResp}
 //	@Router			/products [get]
 func listProducts(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -113,9 +113,9 @@ func listProducts(s *app.App) fiber.Handler {
 			})
 		}
 
-		list := make([]productCardDTO, 0, len(products))
-		assemble := func(p *store.Product) productCardDTO {
-			return productCardDTO{
+		list := make([]productCardResp, 0, len(products))
+		assemble := func(p *store.Product) productCardResp {
+			return productCardResp{
 				ID:           p.ID,
 				Name:         p.Name,
 				Observations: p.Observations,
@@ -143,15 +143,15 @@ func listProducts(s *app.App) fiber.Handler {
 //	@Produce		json
 //	@Failure		400					{object}	errorResp
 //	@Failure		500					{object}	errorResp
-//	@Success		201					{object}	resp{data=customerProfileDTO}
-//	@Param			createCustomerCommand	body		createCustomerCommand	true	"application/json"
+//	@Success		201					{object}	resp{data=customerProfileResp}
+//	@Param			createCustomerReq	body		createCustomerReq	true	"application/json"
 //	@Router			/customer [post]
 func createCustomer(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
-		command := createCustomerCommand{}
+		req := createCustomerReq{}
 
-		err := c.BodyParser(&command)
+		err := c.BodyParser(&req)
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
 				Code:    "002",
@@ -161,10 +161,10 @@ func createCustomer(s *app.App) fiber.Handler {
 		}
 
 		err = s.Store.AddCustomer(ctx, &store.Customer{
-			FirstName: command.FirstName,
-			LastName:  command.LastName,
-			Email:     command.Email,
-			Password:  command.Password,
+			FirstName: req.FirstName,
+			LastName:  req.LastName,
+			Email:     req.Email,
+			Password:  req.Password,
 		})
 
 		if err != nil {
@@ -176,25 +176,25 @@ func createCustomer(s *app.App) fiber.Handler {
 
 		return respJSON(c, http.StatusCreated, respDetails{
 			Message: "Customer created",
-			Data: customerProfileDTO{
-				FirstName: command.FirstName,
-				LastName:  command.LastName,
-				Email:     command.Email,
+			Data: customerProfileResp{
+				FirstName: req.FirstName,
+				LastName:  req.LastName,
+				Email:     req.Email,
 			},
 		})
 	}
 }
 
-// customerProfileDTO subset of Customer fields.
-type customerProfileDTO struct {
+// customerProfileResp subset of Customer fields.
+type customerProfileResp struct {
 	ID        int64  `json:"id,omitempty"`
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 }
 
-// createCustomerCommand subset of fields to request to create a Customer.
-type createCustomerCommand struct {
+// createCustomerReq subset of fields to request to create a Customer.
+type createCustomerReq struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
@@ -211,7 +211,7 @@ type createCustomerCommand struct {
 //	@Failure		400	{object}	errorResp
 //	@Failure		204	{object}	errorResp
 //	@Failure		500	{object}	errorResp
-//	@Success		200	{object}	resp{data=customerProfileDTO}
+//	@Success		200	{object}	resp{data=customerProfileResp}
 //	@Param			id	path		int	true	"Customer id"
 //	@Router			/customers/{id} [delete]
 func deleteCustomer(s *app.App) fiber.Handler {
@@ -258,7 +258,7 @@ func deleteCustomer(s *app.App) fiber.Handler {
 //	@Produce		json
 //	@Failure		400			{object}	errorResp
 //	@Failure		500			{object}	errorResp
-//	@Success		200			{object}	pagerResp{links=pgsql.PagerLinks,meta=pgsql.PagerResults,data=[]customerProfileDTO}
+//	@Success		200			{object}	pagerResp{links=pgsql.PagerLinks,meta=pgsql.PagerResults,data=[]customerProfileResp}
 //	@Param			limit		query		int		false	"Limit of pages"					example(2)
 //	@Param			page		query		int		false	"Current page"						example(1)
 //	@Param			sort		query		string	false	"Sort results by a value"			example(created_at)
@@ -303,8 +303,8 @@ func listCustomers(s *app.App) fiber.Handler {
 			})
 		}
 
-		assemble := func(cx *store.Customer) customerProfileDTO {
-			return customerProfileDTO{
+		assemble := func(cx *store.Customer) customerProfileResp {
+			return customerProfileResp{
 				ID:        cx.ID,
 				FirstName: cx.FirstName,
 				LastName:  cx.LastName,
@@ -312,7 +312,7 @@ func listCustomers(s *app.App) fiber.Handler {
 			}
 		}
 
-		data := make([]customerProfileDTO, 0, len(customers))
+		data := make([]customerProfileResp, 0, len(customers))
 		for _, v := range customers {
 			data = append(data, assemble(v))
 		}
@@ -334,7 +334,7 @@ func listCustomers(s *app.App) fiber.Handler {
 //	@Produce		json
 //	@Failure		400	{object}	errorResp
 //	@Failure		404	{object}	errorResp
-//	@Success		200	{object}	resp{data=productCardDTO}
+//	@Success		200	{object}	resp{data=productCardResp}
 //	@Param			id	path		int	true	"Product id"
 //	@Router			/products/{id} [get]
 func findProduct(s *app.App) fiber.Handler {
@@ -365,7 +365,7 @@ func findProduct(s *app.App) fiber.Handler {
 		}
 
 		return respJSON(c, http.StatusOK, respDetails{
-			Data: productCardDTO{
+			Data: productCardResp{
 				ID:           product.ID,
 				Name:         product.Name,
 				Observations: product.Observations,
@@ -402,8 +402,8 @@ func updateProduct(s *app.App) fiber.Handler {
 			})
 		}
 
-		command := updateProductCommand{}
-		err = c.BodyParser(&command)
+		req := updateProductReq{}
+		err = c.BodyParser(&req)
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
 				Code:    "002",
@@ -412,13 +412,13 @@ func updateProduct(s *app.App) fiber.Handler {
 			})
 		}
 
-		command.ID = int64(id)
+		req.ID = int64(id)
 
 		err = s.Store.Update(ctx, store.Product{
-			ID:           command.ID,
-			Name:         command.Name,
-			Observations: command.Observations,
-			Price:        command.Price,
+			ID:           req.ID,
+			Name:         req.Name,
+			Observations: req.Observations,
+			Price:        req.Price,
 		})
 		if errors.Is(err, store.ErrProductNotFound) {
 			return errorJSON(c, http.StatusNoContent, respDetails{
@@ -443,8 +443,8 @@ func updateProduct(s *app.App) fiber.Handler {
 	}
 }
 
-// updateProductCommand represents a subset of fields to update a Product.
-type updateProductCommand struct {
+// updateProductReq represents a subset of fields to update a Product.
+type updateProductReq struct {
 	ID           int64  `json:"id"`
 	Name         string `json:"name"`
 	Observations string `json:"observations"`

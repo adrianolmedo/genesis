@@ -25,15 +25,15 @@ import (
 //	@Failure		400				{object}	errorResp
 //	@Failure		401				{object}	errorResp
 //	@Failure		500				{object}	errorResp
-//	@Success		201				{object}	resp{data=dataTokenDTO}
-//	@Param			userLoginCommand	body	userLoginCommand	true	"application/json"
+//	@Success		201				{object}	resp{data=dataTokenResp}
+//	@Param			userLoginReq	body		userLoginReq	true	"application/json"
 //	@Router			/login [post]
 func loginUser(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
-		command := userLoginCommand{}
-		err := c.BodyParser(&command)
+		req := userLoginReq{}
+		err := c.BodyParser(&req)
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
 				Code:    "002",
@@ -42,7 +42,7 @@ func loginUser(s *app.App) fiber.Handler {
 			})
 		}
 
-		err = s.User.Login(ctx, command.Email, command.Password)
+		err = s.User.Login(ctx, req.Email, req.Password)
 		if errors.Is(err, user.ErrNotFound) {
 			return errorJSON(c, http.StatusUnauthorized, respDetails{
 				Code:    "003",
@@ -57,7 +57,7 @@ func loginUser(s *app.App) fiber.Handler {
 			})
 		}
 
-		token, err := jwt.Generate(command.Email)
+		token, err := jwt.Generate(req.Email)
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, respDetails{
 				Code:    "004",
@@ -67,18 +67,18 @@ func loginUser(s *app.App) fiber.Handler {
 
 		return respJSON(c, http.StatusCreated, respDetails{
 			Message: "You are logged",
-			Data:    dataTokenDTO{token},
+			Data:    dataTokenResp{token},
 		})
 	}
 }
 
-// userLoginCommand subset of user fields to request login.
-type userLoginCommand struct {
+// userLoginReq subset of user fields to request login.
+type userLoginReq struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-type dataTokenDTO struct {
+type dataTokenResp struct {
 	Token string `json:"token"`
 }
 
@@ -91,15 +91,15 @@ type dataTokenDTO struct {
 //	@Produce		json
 //	@Failure		400				{object}	errorResp
 //	@Failure		500				{object}	errorResp
-//	@Success		201				{object}	resp{data=userProfileDTO}
-//	@Param			userSignUpCommand	body		userSignUpCommand	true	"application/json"
+//	@Success		201				{object}	resp{data=userProfileResp}
+//	@Param			userSignUpReq	body		userSignUpReq	true	"application/json"
 //	@Router			/users [post]
 func signUpUser(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
-		command := userSignUpCommand{}
-		err := c.BodyParser(&command)
+		req := userSignUpReq{}
+		err := c.BodyParser(&req)
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
 				Code:    "002",
@@ -109,10 +109,10 @@ func signUpUser(s *app.App) fiber.Handler {
 		}
 
 		err = s.User.SignUp(ctx, &user.User{
-			FirstName: command.FirstName,
-			LastName:  command.LastName,
-			Email:     command.Email,
-			Password:  command.Password,
+			FirstName: req.FirstName,
+			LastName:  req.LastName,
+			Email:     req.Email,
+			Password:  req.Password,
 		})
 
 		if err != nil {
@@ -124,25 +124,25 @@ func signUpUser(s *app.App) fiber.Handler {
 
 		return respJSON(c, http.StatusCreated, respDetails{
 			Message: "User created",
-			Data: userProfileDTO{
-				FirstName: command.FirstName,
-				LastName:  command.LastName,
-				Email:     command.Email,
+			Data: userProfileResp{
+				FirstName: req.FirstName,
+				LastName:  req.LastName,
+				Email:     req.Email,
 			},
 		})
 	}
 }
 
-// userSignUpCommand subset of User fields to create account.
-type userSignUpCommand struct {
+// userSignUpReq subset of User fields to create account.
+type userSignUpReq struct {
 	FirstName string `json:"firstName" example:"John"`
 	LastName  string `json:"lastName" example:"Doe"`
 	Email     string `json:"email" example:"johndoe@aol.com"`
 	Password  string `json:"password" example:"1234567b"`
 }
 
-// userProfileDTO subset of User fields.
-type userProfileDTO struct {
+// userProfileResp subset of User fields.
+type userProfileResp struct {
 	ID        int64  `json:"id,omitempty" example:"1"`
 	FirstName string `json:"firstName" example:"John"`
 	LastName  string `json:"lastName" example:"Doe"`
@@ -159,7 +159,7 @@ type userProfileDTO struct {
 //	@Param			id	path		int	true	"User id"
 //	@Failure		400	{object}	errorResp
 //	@Failure		404	{object}	errorResp
-//	@Success		200	{object}	resp{data=userProfileDTO}
+//	@Success		200	{object}	resp{data=userProfileResp}
 //	@Router			/users/{id} [get]
 func findUser(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -190,7 +190,7 @@ func findUser(s *app.App) fiber.Handler {
 
 		return respJSON(c, http.StatusOK, respDetails{
 			Message: "User found",
-			Data: userProfileDTO{
+			Data: userProfileResp{
 				ID:        userModel.ID,
 				FirstName: userModel.FirstName,
 				LastName:  userModel.LastName,
@@ -210,8 +210,8 @@ func findUser(s *app.App) fiber.Handler {
 //	@Param			id				path		int	true	"User id"
 //	@Failure		400				{object}	errorResp
 //	@Failure		404				{object}	errorResp
-//	@Success		200				{object}	resp{data=userProfileDTO}
-//	@Param			userUpdateCommand	body		userUpdateCommand	true	"application/json"
+//	@Success		200				{object}	resp{data=userProfileResp}
+//	@Param			userUpdateReq	body		userUpdateReq	true	"application/json"
 //	@Router			/users/{id} [put]
 func updateUser(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -225,8 +225,8 @@ func updateUser(s *app.App) fiber.Handler {
 			})
 		}
 
-		command := userUpdateCommand{}
-		err = c.BodyParser(&command)
+		req := userUpdateReq{}
+		err = c.BodyParser(&req)
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, respDetails{
 				Code:    "002",
@@ -239,10 +239,10 @@ func updateUser(s *app.App) fiber.Handler {
 
 		err = s.User.Update(ctx, user.User{
 			ID:        userID,
-			FirstName: command.FirstName,
-			LastName:  command.LastName,
-			Email:     command.Email,
-			Password:  command.Password,
+			FirstName: req.FirstName,
+			LastName:  req.LastName,
+			Email:     req.Email,
+			Password:  req.Password,
 		})
 
 		if errors.Is(err, user.ErrNotFound) {
@@ -261,18 +261,18 @@ func updateUser(s *app.App) fiber.Handler {
 
 		return respJSON(c, http.StatusCreated, respDetails{
 			Message: "User updated",
-			Data: userProfileDTO{
+			Data: userProfileResp{
 				ID:        userID,
-				FirstName: command.FirstName,
-				LastName:  command.LastName,
-				Email:     command.Email,
+				FirstName: req.FirstName,
+				LastName:  req.LastName,
+				Email:     req.Email,
 			},
 		})
 	}
 }
 
-// userUpdateCommand subset of fields to request to update a User.
-type userUpdateCommand struct {
+// userUpdateReq subset of fields to request to update a User.
+type userUpdateReq struct {
 	FirstName string `json:"firstName" example:"John"`
 	LastName  string `json:"lastName" example:"Doe"`
 	Email     string `json:"email" example:"lorem@ipsum.com"`
@@ -287,7 +287,7 @@ type userUpdateCommand struct {
 //	@Produce	json
 //	@Failure	500	{object}	errorResp
 //	@Success	200	{object}	resp
-//	@Success	200	{object}	resp{data=[]userProfileDTO}
+//	@Success	200	{object}	resp{data=[]userProfileResp}
 //	@Router		/users [get]
 func listUsers(s *app.App) fiber.Handler {
 	return func(c *fiber.Ctx) error {
@@ -329,8 +329,8 @@ func listUsers(s *app.App) fiber.Handler {
 			})
 		}
 
-		assemble := func(u *user.User) userProfileDTO {
-			return userProfileDTO{
+		assemble := func(u *user.User) userProfileResp {
+			return userProfileResp{
 				ID:        u.ID,
 				FirstName: u.FirstName,
 				LastName:  u.LastName,
@@ -338,7 +338,7 @@ func listUsers(s *app.App) fiber.Handler {
 			}
 		}
 
-		list := make([]userProfileDTO, 0, len(users))
+		list := make([]userProfileResp, 0, len(users))
 		for _, v := range users {
 			list = append(list, assemble(v))
 		}
