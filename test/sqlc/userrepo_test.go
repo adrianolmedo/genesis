@@ -3,7 +3,7 @@ package sqlc
 import (
 	"testing"
 
-	"github.com/adrianolmedo/genesis/testhelper"
+	"github.com/adrianolmedo/genesis/test"
 	"github.com/adrianolmedo/genesis/user"
 )
 
@@ -12,7 +12,7 @@ func TestCreateUser(t *testing.T) {
 		cleanUsersData(t)
 	})
 
-	ctx := testhelper.Ctx(t)
+	ctx := test.Ctx(t)
 	db := openDB(ctx, t)
 	defer db.Close()
 
@@ -49,7 +49,7 @@ func TestCreateUser(t *testing.T) {
 
 // cleanUsersData removes all user data from the database.
 func cleanUsersData(t *testing.T) {
-	ctx := testhelper.Ctx(t)
+	ctx := test.Ctx(t)
 	db := openDB(ctx, t)
 	defer db.Close()
 

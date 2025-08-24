@@ -7,14 +7,14 @@ import (
 	"github.com/adrianolmedo/genesis/user"
 )
 
-// App holds the services of the application.
+// App wiring services and dependency injection.
 type App struct {
 	User    *user.Service
 	Store   *store.Service
 	Billing *billing.Service
 }
 
-// NewApp creates a new App with the given services.
+// NewApp creates a new App.
 func NewApp(s *storage.Storage) *App {
 	return &App{
 		User:    user.NewService(s.User),

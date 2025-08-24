@@ -10,22 +10,22 @@ import (
 func TestUser(t *testing.T) {
 	tt := []struct {
 		name        string
-		model       domain.User
+		model       User
 		errExpected bool
 	}{
 		{
 			name:        "empty-struct",
-			model:       domain.User{},
+			model:       User{},
 			errExpected: true,
 		},
 		{
 			name:        "empty-fields",
-			model:       domain.User{FirstName: "", LastName: "", Email: "", Password: ""},
+			model:       User{FirstName: "", LastName: "", Email: "", Password: ""},
 			errExpected: true,
 		},
 		{
 			name: "filled-fields",
-			model: domain.User{
+			model: User{
 				FirstName: "Adrián",
 				LastName:  "Olmedo",
 				Email:     "aol.ve@aol.com",

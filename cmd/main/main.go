@@ -10,10 +10,10 @@ import (
 
 	"github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/app"
-	"github.com/adrianolmedo/genesis/http"
-	"github.com/adrianolmedo/genesis/http/jwt"
 	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/pgsql/sqlc"
+	"github.com/adrianolmedo/genesis/rest"
+	"github.com/adrianolmedo/genesis/rest/jwt"
 
 	"github.com/joho/godotenv"
 	"github.com/peterbourgon/ff/v3"
@@ -80,7 +80,7 @@ func run(cfg genesis.Config) error {
 	}
 
 	// Initialize the services with the storage.
-	srv := http.Router(app.NewApp(s))
+	srv := rest.Router(app.NewApp(s))
 
 	go func() {
 		if err := srv.Listen(cfg.Host + cfg.Port); err != nil {

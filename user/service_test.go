@@ -3,8 +3,6 @@ package user
 import (
 	"strings"
 	"testing"
-
-	domain "github.com/adrianolmedo/genesis"
 )
 
 func TestSignUp(t *testing.T) {
@@ -72,7 +70,7 @@ func TestValidateEmail(t *testing.T) {
 		{name: "not-@-email", email: "aol.veaolcom", errExpected: true},
 	}
 
-	u := new(domain.User)
+	u := new(User)
 
 	for _, tc := range tt {
 		u.Email = tc.email

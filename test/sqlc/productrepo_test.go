@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	domain "github.com/adrianolmedo/genesis"
-	"github.com/adrianolmedo/genesis/testhelper"
+	"github.com/adrianolmedo/genesis/store"
+	"github.com/adrianolmedo/genesis/test"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -15,13 +15,13 @@ func TestCreateProduct(t *testing.T) {
 		cleanProductsData(t)
 	})
 
-	ctx := testhelper.Ctx(t)
-	db := OpenDB(ctx, t)
+	ctx := test.Ctx(t)
+	db := openDB(ctx, t)
 	defer db.Close()
 
-	p := NewProduct(db)
+	p := store.NewProductRepo(db)
 
-	input := &domain.Product{
+	input := &store.Product{
 		Name:         "Coca-Cola",
 		Observations: "",
 		Price:        3,
@@ -54,8 +54,8 @@ func TestProductByID(t *testing.T) {
 		cleanProductsData(t)
 	})
 
-	ctx := testhelper.Ctx(t)
-	db := OpenDB(ctx, t)
+	ctx := test.Ctx(t)
+	db := openDB(ctx, t)
 	defer db.Close()
 	insertProductsData(ctx, t, db)
 
@@ -82,7 +82,7 @@ func TestProductByID(t *testing.T) {
 		},
 	}
 
-	p := NewProduct(db)
+	p := store.NewProductRepo(db)
 
 	for _, tc := range tt {
 		got, err := p.ByID(ctx, tc.input)
@@ -105,19 +105,19 @@ func TestUpdateProduct(t *testing.T) {
 		cleanProductsData(t)
 	})
 
-	ctx := testhelper.Ctx(t)
-	db := OpenDB(ctx, t)
+	ctx := test.Ctx(t)
+	db := openDB(ctx, t)
 	defer db.Close()
 	insertProductsData(ctx, t, db)
 
-	input := domain.Product{
+	input := store.Product{
 		ID:           1,
 		Name:         "Coca-Cola",
 		Observations: "",
 		Price:        3,
 	}
 
-	p := NewProduct(db)
+	p := store.NewProductRepo(db)
 
 	if err := p.Update(ctx, input); err != nil {
 		t.Fatal(err)
@@ -153,10 +153,10 @@ func TestUpdateProduct(t *testing.T) {
 func insertProductsData(ctx context.Context, t *testing.T, db *pgxpool.Pool) {
 	t.Helper()
 
-	p := NewProduct(db)
+	p := store.NewProductRepo(db)
 
 	// Add first product
-	if err := p.Create(ctx, &domain.Product{
+	if err := p.Create(ctx, &store.Product{
 		Name:         "Coca-Cola",
 		Observations: "",
 		Price:        3,
@@ -165,7 +165,7 @@ func insertProductsData(ctx context.Context, t *testing.T, db *pgxpool.Pool) {
 	}
 
 	// Add second product
-	if err := p.Create(ctx, &domain.Product{
+	if err := p.Create(ctx, &store.Product{
 		Name:         "Big-Cola",
 		Observations: "Made in Venezuela",
 		Price:        2,
@@ -176,11 +176,11 @@ func insertProductsData(ctx context.Context, t *testing.T, db *pgxpool.Pool) {
 
 // cleanProductsData delete all rows of `product` table.
 func cleanProductsData(t *testing.T) {
-	ctx := testhelper.Ctx(t)
-	db := OpenDB(ctx, t)
+	ctx := test.Ctx(t)
+	db := openDB(ctx, t)
 	defer db.Close()
 
-	p := NewProduct(db)
+	p := store.NewProductRepo(db)
 
 	err := p.DeleteAll(ctx)
 	if err != nil {

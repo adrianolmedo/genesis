@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/adrianolmedo/genesis"
-	domain "github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/pgsql"
 	"github.com/adrianolmedo/genesis/pgsql/sqlc/dbgen"
 
@@ -90,15 +89,15 @@ func (r Repo) ByID(ctx context.Context, id int64) (*User, error) {
 	}
 
 	u.CreatedAt = m.CreatedAt
-	u.UpdatedAt = pgsql.PtrFromNullTime(m.UpdatedAt)
-	u.DeletedAt = pgsql.PtrFromNullTime(m.DeletedAt)
+	u.UpdatedAt = pgsql.NullTimeToPtr(m.UpdatedAt)
+	u.DeletedAt = pgsql.NullTimeToPtr(m.DeletedAt)
 
 	return u, nil
 }
 
 // Update updates a user in the database.
 func (r Repo) Update(ctx context.Context, m User) error {
-	m.UpdatedAt = pgsql.TimePtr(time.Now())
+	m.UpdatedAt = pgsql.TimeToPtr(time.Now())
 
 	_, err := r.q.UserUpdate(ctx, dbgen.UserUpdateParams{
 		ID:        m.ID,
@@ -106,10 +105,10 @@ func (r Repo) Update(ctx context.Context, m User) error {
 		LastName:  m.LastName,
 		Email:     m.Email,
 		Password:  m.Password,
-		UpdatedAt: pgsql.NullTimeFromPtr(m.UpdatedAt),
+		UpdatedAt: pgsql.TimePtrToNull(m.UpdatedAt),
 	})
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
-		return domain.ErrUserNotFound
+		return ErrNotFound
 	}
 
 	if err != nil {
@@ -200,7 +199,7 @@ func (r Repo) Delete(ctx context.Context, id int64) error {
 		DeletedAt: sql.NullTime{Time: time.Now(), Valid: true},
 	})
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
-		return domain.ErrUserNotFound
+		return ErrNotFound
 	}
 
 	if err != nil {
@@ -213,7 +212,7 @@ func (r Repo) Delete(ctx context.Context, id int64) error {
 func (r Repo) HardDelete(ctx context.Context, id int64) error {
 	_, err := r.q.UserHardDelete(ctx, id)
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
-		return domain.ErrUserNotFound
+		return ErrNotFound
 	}
 
 	if err != nil {

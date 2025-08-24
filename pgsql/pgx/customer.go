@@ -5,8 +5,9 @@ import (
 	"database/sql"
 	"time"
 
-	domain "github.com/adrianolmedo/genesis"
+	"github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/pgsql"
+	"github.com/adrianolmedo/genesis/store"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -17,8 +18,8 @@ type Customer struct {
 }
 
 // Create return one Customer or SQL error.
-func (r Customer) Create(ctx context.Context, m *domain.Customer) error {
-	m.UUID = domain.NextUUID()
+func (r Customer) Create(ctx context.Context, m *store.Customer) error {
+	m.UUID = genesis.NextUUID()
 	m.CreatedAt = time.Now()
 
 	err := r.conn.QueryRow(ctx,
@@ -44,11 +45,11 @@ func (r Customer) All(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, 
 	}
 	defer rows.Close()
 
-	customers := make(domain.Customers, 0)
+	customers := make(store.Customers, 0)
 
 	for rows.Next() {
 		var updatedAtNull, deletedAtNull sql.NullTime
-		m := &domain.Customer{}
+		m := &store.Customer{}
 
 		err := rows.Scan(
 			&m.ID,
@@ -65,8 +66,8 @@ func (r Customer) All(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, 
 			return pgsql.PagerResults{}, err
 		}
 
-		m.UpdatedAt = pgsql.PtrFromNullTime(updatedAtNull)
-		m.DeletedAt = pgsql.PtrFromNullTime(deletedAtNull)
+		m.UpdatedAt = pgsql.NullTimeToPtr(updatedAtNull)
+		m.DeletedAt = pgsql.NullTimeToPtr(deletedAtNull)
 
 		customers = append(customers, m)
 	}
@@ -93,7 +94,7 @@ func (r Customer) Delete(ctx context.Context, id int64) error {
 	}
 
 	if result.RowsAffected() == 0 {
-		return domain.ErrCustomerNotFound
+		return store.ErrCustomerNotFound
 	}
 
 	return nil

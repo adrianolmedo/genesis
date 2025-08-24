@@ -1,4 +1,4 @@
-package http
+package rest
 
 import (
 	"errors"
@@ -6,11 +6,10 @@ import (
 	"net/http"
 	"strconv"
 
-	domain "github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/app"
-	"github.com/adrianolmedo/genesis/http/jwt"
 	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/pgsql"
+	"github.com/adrianolmedo/genesis/rest/jwt"
 	"github.com/adrianolmedo/genesis/user"
 
 	"github.com/gofiber/fiber/v2"
@@ -174,8 +173,8 @@ func findUser(s *app.App) fiber.Handler {
 			})
 		}
 
-		user, err := s.User.Find(ctx, int64(id))
-		if errors.Is(err, domain.ErrUserNotFound) {
+		userModel, err := s.User.Find(ctx, int64(id))
+		if errors.Is(err, user.ErrNotFound) {
 			return errorJSON(c, http.StatusNotFound, respDetails{
 				Code:    "003",
 				Message: err.Error(),
@@ -192,10 +191,10 @@ func findUser(s *app.App) fiber.Handler {
 		return respJSON(c, http.StatusOK, respDetails{
 			Message: "User found",
 			Data: userProfileDTO{
-				ID:        user.ID,
-				FirstName: user.FirstName,
-				LastName:  user.LastName,
-				Email:     user.Email,
+				ID:        userModel.ID,
+				FirstName: userModel.FirstName,
+				LastName:  userModel.LastName,
+				Email:     userModel.Email,
 			},
 		})
 	}
@@ -246,7 +245,7 @@ func updateUser(s *app.App) fiber.Handler {
 			Password:  form.Password,
 		})
 
-		if errors.Is(err, domain.ErrUserNotFound) {
+		if errors.Is(err, user.ErrNotFound) {
 			return errorJSON(c, http.StatusNotFound, respDetails{
 				Code:    "003",
 				Message: err.Error(),
@@ -315,7 +314,7 @@ func listUsers(s *app.App) fiber.Handler {
 			})
 		}
 
-		users, ok := pr.Rows.(domain.Users)
+		users, ok := pr.Rows.(user.Users)
 		if !ok {
 			return errorJSON(c, http.StatusInternalServerError, respDetails{
 				Code:    "003",
@@ -330,7 +329,7 @@ func listUsers(s *app.App) fiber.Handler {
 			})
 		}
 
-		assemble := func(u *domain.User) userProfileDTO {
+		assemble := func(u *user.User) userProfileDTO {
 			return userProfileDTO{
 				ID:        u.ID,
 				FirstName: u.FirstName,
@@ -376,7 +375,7 @@ func deleteUser(s *app.App) fiber.Handler {
 		}
 
 		err = s.User.Remove(ctx, int64(id))
-		if errors.Is(err, domain.ErrUserNotFound) {
+		if errors.Is(err, user.ErrNotFound) {
 			return errorJSON(c, http.StatusNotFound, respDetails{
 				Code:    "003",
 				Message: err.Error(),

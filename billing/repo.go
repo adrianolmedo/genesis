@@ -18,8 +18,6 @@ type Repo struct {
 }
 
 // NewInvoice creates a new Invoice repository instance.
-// Since [InvoiceHader], [InvoiceItem] (or any other repository in question)
-// are closely related to Invoice, they are created as part of the Invoice structure.
 func NewRepo(db *pgxpool.Pool) *Repo {
 	q := dbgen.New(db)
 	return &Repo{
@@ -29,8 +27,8 @@ func NewRepo(db *pgxpool.Pool) *Repo {
 }
 
 // CreateInvoice creates a new invoice with its header and items.
-func (i Repo) CreateInvoice(ctx context.Context, inv *Invoice) error {
-	tx, err := i.db.Begin(ctx)
+func (r Repo) CreateInvoice(ctx context.Context, inv *Invoice) error {
+	tx, err := r.db.Begin(ctx)
 	if err != nil {
 		return err
 	}
@@ -41,12 +39,12 @@ func (i Repo) CreateInvoice(ctx context.Context, inv *Invoice) error {
 	}()
 
 	// Create invoice header
-	if err := i.CreateHeader(ctx, tx, inv.Header); err != nil {
+	if err := r.CreateHeader(ctx, tx, inv.Header); err != nil {
 		return fmt.Errorf("invoice header: %w", err)
 	}
 
 	// Create invoice items
-	if err := i.CreateItem(ctx, tx, inv.Header.ID, inv.Items); err != nil {
+	if err := r.CreateItem(ctx, tx, inv.Header.ID, inv.Items); err != nil {
 		return fmt.Errorf("invoice items: %w", err)
 	}
 
@@ -83,6 +81,25 @@ func (r Repo) CreateItem(ctx context.Context, tx pgx.Tx, headerID int64, items I
 		item.ID = row.ID
 		item.CreatedAt = row.CreatedAt
 
+	}
+	return nil
+}
+
+// DeleteAll delete all invoice headers (permanantly).
+func (r Repo) DeleteAll(ctx context.Context) error {
+	err := r.q.InvoiceHeaderDeleteAll(ctx)
+	if err != nil {
+		return fmt.Errorf("can't truncate table: %v", err)
+	}
+	return nil
+}
+
+// DeleteAllItems deletes all invoice items.
+// This is used for testing purposes to reset the state of the invoice items table.
+func (r Repo) DeleteAllItems(ctx context.Context) error {
+	err := r.q.InvoiceItemDeleteAll(ctx)
+	if err != nil {
+		return fmt.Errorf("can't truncate table: %v", err)
 	}
 	return nil
 }

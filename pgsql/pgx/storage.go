@@ -9,7 +9,7 @@ import (
 
 // Storage represents all repositories.
 type Storage struct {
-	User     User
+	User     UserRepo
 	Product  Product
 	Customer Customer
 	Invoice  Invoice
@@ -24,7 +24,7 @@ func NewStorage(ctx context.Context, cfg genesis.Config) (*Storage, error) {
 	}
 
 	return &Storage{
-		User:     User{conn: db},
+		User:     UserRepo{conn: db},
 		Product:  Product{conn: db},
 		Customer: Customer{conn: db},
 		Invoice: Invoice{

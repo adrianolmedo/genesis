@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"regexp"
 
-	domain "github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/pgsql"
 )
 
@@ -89,7 +88,7 @@ func (s Service) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, 
 // Remove delete User by its ID.
 func (s Service) Remove(ctx context.Context, id int64) error {
 	if id == 0 {
-		return domain.ErrUserNotFound
+		return ErrNotFound
 	}
 
 	return s.repo.Delete(ctx, id)

@@ -37,8 +37,7 @@ type Storage struct {
 	Invoice  *billing.Repo
 }
 
-// NewStorage start postgres database connection, build the Storage and return it
-// its pointer.
+// NewStorage creates a new Storage instance with all repositories.
 func NewStorage(ctx context.Context, db *pgxpool.Pool, cfg genesis.Config) (*Storage, error) {
 	return &Storage{
 		db:       db,

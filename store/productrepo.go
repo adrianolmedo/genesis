@@ -67,21 +67,21 @@ func (r ProductRepo) ByID(ctx context.Context, id int64) (*Product, error) {
 	}
 
 	p.CreatedAt = m.CreatedAt
-	p.UpdatedAt = pgsql.PtrFromNullTime(m.UpdatedAt)
-	p.DeletedAt = pgsql.PtrFromNullTime(m.DeletedAt)
+	p.UpdatedAt = pgsql.NullTimeToPtr(m.UpdatedAt)
+	p.DeletedAt = pgsql.NullTimeToPtr(m.DeletedAt)
 
 	return p, nil
 }
 
 func (r ProductRepo) Update(ctx context.Context, m Product) error {
-	m.UpdatedAt = pgsql.TimePtr(time.Now())
+	m.UpdatedAt = pgsql.TimeToPtr(time.Now())
 
 	_, err := r.q.ProductUpdate(ctx, dbgen.ProductUpdateParams{
 		ID:           m.ID,
 		Name:         m.Name,
 		Observations: m.Observations,
 		Price:        m.Price,
-		UpdatedAt:    pgsql.NullTimeFromPtr(m.UpdatedAt),
+		UpdatedAt:    pgsql.TimePtrToNull(m.UpdatedAt),
 	})
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return ErrProductNotFound
@@ -116,8 +116,8 @@ func toDomainProducts(dbProducts []dbgen.Product) Products {
 		}
 
 		p.CreatedAt = m.CreatedAt
-		p.UpdatedAt = pgsql.PtrFromNullTime(m.UpdatedAt)
-		p.DeletedAt = pgsql.PtrFromNullTime(m.DeletedAt)
+		p.UpdatedAt = pgsql.NullTimeToPtr(m.UpdatedAt)
+		p.DeletedAt = pgsql.NullTimeToPtr(m.DeletedAt)
 
 		products = append(products, p)
 	}

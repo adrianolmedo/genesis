@@ -1,14 +1,15 @@
-package http
+package rest
 
 import (
 	"errors"
 	"fmt"
 	"net/http"
 
-	domain "github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/app"
 	"github.com/adrianolmedo/genesis/billing"
 	"github.com/adrianolmedo/genesis/logger"
+	"github.com/adrianolmedo/genesis/store"
+	"github.com/adrianolmedo/genesis/user"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -43,7 +44,7 @@ func generateInvoice(s *app.App) fiber.Handler {
 		clientID := form.Header.ClientID
 
 		_, err = s.User.Find(ctx, clientID)
-		if errors.Is(err, domain.ErrUserNotFound) {
+		if errors.Is(err, user.ErrNotFound) {
 			logger.Error("generating invoice", fmt.Sprintf("user ID %d not found to generate invoice", clientID))
 
 			return errorJSON(c, http.StatusNotFound, respDetails{
@@ -61,6 +62,7 @@ func generateInvoice(s *app.App) fiber.Handler {
 			})
 		}
 
+		// assmble is like a mapper to convert invoiceItemForm to billing.InvoiceItem.
 		assemble := func(i invoiceItemForm) *billing.InvoiceItem {
 			return &billing.InvoiceItem{
 				ProductID: i.ProductID,
@@ -72,12 +74,12 @@ func generateInvoice(s *app.App) fiber.Handler {
 
 			_, err := s.Store.Find(ctx, item.ProductID)
 
-			if errors.Is(err, domain.ErrProductNotFound) {
+			if errors.Is(err, store.ErrProductNotFound) {
 				logger.Debug("generating invoice", fmt.Sprintf("product ID %d not found to add the invoice", item.ProductID))
 
 				return errorJSON(c, http.StatusNotFound, respDetails{
 					Code:    "002",
-					Message: fmt.Sprintf("%s with id %d", domain.ErrProductNotFound, item.ProductID),
+					Message: fmt.Sprintf("%s with id %d", store.ErrProductNotFound, item.ProductID),
 				})
 			}
 

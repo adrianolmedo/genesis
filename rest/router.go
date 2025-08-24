@@ -1,12 +1,12 @@
-package http
+package rest
 
 import (
 	"net/http"
 
 	"github.com/adrianolmedo/genesis/app"
 	_ "github.com/adrianolmedo/genesis/docs"
-	"github.com/adrianolmedo/genesis/http/jwt"
 	"github.com/adrianolmedo/genesis/logger"
+	"github.com/adrianolmedo/genesis/rest/jwt"
 
 	"github.com/gofiber/fiber/v2"
 	swagger "github.com/swaggo/fiber-swagger"
