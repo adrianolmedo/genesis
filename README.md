@@ -4,6 +4,8 @@ REST API architecture based on the main objective of Hexagonal Architecture: to 
 
 ## Architecture
 
+![Package by feature o Vertical Slice](https://i.imgur.com/qBM6RKE.png)
+
 ```
 ├── cmd/
 │   └── main/
