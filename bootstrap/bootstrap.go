@@ -1,4 +1,4 @@
-package app
+package bootstrap
 
 import (
 	"github.com/adrianolmedo/genesis/billing"
@@ -7,16 +7,16 @@ import (
 	"github.com/adrianolmedo/genesis/user"
 )
 
-// App wiring services and dependency injection.
-type App struct {
+// Bootstrap holds the application services and their dependencies.
+type Bootstrap struct {
 	User    *user.Service
 	Store   *store.Service
 	Billing *billing.Service
 }
 
-// NewApp creates a new App.
-func NewApp(s *storage.Storage) *App {
-	return &App{
+// New returns a new Bootstrap instance with initialized services.
+func New(s *storage.Storage) *Bootstrap {
+	return &Bootstrap{
 		User:    user.NewService(s.User),
 		Store:   store.NewService(s.Product, s.Customer),
 		Billing: billing.NewService(s.Invoice),

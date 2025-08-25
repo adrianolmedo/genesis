@@ -12,8 +12,8 @@ REST API architecture based on the main objective of Hexagonal Architecture: to 
 │       └── main.go
 ├── commons.go                      <-- root as shared package
 ├── config.go
-├── app/                            <-- wiring container as mediator between
-│   └── app.go                          features and servers
+├── bootstrap/                      <-- manual wiring dependencies (infra)
+│   └── bootstrap.go                          
 ├── user/                           <-- user (feature)
 │    ├── user.go                        <-- domain models, entities
 │    ├── service.go                     <-- service layer

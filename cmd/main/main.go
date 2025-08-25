@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	"github.com/adrianolmedo/genesis"
-	"github.com/adrianolmedo/genesis/app"
+	"github.com/adrianolmedo/genesis/bootstrap"
 	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/pgsql/sqlc"
 	"github.com/adrianolmedo/genesis/rest"
@@ -46,14 +46,14 @@ func main() {
 		DatabaseURL: *dburl,
 	}
 
-	if err := run(cfg); err != nil {
+	if err := run(context.Background(), cfg); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		logger.Error("run", "err", err.Error())
 		os.Exit(1)
 	}
 }
 
-func run(cfg genesis.Config) error {
+func run(ctx context.Context, cfg genesis.Config) error {
 	if err := cfg.Validate(); err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func run(cfg genesis.Config) error {
 	}
 
 	// Context que se cancela al recibir SIGINT/SIGTERM or Ctrl+c.
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
 	db, err := sqlc.NewPool(ctx, cfg)
@@ -80,7 +80,7 @@ func run(cfg genesis.Config) error {
 	}
 
 	// Initialize the services with the storage.
-	srv := rest.Router(app.NewApp(s))
+	srv := rest.Router(bootstrap.New(s))
 
 	go func() {
 		if err := srv.Listen(cfg.Host + cfg.Port); err != nil {
