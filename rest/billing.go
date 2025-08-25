@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/adrianolmedo/genesis/app"
 	"github.com/adrianolmedo/genesis/billing"
+	"github.com/adrianolmedo/genesis/bootstrap"
 	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/store"
 	"github.com/adrianolmedo/genesis/user"
@@ -27,7 +27,7 @@ import (
 //	@Success		201					{object}	resp{data=generateInvoiceReq}
 //	@Param			generateInvoiceReq	body		generateInvoiceReq	true	"application/json"
 //	@Router			/invoices [post]
-func generateInvoice(s *app.App) fiber.Handler {
+func generateInvoice(svcs *bootstrap.Bootstrap) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 		req := generateInvoiceReq{}
@@ -43,7 +43,7 @@ func generateInvoice(s *app.App) fiber.Handler {
 
 		clientID := req.Header.ClientID
 
-		_, err = s.User.Find(ctx, clientID)
+		_, err = svcs.User.Find(ctx, clientID)
 		if errors.Is(err, user.ErrNotFound) {
 			logger.Error("generating invoice", fmt.Sprintf("user ID %d not found to generate invoice", clientID))
 
@@ -72,7 +72,7 @@ func generateInvoice(s *app.App) fiber.Handler {
 		items := make(billing.ItemList, 0, len(req.Items))
 		for _, item := range req.Items {
 
-			_, err := s.Store.Find(ctx, item.ProductID)
+			_, err := svcs.Store.Find(ctx, item.ProductID)
 
 			if errors.Is(err, store.ErrProductNotFound) {
 				logger.Debug("generating invoice", fmt.Sprintf("product ID %d not found to add the invoice", item.ProductID))
@@ -103,7 +103,7 @@ func generateInvoice(s *app.App) fiber.Handler {
 			Items: items,
 		}
 
-		err = s.Billing.Generate(ctx, invoice)
+		err = svcs.Billing.Generate(ctx, invoice)
 		if err != nil {
 			logger.Error("generating invoice", err.Error())
 

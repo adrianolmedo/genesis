@@ -1,4 +1,4 @@
-// Package genesis, the root shared package that provides utilities and config.
+// Package genesis as root shared package that provides general config and utilities.
 package genesis
 
 import (

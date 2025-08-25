@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/adrianolmedo/genesis/app"
+	"github.com/adrianolmedo/genesis/bootstrap"
 	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/pgsql"
 	"github.com/adrianolmedo/genesis/rest/jwt"
@@ -28,7 +28,7 @@ import (
 //	@Success		201				{object}	resp{data=dataTokenResp}
 //	@Param			userLoginReq	body		userLoginReq	true	"application/json"
 //	@Router			/login [post]
-func loginUser(s *app.App) fiber.Handler {
+func loginUser(svcs *bootstrap.Bootstrap) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -42,7 +42,7 @@ func loginUser(s *app.App) fiber.Handler {
 			})
 		}
 
-		err = s.User.Login(ctx, req.Email, req.Password)
+		err = svcs.User.Login(ctx, req.Email, req.Password)
 		if errors.Is(err, user.ErrNotFound) {
 			return errorJSON(c, http.StatusUnauthorized, respDetails{
 				Code:    "003",
@@ -94,7 +94,7 @@ type dataTokenResp struct {
 //	@Success		201				{object}	resp{data=userProfileResp}
 //	@Param			userSignUpReq	body		userSignUpReq	true	"application/json"
 //	@Router			/users [post]
-func signUpUser(s *app.App) fiber.Handler {
+func signUpUser(svcs *bootstrap.Bootstrap) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -108,7 +108,7 @@ func signUpUser(s *app.App) fiber.Handler {
 			})
 		}
 
-		err = s.User.SignUp(ctx, &user.User{
+		err = svcs.User.SignUp(ctx, &user.User{
 			FirstName: req.FirstName,
 			LastName:  req.LastName,
 			Email:     req.Email,
@@ -161,7 +161,7 @@ type userProfileResp struct {
 //	@Failure		404	{object}	errorResp
 //	@Success		200	{object}	resp{data=userProfileResp}
 //	@Router			/users/{id} [get]
-func findUser(s *app.App) fiber.Handler {
+func findUser(svcs *bootstrap.Bootstrap) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -173,7 +173,7 @@ func findUser(s *app.App) fiber.Handler {
 			})
 		}
 
-		userModel, err := s.User.Find(ctx, int64(id))
+		userModel, err := svcs.User.Find(ctx, int64(id))
 		if errors.Is(err, user.ErrNotFound) {
 			return errorJSON(c, http.StatusNotFound, respDetails{
 				Code:    "003",
@@ -213,7 +213,7 @@ func findUser(s *app.App) fiber.Handler {
 //	@Success		200				{object}	resp{data=userProfileResp}
 //	@Param			userUpdateReq	body		userUpdateReq	true	"application/json"
 //	@Router			/users/{id} [put]
-func updateUser(s *app.App) fiber.Handler {
+func updateUser(svcs *bootstrap.Bootstrap) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -237,7 +237,7 @@ func updateUser(s *app.App) fiber.Handler {
 
 		userID := int64(id)
 
-		err = s.User.Update(ctx, user.User{
+		err = svcs.User.Update(ctx, user.User{
 			ID:        userID,
 			FirstName: req.FirstName,
 			LastName:  req.LastName,
@@ -289,7 +289,7 @@ type userUpdateReq struct {
 //	@Success	200	{object}	resp
 //	@Success	200	{object}	resp{data=[]userProfileResp}
 //	@Router		/users [get]
-func listUsers(s *app.App) fiber.Handler {
+func listUsers(svcs *bootstrap.Bootstrap) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -306,7 +306,7 @@ func listUsers(s *app.App) fiber.Handler {
 			})
 		}
 
-		pr, err := s.User.List(ctx, p)
+		pr, err := svcs.User.List(ctx, p)
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, respDetails{
 				Code:    "003",
@@ -362,7 +362,7 @@ func listUsers(s *app.App) fiber.Handler {
 //	@Failure		404	{object}	errorResp
 //	@Success		200	{object}	resp
 //	@Router			/users/{id} [delete]
-func deleteUser(s *app.App) fiber.Handler {
+func deleteUser(svcs *bootstrap.Bootstrap) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -374,7 +374,7 @@ func deleteUser(s *app.App) fiber.Handler {
 			})
 		}
 
-		err = s.User.Remove(ctx, int64(id))
+		err = svcs.User.Remove(ctx, int64(id))
 		if errors.Is(err, user.ErrNotFound) {
 			return errorJSON(c, http.StatusNotFound, respDetails{
 				Code:    "003",
