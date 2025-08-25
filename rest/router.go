@@ -3,7 +3,7 @@ package rest
 import (
 	"net/http"
 
-	"github.com/adrianolmedo/genesis/app"
+	"github.com/adrianolmedo/genesis/bootstrap"
 	_ "github.com/adrianolmedo/genesis/docs"
 	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/rest/jwt"
@@ -26,7 +26,7 @@ import (
 
 // @host		localhost:3000
 // @BasePath	/v1/
-func Router(svc *app.App) *fiber.App {
+func Router(svcs *bootstrap.Bootstrap) *fiber.App {
 	f := fiber.New()
 
 	f.Get("/v1/test", func(c *fiber.Ctx) error {
@@ -36,26 +36,26 @@ func Router(svc *app.App) *fiber.App {
 		})
 	})
 
-	f.Post("/v1/login", loginUser(svc))
-	f.Post("/v1/users", signUpUser(svc))
-	f.Get("/v1/users/:id", findUser(svc))
+	f.Post("/v1/login", loginUser(svcs))
+	f.Post("/v1/users", signUpUser(svcs))
+	f.Get("/v1/users/:id", findUser(svcs))
 
-	f.Get("/v1/users", authWare, listUsers(svc))
-	f.Put("/v1/users/:id", authWare, updateUser(svc))
-	f.Delete("/v1/users/:id", authWare, deleteUser(svc))
+	f.Get("/v1/users", authWare, listUsers(svcs))
+	f.Put("/v1/users/:id", authWare, updateUser(svcs))
+	f.Delete("/v1/users/:id", authWare, deleteUser(svcs))
 
-	f.Post("/v1/customers", createCustomer(svc))
-	f.Get("/v1/customers", listCustomers(svc))
-	f.Delete("v1/customers/:id", deleteCustomer(svc))
+	f.Post("/v1/customers", createCustomer(svcs))
+	f.Get("/v1/customers", listCustomers(svcs))
+	f.Delete("v1/customers/:id", deleteCustomer(svcs))
 
-	f.Get("/v1/products", listProducts(svc))
-	f.Get("/v1/products/:id", findProduct(svc))
+	f.Get("/v1/products", listProducts(svcs))
+	f.Get("/v1/products/:id", findProduct(svcs))
 
-	f.Post("/v1/products", authWare, addProduct(svc))
-	f.Put("/v1/products/:id", authWare, updateProduct(svc))
-	f.Delete("/v1/products/:id", authWare, deleteProduct(svc))
+	f.Post("/v1/products", authWare, addProduct(svcs))
+	f.Put("/v1/products/:id", authWare, updateProduct(svcs))
+	f.Delete("/v1/products/:id", authWare, deleteProduct(svcs))
 
-	f.Post("/v1/invoices", authWare, generateInvoice(svc))
+	f.Post("/v1/invoices", authWare, generateInvoice(svcs))
 
 	f.Get("/swagger/*", swagger.WrapHandler)
 
