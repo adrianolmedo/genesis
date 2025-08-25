@@ -90,7 +90,7 @@ func run(ctx context.Context, cfg genesis.Config) error {
 
 	// Wait stop signal.
 	<-ctx.Done()
-	logger.Info("Shutting down gracefully...")
+	fmt.Println("\nShutting down gracefully...")
 
 	// Stop the server gracefully and close the storage (eg.: connections, workers, etc).
 	if err := srv.Shutdown(); err != nil {
