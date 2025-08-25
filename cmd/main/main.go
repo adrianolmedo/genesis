@@ -79,7 +79,7 @@ func run(ctx context.Context, cfg genesis.Config) error {
 		return fmt.Errorf("error from storage: %v", err)
 	}
 
-	// Initialize the services with the storage.
+	// Initialize the server with its dependencies.
 	srv := rest.Router(bootstrap.New(s))
 
 	go func() {

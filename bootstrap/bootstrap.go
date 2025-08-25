@@ -7,7 +7,7 @@ import (
 	"github.com/adrianolmedo/genesis/user"
 )
 
-// Bootstrap holds the application services and their dependencies.
+// Bootstrap holds services and their dependencies.
 type Bootstrap struct {
 	User    *user.Service
 	Store   *store.Service
