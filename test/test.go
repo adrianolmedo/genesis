@@ -1,5 +1,4 @@
-// Package test provides a test suite for SQLC generated code
-// and utilities.
+// Package test for test integrations, also provides test utils utilities.
 package test
 
 import (
