@@ -1,8 +1,14 @@
+// Package genesis, the root shared package that provides utilities and config.
 package genesis
 
-import "fmt"
+import (
+	"fmt"
+	"time"
 
-// Config server RESTful API.
+	"github.com/pborman/uuid"
+)
+
+// Config holds the application configuration.
 type Config struct {
 	// Host where is running the app.
 	Host string
@@ -26,4 +32,16 @@ func (c Config) Validate() error {
 	}
 
 	return nil
+}
+
+// NextUUID generates a new UUID.
+func NextUUID() string {
+	return uuid.New()
+}
+
+// AuditFields holds common fields for tracking record changes.
+type AuditFields struct {
+	CreatedAt time.Time
+	UpdatedAt *time.Time
+	DeletedAt *time.Time
 }
