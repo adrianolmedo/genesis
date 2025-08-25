@@ -64,7 +64,7 @@ func run(ctx context.Context, cfg genesis.Config) error {
 		return fmt.Errorf("certificates could not be loaded: %v", err)
 	}
 
-	// Context que se cancela al recibir SIGINT/SIGTERM or Ctrl+c.
+	// Context that is canceled upon receiving SIGINT/SIGTERM or Ctrl+c.
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
