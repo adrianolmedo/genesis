@@ -1,4 +1,4 @@
-package bootstrap
+package compose
 
 import (
 	"github.com/adrianolmedo/genesis/billing"
@@ -7,16 +7,16 @@ import (
 	"github.com/adrianolmedo/genesis/user"
 )
 
-// Bootstrap holds services and their dependencies.
-type Bootstrap struct {
+// Services holds services and their dependencies.
+type Services struct {
 	User    *user.Service
 	Store   *store.Service
 	Billing *billing.Service
 }
 
-// New returns a new Bootstrap instance with initialized services.
-func New(s *storage.Storage) *Bootstrap {
-	return &Bootstrap{
+// NewServices returns a new Services instance with initialized services.
+func NewServices(s *storage.Storage) *Services {
+	return &Services{
 		User:    user.NewService(s.User),
 		Store:   store.NewService(s.Product, s.Customer),
 		Billing: billing.NewService(s.Invoice),

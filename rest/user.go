@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/adrianolmedo/genesis/bootstrap"
+	"github.com/adrianolmedo/genesis/compose"
 	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/pgsql"
 	"github.com/adrianolmedo/genesis/rest/jwt"
@@ -28,7 +28,7 @@ import (
 //	@Success		201				{object}	resp{data=dataTokenResp}
 //	@Param			userLoginReq	body		userLoginReq	true	"application/json"
 //	@Router			/login [post]
-func loginUser(svcs *bootstrap.Bootstrap) fiber.Handler {
+func loginUser(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -94,7 +94,7 @@ type dataTokenResp struct {
 //	@Success		201				{object}	resp{data=userProfileResp}
 //	@Param			userSignUpReq	body		userSignUpReq	true	"application/json"
 //	@Router			/users [post]
-func signUpUser(svcs *bootstrap.Bootstrap) fiber.Handler {
+func signUpUser(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -161,7 +161,7 @@ type userProfileResp struct {
 //	@Failure		404	{object}	errorResp
 //	@Success		200	{object}	resp{data=userProfileResp}
 //	@Router			/users/{id} [get]
-func findUser(svcs *bootstrap.Bootstrap) fiber.Handler {
+func findUser(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -213,7 +213,7 @@ func findUser(svcs *bootstrap.Bootstrap) fiber.Handler {
 //	@Success		200				{object}	resp{data=userProfileResp}
 //	@Param			userUpdateReq	body		userUpdateReq	true	"application/json"
 //	@Router			/users/{id} [put]
-func updateUser(svcs *bootstrap.Bootstrap) fiber.Handler {
+func updateUser(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -289,7 +289,7 @@ type userUpdateReq struct {
 //	@Success	200	{object}	resp
 //	@Success	200	{object}	resp{data=[]userProfileResp}
 //	@Router		/users [get]
-func listUsers(svcs *bootstrap.Bootstrap) fiber.Handler {
+func listUsers(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -362,7 +362,7 @@ func listUsers(svcs *bootstrap.Bootstrap) fiber.Handler {
 //	@Failure		404	{object}	errorResp
 //	@Success		200	{object}	resp
 //	@Router			/users/{id} [delete]
-func deleteUser(svcs *bootstrap.Bootstrap) fiber.Handler {
+func deleteUser(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 

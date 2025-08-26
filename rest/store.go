@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/adrianolmedo/genesis/bootstrap"
+	"github.com/adrianolmedo/genesis/compose"
 	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/pgsql"
 	"github.com/adrianolmedo/genesis/store"
@@ -27,7 +27,7 @@ import (
 //	@Success		201				{object}	resp{data=productCardResp}
 //	@Param			addProductReq	body		addProductReq	true	"application/json"
 //	@Router			/products [post]
-func addProduct(svcs *bootstrap.Bootstrap) fiber.Handler {
+func addProduct(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 		req := addProductReq{}
@@ -94,7 +94,7 @@ type productCardResp struct {
 //	@Success		200	{object}	resp
 //	@Success		200	{object}	resp{data=[]productCardResp}
 //	@Router			/products [get]
-func listProducts(svcs *bootstrap.Bootstrap) fiber.Handler {
+func listProducts(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -146,7 +146,7 @@ func listProducts(svcs *bootstrap.Bootstrap) fiber.Handler {
 //	@Success		201					{object}	resp{data=customerProfileResp}
 //	@Param			createCustomerReq	body		createCustomerReq	true	"application/json"
 //	@Router			/customer [post]
-func createCustomer(svcs *bootstrap.Bootstrap) fiber.Handler {
+func createCustomer(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 		req := createCustomerReq{}
@@ -214,7 +214,7 @@ type createCustomerReq struct {
 //	@Success		200	{object}	resp{data=customerProfileResp}
 //	@Param			id	path		int	true	"Customer id"
 //	@Router			/customers/{id} [delete]
-func deleteCustomer(svcs *bootstrap.Bootstrap) fiber.Handler {
+func deleteCustomer(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -264,7 +264,7 @@ func deleteCustomer(svcs *bootstrap.Bootstrap) fiber.Handler {
 //	@Param			sort		query		string	false	"Sort results by a value"			example(created_at)
 //	@Param			direction	query		string	false	"Order by ascendent o descendent"	example(desc)
 //	@Router			/customers [get]
-func listCustomers(svcs *bootstrap.Bootstrap) fiber.Handler {
+func listCustomers(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -337,7 +337,7 @@ func listCustomers(svcs *bootstrap.Bootstrap) fiber.Handler {
 //	@Success		200	{object}	resp{data=productCardResp}
 //	@Param			id	path		int	true	"Product id"
 //	@Router			/products/{id} [get]
-func findProduct(svcs *bootstrap.Bootstrap) fiber.Handler {
+func findProduct(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 
@@ -388,7 +388,7 @@ func findProduct(svcs *bootstrap.Bootstrap) fiber.Handler {
 //	@Success		200	{object}	resp
 //	@Param			id	path		int	true	"Product id"
 //	@Router			/products/{id} [put]
-func updateProduct(svcs *bootstrap.Bootstrap) fiber.Handler {
+func updateProduct(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 		id, err := strconv.Atoi(c.Params("id"))
@@ -464,7 +464,7 @@ type updateProductReq struct {
 //	@Success		200	{object}	resp
 //	@Param			id	path		int	true	"Product id"
 //	@Router			/products/{id} [delete]
-func deleteProduct(svcs *bootstrap.Bootstrap) fiber.Handler {
+func deleteProduct(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 

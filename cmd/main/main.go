@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	"github.com/adrianolmedo/genesis"
-	"github.com/adrianolmedo/genesis/bootstrap"
+	"github.com/adrianolmedo/genesis/compose"
 	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/pgsql/sqlc"
 	"github.com/adrianolmedo/genesis/rest"
@@ -80,7 +80,7 @@ func run(ctx context.Context, cfg genesis.Config) error {
 	}
 
 	// Initialize the server with its dependencies.
-	srv := rest.Router(bootstrap.New(s))
+	srv := rest.Router(compose.NewServices(s))
 
 	go func() {
 		if err := srv.Listen(cfg.Host + cfg.Port); err != nil {

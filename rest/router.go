@@ -3,7 +3,7 @@ package rest
 import (
 	"net/http"
 
-	"github.com/adrianolmedo/genesis/bootstrap"
+	"github.com/adrianolmedo/genesis/compose"
 	_ "github.com/adrianolmedo/genesis/docs"
 	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/rest/jwt"
@@ -26,7 +26,7 @@ import (
 
 // @host		localhost:3000
 // @BasePath	/v1/
-func Router(svcs *bootstrap.Bootstrap) *fiber.App {
+func Router(svcs *compose.Services) *fiber.App {
 	f := fiber.New()
 
 	f.Get("/v1/test", func(c *fiber.Ctx) error {

@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/adrianolmedo/genesis/billing"
-	"github.com/adrianolmedo/genesis/bootstrap"
+	"github.com/adrianolmedo/genesis/compose"
 	"github.com/adrianolmedo/genesis/logger"
 	"github.com/adrianolmedo/genesis/store"
 	"github.com/adrianolmedo/genesis/user"
@@ -27,7 +27,7 @@ import (
 //	@Success		201					{object}	resp{data=generateInvoiceReq}
 //	@Param			generateInvoiceReq	body		generateInvoiceReq	true	"application/json"
 //	@Router			/invoices [post]
-func generateInvoice(svcs *bootstrap.Bootstrap) fiber.Handler {
+func generateInvoice(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 		req := generateInvoiceReq{}
