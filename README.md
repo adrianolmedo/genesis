@@ -12,8 +12,8 @@ Example Go codebase based on the main objective of Hexagonal Architecture: isola
 │       └── main.go
 ├── commons.go                      <-- root as shared package
 ├── config.go
-├── bootstrap/                      <-- manual wiring dependencies (infra)
-│   └── bootstrap.go                          
+├── compose/                        <-- manual wiring dependencies
+│   └── services.go                          
 ├── user/                           <-- user (feature)
 │    ├── user.go                        <-- domain models, entities
 │    ├── service.go                     <-- service layer
@@ -26,7 +26,7 @@ Example Go codebase based on the main objective of Hexagonal Architecture: isola
 │   ├── repo.go
 │   └── service_test.go
 ├── store/                          <-- store (feature)
-├── rest/                           <-- retsfull server (infra)
+├── rest/                           <-- http restfull server (infra)
 │   ├── jwt/
 │   │   ├── claims.go
 │   │   └── claims_test.go
