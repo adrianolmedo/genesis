@@ -1,12 +1,6 @@
-// Package genesis as root shared package that provides general config and utilities.
 package genesis
 
-import (
-	"fmt"
-	"time"
-
-	"github.com/pborman/uuid"
-)
+import "fmt"
 
 // Config holds the application configuration.
 type Config struct {
@@ -32,16 +26,4 @@ func (c Config) Validate() error {
 	}
 
 	return nil
-}
-
-// NextUUID generates a new UUID.
-func NextUUID() string {
-	return uuid.New()
-}
-
-// AuditFields holds common fields for tracking record changes.
-type AuditFields struct {
-	CreatedAt time.Time
-	UpdatedAt *time.Time
-	DeletedAt *time.Time
 }
