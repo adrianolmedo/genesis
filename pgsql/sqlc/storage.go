@@ -12,22 +12,6 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// NewPool return a postgres database connection from cfg params.
-func NewPool(ctx context.Context, cfg genesis.Config) (*pgxpool.Pool, error) {
-	pool, err := pgxpool.New(ctx, cfg.DatabaseURL)
-	if err != nil {
-		return nil, err
-	}
-
-	// Optional: test connection.
-	err = pool.Ping(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("can't do ping %v", err)
-	}
-
-	return pool, nil
-}
-
 // Storage represents all repositories.
 type Storage struct {
 	db       *pgxpool.Pool
@@ -46,4 +30,20 @@ func NewStorage(ctx context.Context, db *pgxpool.Pool, cfg genesis.Config) (*Sto
 		Customer: store.NewCustomerRepo(db),
 		Invoice:  billing.NewRepo(db),
 	}, nil
+}
+
+// NewPool return a postgres database connection from cfg params.
+func NewPool(ctx context.Context, cfg genesis.Config) (*pgxpool.Pool, error) {
+	pool, err := pgxpool.New(ctx, cfg.DatabaseURL)
+	if err != nil {
+		return nil, err
+	}
+
+	// Optional: test connection.
+	err = pool.Ping(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("can't do ping %v", err)
+	}
+
+	return pool, nil
 }
