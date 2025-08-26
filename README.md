@@ -1,6 +1,6 @@
 # Genesis
 
-REST API architecture based on the main objective of Hexagonal Architecture: to isolate business logic from external dependencies in each bounded context or feature.
+Example Go codebase based on the main objective of Hexagonal Architecture: isolate business logic from external dependencies (in each bounded context or feature).
 
 ## Architecture
 
