@@ -13,7 +13,7 @@ type billingService struct {
 	repo storage.InvoiceRepository
 }
 
-func NewBillingService(repo storage.InvoiceRepository) BillingService {
+func NewBillingService(repo storage.InvoiceRepository) *billingService {
 	return &billingService{repo}
 }
 

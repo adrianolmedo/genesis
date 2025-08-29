@@ -10,7 +10,7 @@ type loginService struct {
 	repo storage.LoginRepository
 }
 
-func NewLoginService(repo storage.LoginRepository) LoginService {
+func NewLoginService(repo storage.LoginRepository) *loginService {
 	return &loginService{repo}
 }
 

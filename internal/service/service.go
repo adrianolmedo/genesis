@@ -8,10 +8,10 @@ import (
 
 type Service struct {
 	Storage storage.Storage
-	User    UserService
-	Login   LoginService
-	Store   StoreService
-	Billing BillingService
+	User    *userService
+	Login   *loginService
+	Store   *storeService
+	Billing *billingService
 }
 
 func New(s storage.Storage) (*Service, error) {
