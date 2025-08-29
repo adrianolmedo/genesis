@@ -134,9 +134,9 @@ func Offset(limit, page int) int {
 }
 
 // Paginate calculates pagination details.
-func (p *Pager) Paginate(rows any, totalRows int64) PagerResults {
+func (p *Pager) Paginate(rows any, totalRows int64) PagerResult {
 	if totalRows == 0 {
-		return PagerResults{
+		return PagerResult{
 			Page:       p.page,
 			Limit:      p.limit,
 			Sort:       p.sort,
@@ -166,7 +166,7 @@ func (p *Pager) Paginate(rows any, totalRows int64) PagerResults {
 		}
 	}
 
-	return PagerResults{
+	return PagerResult{
 		Page:       p.page,
 		Limit:      p.limit,
 		Sort:       p.sort,
@@ -178,8 +178,8 @@ func (p *Pager) Paginate(rows any, totalRows int64) PagerResults {
 	}
 }
 
-// PagerResults contains paginated data.
-type PagerResults struct {
+// PagerResult contains paginated data.
+type PagerResult struct {
 	Limit      int    `json:"limit"`
 	Page       int    `json:"page"`
 	Sort       string `json:"sort"`

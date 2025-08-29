@@ -258,7 +258,7 @@ func deleteCustomer(svcs *compose.Services) fiber.Handler {
 //	@Produce		json
 //	@Failure		400			{object}	errorResp
 //	@Failure		500			{object}	errorResp
-//	@Success		200			{object}	pagerResp{links=pgsql.PagerLinks,meta=pgsql.PagerResults,data=[]customerProfileResp}
+//	@Success		200			{object}	pagerResp{links=pgsql.PagerLinks,meta=pgsql.PagerResult,data=[]customerProfileResp}
 //	@Param			limit		query		int		false	"Limit of pages"					example(2)
 //	@Param			page		query		int		false	"Current page"						example(1)
 //	@Param			sort		query		string	false	"Sort results by a value"			example(created_at)

@@ -24,7 +24,7 @@ type errorResp struct {
 
 // pagerResp represents a paginated API response using existing DTOs.
 type pagerResp struct {
-	Meta  pgsql.PagerResults `json:"meta"`  // Uses your existing struct for metadata
-	Data  any                `json:"data"`  // Holds the actual paginated data
-	Links pgsql.PagerLinks   `json:"links"` // Uses your existing struct for pagination links
+	Meta  pgsql.PagerResult `json:"meta"`  // Uses your existing struct for metadata
+	Data  any               `json:"data"`  // Holds the actual paginated data
+	Links pgsql.PagerLinks  `json:"links"` // Uses your existing struct for pagination links
 }

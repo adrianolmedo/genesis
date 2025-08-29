@@ -66,7 +66,7 @@ func (s Service) AddCustomer(ctx context.Context, cx *Customer) error {
 	return s.customerRepo.Create(ctx, cx)
 }
 
-func (s Service) ListCustomers(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, error) {
+func (s Service) ListCustomers(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, error) {
 	return s.customerRepo.List(ctx, p)
 }
 

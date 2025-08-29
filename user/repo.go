@@ -119,35 +119,35 @@ func (r Repo) Update(ctx context.Context, m User) error {
 }
 
 // List returns a paginated list of users.
-// It returns a pgsql.PagerResults containing the paginated users and total rows.
-// If an error occurs during the query, it returns an empty PagerResults and the error.
-func (r Repo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, error) {
+// It returns a pgsql.PagerResult containing the paginated users and total rows.
+// If an error occurs during the query, it returns an empty PagerResult and the error.
+func (r Repo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, error) {
 	users, err := r.q.UserListAsc(ctx, dbgen.UserListAscParams{
 		Sort:   p.Sort(),
 		Offset: int32(p.Offset()),
 		Limit:  int32(p.Limit()),
 	})
 	if err != nil {
-		return pgsql.PagerResults{}, err
+		return pgsql.PagerResult{}, err
 	}
 
 	totalRows, err := r.q.UserListCount(ctx)
 	if err != nil {
-		return pgsql.PagerResults{}, err
+		return pgsql.PagerResult{}, err
 	}
 
 	return p.Paginate(users, totalRows), nil
 }
 
 // All is like List but with custom SQL.
-/*func (r Repo) All(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, error) {
+/*func (r Repo) All(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, error) {
 	query := `SELECT id, uuid, first_name, last_name, email, password, created_at, updated_at, deleted_at FROM "user" WHERE deleted_at IS NULL`
 	query += " " + p.OrderBy()
 	query += " " + p.LimitOffset()
 
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
-		return pgsql.PagerResults{}, err
+		return pgsql.PagerResult{}, err
 	}
 	defer rows.Close()
 
@@ -167,7 +167,7 @@ func (r Repo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, err
 			&deletedAtNull,
 		)
 		if err != nil {
-			return pgsql.PagerResults{}, err
+			return pgsql.PagerResult{}, err
 		}
 
 		m.UpdatedAt = pgsql.PtrFromNullTime(updatedAtNull)
@@ -177,14 +177,14 @@ func (r Repo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, err
 	}
 
 	if err := rows.Err(); err != nil {
-		return pgsql.PagerResults{}, err
+		return pgsql.PagerResult{}, err
 	}
 
 	// Get total rows to calculate total pages.
 	var totalRows int64
 	err = r.db.QueryRow(ctx, `SELECT COUNT (*) FROM "user" WHERE deleted_at IS NULL`).Scan(&totalRows)
 	if err != nil {
-		return pgsql.PagerResults{}, err
+		return pgsql.PagerResult{}, err
 	}
 
 	return p.Paginate(users, totalRows), nil

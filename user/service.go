@@ -81,7 +81,7 @@ func (s Service) Update(ctx context.Context, u User) error {
 }
 
 // List get list of users.
-func (s Service) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, error) {
+func (s Service) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, error) {
 	return s.repo.List(ctx, p)
 }
 

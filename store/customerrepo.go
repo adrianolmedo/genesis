@@ -47,19 +47,19 @@ func (r CustomerRepo) Create(ctx context.Context, m *Customer) error {
 }
 
 // List retrieves a paginated list of customers from the database.
-func (r CustomerRepo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResults, error) {
+func (r CustomerRepo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, error) {
 	customers, err := r.q.CustomerListAsc(ctx, dbgen.CustomerListAscParams{
 		Sort:   p.Sort(),
 		Offset: int32(p.Offset()),
 		Limit:  int32(p.Limit()),
 	})
 	if err != nil {
-		return pgsql.PagerResults{}, err
+		return pgsql.PagerResult{}, err
 	}
 
 	totalRows, err := r.q.CustomerListCount(context.Background())
 	if err != nil {
-		return pgsql.PagerResults{}, err
+		return pgsql.PagerResult{}, err
 	}
 
 	return p.Paginate(customers, totalRows), nil
