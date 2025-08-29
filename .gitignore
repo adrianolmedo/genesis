@@ -1,5 +1,4 @@
 .vscode
-rest
 app.rsa
 app.rsa.pub
 connect-to-mysql.sh
