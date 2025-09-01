@@ -29,7 +29,7 @@ func (p Product) Validate() error {
 }
 
 // Products collection of Product.
-type Products []*Product
+type Products []Product
 
 // IsEmpty return true if is empty.
 func (ps Products) IsEmpty() bool {

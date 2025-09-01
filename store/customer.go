@@ -29,7 +29,7 @@ func (c Customer) Validate() error {
 }
 
 // Customers collection of Customer.
-type Customers []*Customer
+type Customers []Customer
 
 // IsEmpty return true if is empty.
 func (cs Customers) IsEmpty() bool {

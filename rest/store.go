@@ -114,7 +114,7 @@ func listProducts(svcs *compose.Services) fiber.Handler {
 		}
 
 		list := make([]productCardResp, 0, len(products))
-		assemble := func(p *store.Product) productCardResp {
+		assemble := func(p store.Product) productCardResp {
 			return productCardResp{
 				ID:           p.ID,
 				Name:         p.Name,
@@ -303,7 +303,7 @@ func listCustomers(svcs *compose.Services) fiber.Handler {
 			})
 		}
 
-		assemble := func(cx *store.Customer) customerProfileResp {
+		assemble := func(cx store.Customer) customerProfileResp {
 			return customerProfileResp{
 				ID:        cx.ID,
 				FirstName: cx.FirstName,

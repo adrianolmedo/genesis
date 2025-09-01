@@ -63,8 +63,8 @@ func generateInvoice(svcs *compose.Services) fiber.Handler {
 		}
 
 		// assmble is like a mapper to convert invoiceItemReq to billing.InvoiceItem.
-		assemble := func(i invoiceItemReq) *billing.InvoiceItem {
-			return &billing.InvoiceItem{
+		assemble := func(i invoiceItemReq) billing.InvoiceItem {
+			return billing.InvoiceItem{
 				ProductID: i.ProductID,
 			}
 		}

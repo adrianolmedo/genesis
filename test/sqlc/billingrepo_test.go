@@ -20,7 +20,7 @@ func TestCreateInvoice(t *testing.T) {
 			ClientID: 1,
 		},
 		Items: billing.ItemList{
-			&billing.InvoiceItem{ProductID: 1},
+			billing.InvoiceItem{ProductID: 1},
 		},
 	}
 

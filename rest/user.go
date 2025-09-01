@@ -329,7 +329,7 @@ func listUsers(svcs *compose.Services) fiber.Handler {
 			})
 		}
 
-		assemble := func(u *user.User) userProfileResp {
+		assemble := func(u user.User) userProfileResp {
 			return userProfileResp{
 				ID:        u.ID,
 				FirstName: u.FirstName,

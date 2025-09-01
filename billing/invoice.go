@@ -41,7 +41,7 @@ type InvoiceItem struct {
 }
 
 // ItemList collection of invoice items.
-type ItemList []*InvoiceItem
+type ItemList []InvoiceItem
 
 // IsEmpty return true if is empty.
 func (il ItemList) IsEmpty() bool {

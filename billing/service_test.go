@@ -19,7 +19,7 @@ func TestGenerateInvoice(t *testing.T) {
 					ClientID: 1,
 				},
 				Items: ItemList{
-					&InvoiceItem{ProductID: 1},
+					InvoiceItem{ProductID: 1},
 				},
 			},
 			errExpected:    false,

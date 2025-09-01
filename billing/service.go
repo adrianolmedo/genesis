@@ -20,7 +20,7 @@ func (s Service) Generate(ctx context.Context, inv *Invoice) error {
 }
 
 func generateInvoice(inv *Invoice) error {
-	if inv.Items == nil || inv.Items.IsEmpty() {
+	if inv.Items.IsEmpty() {
 		return ErrItemListCantBeEmpty
 	}
 
