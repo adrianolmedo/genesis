@@ -26,7 +26,7 @@ func NewCustomerRepo(db dbgen.DBTX) *CustomerRepo {
 }
 
 // Create creates a new customer in the database.
-func (r CustomerRepo) Create(ctx context.Context, m *Customer) error {
+func (r *CustomerRepo) Create(ctx context.Context, m *Customer) error {
 	m.UUID = genesis.NextUUID()
 	m.CreatedAt = time.Now()
 
@@ -47,7 +47,7 @@ func (r CustomerRepo) Create(ctx context.Context, m *Customer) error {
 }
 
 // List retrieves a paginated list of customers from the database.
-func (r CustomerRepo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, error) {
+func (r *CustomerRepo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, error) {
 	customers, err := r.q.CustomerListAsc(ctx, dbgen.CustomerListAscParams{
 		Sort:   p.Sort(),
 		Offset: int32(p.Offset()),
@@ -66,7 +66,7 @@ func (r CustomerRepo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResu
 }
 
 // Delete soft deletes a customer by setting the DeletedAt field.
-func (r CustomerRepo) Delete(ctx context.Context, id int64) error {
+func (r *CustomerRepo) Delete(ctx context.Context, id int64) error {
 	_, err := r.q.CustomerDelete(ctx, dbgen.CustomerDeleteParams{
 		ID:        id,
 		DeletedAt: sql.NullTime{Time: time.Now(), Valid: true},

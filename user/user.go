@@ -35,7 +35,7 @@ func (u User) Validate() error {
 }
 
 // Users a collection of User.
-type Users []*User
+type Users []User
 
 // IsEmpty return true if is empty.
 func (us Users) IsEmpty() bool {

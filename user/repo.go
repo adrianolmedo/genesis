@@ -30,7 +30,7 @@ func NewRepo(db dbgen.DBTX) *Repo {
 // Create a User to the storage.
 // It sets the UUID and CreatedAt fields of the User model before inserting
 // it into the database.
-func (r Repo) Create(ctx context.Context, m *User) error {
+func (r *Repo) Create(ctx context.Context, m *User) error {
 	m.UUID = genesis.NextUUID()
 	m.CreatedAt = time.Now()
 
@@ -52,7 +52,7 @@ func (r Repo) Create(ctx context.Context, m *User) error {
 }
 
 // ByLogin get a User from its login data.
-func (r Repo) ByLogin(ctx context.Context, email, pass string) error {
+func (r *Repo) ByLogin(ctx context.Context, email, pass string) error {
 	id, err := r.q.UserByLogin(ctx, dbgen.UserByLoginParams{
 		Email:    email,
 		Password: pass,
@@ -69,7 +69,7 @@ func (r Repo) ByLogin(ctx context.Context, email, pass string) error {
 }
 
 // ByID get a User from its id.
-func (r Repo) ByID(ctx context.Context, id int64) (*User, error) {
+func (r *Repo) ByID(ctx context.Context, id int64) (*User, error) {
 	m, err := r.q.UserByID(ctx, id)
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return nil, ErrNotFound
@@ -96,7 +96,7 @@ func (r Repo) ByID(ctx context.Context, id int64) (*User, error) {
 }
 
 // Update updates a user in the database.
-func (r Repo) Update(ctx context.Context, m User) error {
+func (r *Repo) Update(ctx context.Context, m User) error {
 	m.UpdatedAt = pgsql.TimeToPtr(time.Now())
 
 	_, err := r.q.UserUpdate(ctx, dbgen.UserUpdateParams{
@@ -121,7 +121,7 @@ func (r Repo) Update(ctx context.Context, m User) error {
 // List returns a paginated list of users.
 // It returns a pgsql.PagerResult containing the paginated users and total rows.
 // If an error occurs during the query, it returns an empty PagerResult and the error.
-func (r Repo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, error) {
+func (r *Repo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, error) {
 	users, err := r.q.UserListAsc(ctx, dbgen.UserListAscParams{
 		Sort:   p.Sort(),
 		Offset: int32(p.Offset()),
@@ -140,7 +140,7 @@ func (r Repo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, erro
 }
 
 // All is like List but with custom SQL.
-/*func (r Repo) All(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, error) {
+/*func (r *Repo) All(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, error) {
 	query := `SELECT id, uuid, first_name, last_name, email, password, created_at, updated_at, deleted_at FROM "user" WHERE deleted_at IS NULL`
 	query += " " + p.OrderBy()
 	query += " " + p.LimitOffset()
@@ -193,7 +193,7 @@ func (r Repo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, erro
 // Delete marks a user as deleted in the storage.
 // It sets the DeletedAt field to the current time, effectively
 // soft-deleting the user.
-func (r Repo) Delete(ctx context.Context, id int64) error {
+func (r *Repo) Delete(ctx context.Context, id int64) error {
 	_, err := r.q.UserDelete(ctx, dbgen.UserDeleteParams{
 		ID:        id,
 		DeletedAt: sql.NullTime{Time: time.Now(), Valid: true},
@@ -209,7 +209,7 @@ func (r Repo) Delete(ctx context.Context, id int64) error {
 }
 
 // HardDelete deletes a user from the storage (permanently).
-func (r Repo) HardDelete(ctx context.Context, id int64) error {
+func (r *Repo) HardDelete(ctx context.Context, id int64) error {
 	_, err := r.q.UserHardDelete(ctx, id)
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return ErrNotFound
@@ -222,7 +222,7 @@ func (r Repo) HardDelete(ctx context.Context, id int64) error {
 }
 
 // DeleteAll deletes all users from the storage (permanently).
-func (r Repo) DeleteAll(ctx context.Context) error {
+func (r *Repo) DeleteAll(ctx context.Context) error {
 	err := r.q.UserDeleteAll(ctx)
 	if err != nil {
 		return fmt.Errorf("can't truncate table: %v", err)

@@ -27,7 +27,7 @@ func NewRepo(db *pgxpool.Pool) *Repo {
 }
 
 // CreateInvoice creates a new invoice with its header and items.
-func (r Repo) CreateInvoice(ctx context.Context, inv *Invoice) error {
+func (r *Repo) CreateInvoice(ctx context.Context, inv *Invoice) error {
 	tx, err := r.db.Begin(ctx)
 	if err != nil {
 		return err
@@ -52,7 +52,7 @@ func (r Repo) CreateInvoice(ctx context.Context, inv *Invoice) error {
 }
 
 // CreateHeader creates a new invoice header in the database.
-func (r Repo) CreateHeader(ctx context.Context, tx pgx.Tx, m *InvoiceHeader) error {
+func (r *Repo) CreateHeader(ctx context.Context, tx pgx.Tx, m *InvoiceHeader) error {
 	m.UUID = genesis.NextUUID()
 
 	row, err := r.q.WithTx(tx).InvoiceHeaderCreate(ctx, dbgen.InvoiceHeaderCreateParams{
@@ -67,26 +67,26 @@ func (r Repo) CreateHeader(ctx context.Context, tx pgx.Tx, m *InvoiceHeader) err
 	return nil
 }
 
-// CreateItem creates items associated with a header and product for the invoice.
-func (r Repo) CreateItem(ctx context.Context, tx pgx.Tx, headerID int64, items ItemList) error {
-	for _, item := range items {
+// CreateItem create items associated with a header and product for the invoice.
+func (r *Repo) CreateItem(ctx context.Context, tx pgx.Tx, headerID int64, items ItemList) error {
+	for i := range items {
 		row, err := r.q.WithTx(tx).InvoiceItemCreate(ctx, dbgen.InvoiceItemCreateParams{
 			InvoiceHeaderID: headerID,
-			ProductID:       item.ProductID,
+			ProductID:       items[i].ProductID,
 		})
 		if err != nil {
 			return err
 		}
 
-		item.ID = row.ID
-		item.CreatedAt = row.CreatedAt
+		items[i].ID = row.ID
+		items[i].CreatedAt = row.CreatedAt
 
 	}
 	return nil
 }
 
 // DeleteAll delete all invoice headers (permanantly).
-func (r Repo) DeleteAll(ctx context.Context) error {
+func (r *Repo) DeleteAll(ctx context.Context) error {
 	err := r.q.InvoiceHeaderDeleteAll(ctx)
 	if err != nil {
 		return fmt.Errorf("can't truncate table: %v", err)
@@ -96,7 +96,7 @@ func (r Repo) DeleteAll(ctx context.Context) error {
 
 // DeleteAllItems deletes all invoice items.
 // This is used for testing purposes to reset the state of the invoice items table.
-func (r Repo) DeleteAllItems(ctx context.Context) error {
+func (r *Repo) DeleteAllItems(ctx context.Context) error {
 	err := r.q.InvoiceItemDeleteAll(ctx)
 	if err != nil {
 		return fmt.Errorf("can't truncate table: %v", err)
