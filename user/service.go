@@ -25,7 +25,6 @@ func (s Service) Login(ctx context.Context, email, password string) error {
 	if err := validateEmail(email); err != nil {
 		return err
 	}
-
 	return s.repo.ByLogin(ctx, email, password)
 }
 
@@ -35,7 +34,6 @@ func (s Service) SignUp(ctx context.Context, u *User) error {
 	if err != nil {
 		return err
 	}
-
 	return s.repo.Create(ctx, u)
 }
 
@@ -47,12 +45,10 @@ func signUp(u *User) error {
 	if err != nil {
 		return err
 	}
-
 	err = validateEmail(u.Email)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -61,7 +57,6 @@ func (s Service) Find(ctx context.Context, id int64) (*User, error) {
 	if id == 0 {
 		return &User{}, ErrNotFound
 	}
-
 	return s.repo.ByID(ctx, id)
 }
 
@@ -71,12 +66,10 @@ func (s Service) Update(ctx context.Context, u User) error {
 	if err != nil {
 		return err
 	}
-
 	err = validateEmail(u.Email)
 	if err != nil {
 		return err
 	}
-
 	return s.repo.Update(ctx, u)
 }
 
@@ -90,7 +83,6 @@ func (s Service) Remove(ctx context.Context, id int64) error {
 	if id == 0 {
 		return ErrNotFound
 	}
-
 	return s.repo.Delete(ctx, id)
 }
 
@@ -100,10 +92,8 @@ func validateEmail(email string) error {
 	if err != nil {
 		return fmt.Errorf("email pattern: %v", err)
 	}
-
 	if !validEmail {
 		return errors.New("invalid email")
 	}
-
 	return nil
 }

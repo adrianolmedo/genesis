@@ -29,7 +29,6 @@ func NewCustomerRepo(db dbgen.DBTX) *CustomerRepo {
 func (r *CustomerRepo) Create(ctx context.Context, m *Customer) error {
 	m.UUID = genesis.NextUUID()
 	m.CreatedAt = time.Now()
-
 	id, err := r.q.CustomerCreate(ctx, dbgen.CustomerCreateParams{
 		Uuid:      uuid.Parse(m.UUID),
 		FirstName: m.FirstName,
@@ -41,7 +40,6 @@ func (r *CustomerRepo) Create(ctx context.Context, m *Customer) error {
 	if err != nil {
 		return err
 	}
-
 	m.ID = id
 	return nil
 }
@@ -56,12 +54,10 @@ func (r *CustomerRepo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerRes
 	if err != nil {
 		return pgsql.PagerResult{}, err
 	}
-
 	totalRows, err := r.q.CustomerListCount(context.Background())
 	if err != nil {
 		return pgsql.PagerResult{}, err
 	}
-
 	return p.Paginate(customers, totalRows), nil
 }
 
@@ -74,7 +70,6 @@ func (r *CustomerRepo) Delete(ctx context.Context, id int64) error {
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return ErrCustomerNotFound
 	}
-
 	if err != nil {
 		return err
 	}

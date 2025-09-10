@@ -25,7 +25,6 @@ func (s Service) Add(ctx context.Context, p *Product) error {
 	if err != nil {
 		return err
 	}
-
 	return s.productRepo.Create(ctx, p)
 }
 
@@ -37,7 +36,6 @@ func addProduct(p *Product) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -45,7 +43,6 @@ func (s Service) Find(ctx context.Context, id int64) (*Product, error) {
 	if id == 0 {
 		return nil, ErrProductNotFound
 	}
-
 	return s.productRepo.ByID(ctx, id)
 }
 
@@ -54,7 +51,6 @@ func (s Service) Update(ctx context.Context, p Product) error {
 	if err != nil {
 		return err
 	}
-
 	return s.productRepo.Update(ctx, p)
 }
 
@@ -74,7 +70,6 @@ func (s Service) RemoveCustomer(ctx context.Context, id int64) error {
 	if id == 0 {
 		return ErrCustomerNotFound
 	}
-
 	return s.customerRepo.Delete(ctx, id)
 }
 
@@ -82,6 +77,5 @@ func (s Service) Remove(ctx context.Context, id int64) error {
 	if id == 0 {
 		return ErrProductNotFound
 	}
-
 	return s.productRepo.Delete(ctx, id)
 }

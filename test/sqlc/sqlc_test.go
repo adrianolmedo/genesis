@@ -29,15 +29,12 @@ func TestDB(t *testing.T) {
 // It returns the connection or fails the test if an error occurs.
 func openDB(ctx context.Context, t *testing.T) *pgxpool.Pool {
 	t.Helper()
-
 	dbcfg := genesis.Config{
 		DatabaseURL: *dburl,
 	}
-
 	db, err := sqlc.NewPool(ctx, dbcfg)
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	return db
 }

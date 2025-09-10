@@ -40,7 +40,6 @@ func TestPager(t *testing.T) {
 			errExpected: true,
 		},
 	}
-
 	for _, tc := range tt {
 		_, err := pgsql.NewPager(tc.limit, tc.page, tc.sort, tc.direction)
 		errReceived := err != nil
@@ -76,7 +75,6 @@ func TestLimitOffset(t *testing.T) {
 			want:  "LIMIT 10 OFFSET 10",
 		},
 	}
-
 	for _, tc := range tt {
 		got := pgsql.LimitOffset(tc.limit, tc.page)
 		if tc.want != got {

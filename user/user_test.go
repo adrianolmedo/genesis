@@ -33,7 +33,6 @@ func TestUser(t *testing.T) {
 			errExpected: false,
 		},
 	}
-
 	for _, tc := range tt {
 		err := tc.model.Validate()
 		errReceived := err != nil
@@ -47,7 +46,6 @@ func TestUser(t *testing.T) {
 // TestNextUUID se segura que el campo UUID tenga un valor UUID válido.
 func TestNextUUID(t *testing.T) {
 	uuid := domain.NextUUID()
-
 	if !isValidUUID(uuid) {
 		t.Errorf("NextUUID() generate invalid UUID: %s", uuid)
 	} else {

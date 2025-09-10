@@ -33,13 +33,11 @@ func TestAddProduct(t *testing.T) {
 			wantErrContain: "the product has no name",
 		},
 	}
-
 	for _, tc := range tt {
 		err := addProduct(tc.input)
 		if (err != nil) != tc.errExpected {
 			t.Fatalf("%s: unexpected error value, %v", tc.name, err)
 		}
-
 		if err != nil && !strings.Contains(err.Error(), tc.wantErrContain) {
 			t.Fatalf("want error string %q to contain %q", err.Error(), tc.wantErrContain)
 		}

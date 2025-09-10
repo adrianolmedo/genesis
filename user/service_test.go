@@ -46,7 +46,6 @@ func TestSignUp(t *testing.T) {
 			wantErrContain: "invalid",
 		},
 	}
-
 	for _, tc := range tt {
 		err := signUp(tc.input)
 		if (err != nil) != tc.errExpected {
@@ -69,15 +68,11 @@ func TestValidateEmail(t *testing.T) {
 		{name: "not-dot-email", email: "aol.ve@aolcom", errExpected: false},
 		{name: "not-@-email", email: "aol.veaolcom", errExpected: true},
 	}
-
 	u := User{}
-
 	for _, tc := range tt {
 		u.Email = tc.email
-
 		err := validateEmail(u.Email)
 		errReceived := err != nil
-
 		if errReceived != tc.errExpected {
 			t.Fatalf("%s: unexpected error value: %v", tc.name, err)
 		}

@@ -28,12 +28,10 @@ func NewPager(limit, page int, sort, direction string) (*Pager, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	page, err = validatePage(page)
 	if err != nil {
 		return nil, err
 	}
-
 	return &Pager{
 		limit:     limit,
 		page:      page,
@@ -47,11 +45,9 @@ func validatePage(p int) (int, error) {
 	if p < 0 {
 		return p, errors.New("positive number expected for page")
 	}
-
 	if p == 0 {
 		p = 1
 	}
-
 	return p, nil
 }
 
@@ -61,12 +57,10 @@ func validateLimit(n int) (int, error) {
 	if n < 0 {
 		return n, errors.New("positive number expected for limit")
 	}
-
 	maxLimit := PagerMaxLimit
 	if n == 0 || n > maxLimit {
 		n = maxLimit
 	}
-
 	return n, nil
 }
 
@@ -75,7 +69,6 @@ func validateLimit(n int) (int, error) {
 func normalizeDirection(dir string) string {
 	dir = strings.ToUpper(dir)
 	validDir := map[string]bool{"ASC": true, "DESC": true}
-
 	if validDir[dir] {
 		return dir
 	}
@@ -83,25 +76,17 @@ func normalizeDirection(dir string) string {
 }
 
 // Limit restrict to subset of results.
-func (p *Pager) Limit() int {
-	return p.limit
-}
+func (p *Pager) Limit() int { return p.limit }
 
 // Page indicates the page from the client.
-func (p *Pager) Page() int {
-	return p.page
-}
+func (p *Pager) Page() int { return p.page }
 
 // Sort sort results by the value of a field, e.g.: ORDER BY created_at.
-func (p *Pager) Sort() string {
-	return p.sort
-}
+func (p *Pager) Sort() string { return p.sort }
 
 // Direction to display the results in DESC or ASC order based on the
 // Sort value.
-func (p *Pager) Direction() string {
-	return p.direction
-}
+func (p *Pager) Direction() string { return p.direction }
 
 // OrderBy generates an SQL ORDER BY clause.
 func (p *Pager) OrderBy() string {
@@ -109,9 +94,7 @@ func (p *Pager) OrderBy() string {
 }
 
 // LimitOffset generates an SQL LIMIT OFFSET clause.
-func (p *Pager) LimitOffset() string {
-	return LimitOffset(p.limit, p.page)
-}
+func (p *Pager) LimitOffset() string { return LimitOffset(p.limit, p.page) }
 
 // LimitOffset returns a SQL string for LIMIT OFFSET a given limit & page.
 func LimitOffset(limit, page int) string {
@@ -121,9 +104,7 @@ func LimitOffset(limit, page int) string {
 	return fmt.Sprintf("LIMIT %d OFFSET %d", limit, Offset(limit, page))
 }
 
-func (p *Pager) Offset() int {
-	return Offset(p.limit, p.page)
-}
+func (p *Pager) Offset() int { return Offset(p.limit, p.page) }
 
 // Offset calculate offset operation from page and limit.
 func Offset(limit, page int) int {
@@ -147,11 +128,8 @@ func (p *Pager) Paginate(rows any, totalRows int64) PagerResult {
 			Rows:       rows,
 		}
 	}
-
 	totalPages := int(math.Ceil(float64(totalRows) / float64(p.limit)))
-
 	var fromRow, toRow int
-
 	if p.direction == "ASC" {
 		fromRow = (p.page - 1) * p.limit
 		toRow = fromRow + p.limit
@@ -165,7 +143,6 @@ func (p *Pager) Paginate(rows any, totalRows int64) PagerResult {
 			fromRow = 0
 		}
 	}
-
 	return PagerResult{
 		Page:       p.page,
 		Limit:      p.limit,
@@ -197,7 +174,6 @@ func (p *Pager) Links(path string, totalPages int) PagerLinks {
 	genLink := func(page int) string {
 		return fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, p.limit, page, p.sort)
 	}
-
 	firstPage := genLink(1)
 	lastPage := genLink(totalPages)
 
@@ -208,7 +184,6 @@ func (p *Pager) Links(path string, totalPages int) PagerLinks {
 	if p.page < totalPages {
 		nextPage = genLink(p.page + 1)
 	}
-
 	return PagerLinks{
 		FirstPage:    firstPage,
 		PreviousPage: previousPage,

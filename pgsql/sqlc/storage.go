@@ -44,6 +44,5 @@ func NewPool(ctx context.Context, cfg genesis.Config) (*pgxpool.Pool, error) {
 	if err != nil {
 		return nil, fmt.Errorf("can't do ping %v", err)
 	}
-
 	return pool, nil
 }

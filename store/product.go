@@ -24,7 +24,6 @@ func (p Product) Validate() error {
 	if p.Name == "" {
 		return errors.New("the product has no name")
 	}
-
 	return nil
 }
 

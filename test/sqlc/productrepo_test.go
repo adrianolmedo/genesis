@@ -53,12 +53,11 @@ func TestProductByID(t *testing.T) {
 	t.Cleanup(func() {
 		cleanProductsData(t)
 	})
-
 	ctx := test.Ctx(t)
 	db := openDB(ctx, t)
 	defer db.Close()
-	insertProductsData(ctx, t, db)
 
+	insertProductsData(ctx, t, db)
 	tt := []struct {
 		name           string
 		input          int64
@@ -81,9 +80,7 @@ func TestProductByID(t *testing.T) {
 			wantErrContain: "product not found",
 		},
 	}
-
 	p := store.NewProductRepo(db)
-
 	for _, tc := range tt {
 		got, err := p.ByID(ctx, tc.input)
 		if (err != nil) != tc.errExpected {
@@ -104,46 +101,37 @@ func TestUpdateProduct(t *testing.T) {
 	t.Cleanup(func() {
 		cleanProductsData(t)
 	})
-
 	ctx := test.Ctx(t)
 	db := openDB(ctx, t)
 	defer db.Close()
-	insertProductsData(ctx, t, db)
 
+	insertProductsData(ctx, t, db)
 	input := store.Product{
 		ID:           1,
 		Name:         "Coca-Cola",
 		Observations: "",
 		Price:        3,
 	}
-
 	p := store.NewProductRepo(db)
-
 	if err := p.Update(ctx, input); err != nil {
 		t.Fatal(err)
 	}
-
 	got, err := p.ByID(ctx, input.ID)
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	if got.Name != input.Name {
 		t.Errorf("Name: want %s, got %s", input.Name, got.Name)
 	}
-
 	if got.Observations != input.Observations {
 		t.Errorf("Observations: want %s, got %s", input.Observations, got.Observations)
 	}
-
 	if got.CreatedAt.IsZero() {
 		t.Error("expected created at")
 	}
-
 	if got.UpdatedAt.IsZero() {
 		t.Error("expected updated at")
 	}
-
 	if got.DeletedAt != nil {
 		t.Error("unexpected deleted at")
 	}
@@ -152,7 +140,6 @@ func TestUpdateProduct(t *testing.T) {
 // insertProductsData add default `product` data.
 func insertProductsData(ctx context.Context, t *testing.T, db *pgxpool.Pool) {
 	t.Helper()
-
 	p := store.NewProductRepo(db)
 
 	// Add first product
@@ -181,7 +168,6 @@ func cleanProductsData(t *testing.T) {
 	defer db.Close()
 
 	p := store.NewProductRepo(db)
-
 	err := p.DeleteAll(ctx)
 	if err != nil {
 		t.Fatal(err)

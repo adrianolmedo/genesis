@@ -27,11 +27,9 @@ func TestProduct(t *testing.T) {
 			errExpected: false,
 		},
 	}
-
 	for _, tc := range tt {
 		err := tc.model.Validate()
 		errReceived := err != nil
-
 		if errReceived != tc.errExpected {
 			t.Fatalf("%s: unexpected error value, %v", tc.name, err)
 		}

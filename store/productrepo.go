@@ -32,7 +32,6 @@ func NewProductRepo(db dbgen.DBTX) *ProductRepo {
 func (r *ProductRepo) Create(ctx context.Context, m *Product) error {
 	m.UUID = genesis.NextUUID()
 	m.CreatedAt = time.Now()
-
 	id, err := r.q.ProductCreate(ctx, dbgen.ProductCreateParams{
 		Uuid:         uuid.Parse(m.UUID),
 		Name:         m.Name,
@@ -43,7 +42,6 @@ func (r *ProductRepo) Create(ctx context.Context, m *Product) error {
 	if err != nil {
 		return err
 	}
-
 	m.ID = id
 	return nil
 }
@@ -53,11 +51,9 @@ func (r *ProductRepo) ByID(ctx context.Context, id int64) (*Product, error) {
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return nil, ErrProductNotFound
 	}
-
 	if err != nil {
 		return nil, err
 	}
-
 	p := &Product{
 		ID:           m.ID,
 		UUID:         m.Uuid.String(),
@@ -65,17 +61,14 @@ func (r *ProductRepo) ByID(ctx context.Context, id int64) (*Product, error) {
 		Observations: m.Observations,
 		Price:        m.Price,
 	}
-
 	p.CreatedAt = m.CreatedAt
 	p.UpdatedAt = pgsql.NullTimeToPtr(m.UpdatedAt)
 	p.DeletedAt = pgsql.NullTimeToPtr(m.DeletedAt)
-
 	return p, nil
 }
 
 func (r *ProductRepo) Update(ctx context.Context, m Product) error {
 	m.UpdatedAt = pgsql.TimeToPtr(time.Now())
-
 	_, err := r.q.ProductUpdate(ctx, dbgen.ProductUpdateParams{
 		ID:           m.ID,
 		Name:         m.Name,
@@ -86,11 +79,9 @@ func (r *ProductRepo) Update(ctx context.Context, m Product) error {
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return ErrProductNotFound
 	}
-
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -114,11 +105,9 @@ func toDomainProducts(dbProducts []dbgen.Product) Products {
 			Observations: m.Observations,
 			Price:        m.Price,
 		}
-
 		p.CreatedAt = m.CreatedAt
 		p.UpdatedAt = pgsql.NullTimeToPtr(m.UpdatedAt)
 		p.DeletedAt = pgsql.NullTimeToPtr(m.DeletedAt)
-
 		products = append(products, p)
 	}
 	return products
@@ -133,11 +122,9 @@ func (r *ProductRepo) Delete(ctx context.Context, id int64) error {
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return ErrProductNotFound
 	}
-
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -147,11 +134,9 @@ func (r *ProductRepo) HardDelete(ctx context.Context, id int64) error {
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return ErrProductNotFound
 	}
-
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
