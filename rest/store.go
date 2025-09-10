@@ -34,7 +34,7 @@ func addProduct(svcs *compose.Services) fiber.Handler {
 
 		err := c.BodyParser(&req)
 		if err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: "The JSON structure is not correct",
 				Details: "Check the JSON syntax in the structure",
@@ -50,7 +50,7 @@ func addProduct(svcs *compose.Services) fiber.Handler {
 		err = svcs.Store.Add(ctx, product)
 
 		if err != nil {
-			return errorJSON(c, http.StatusInternalServerError, respDetails{
+			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
@@ -58,7 +58,7 @@ func addProduct(svcs *compose.Services) fiber.Handler {
 
 		logger.Debug("Product added", "product", product.UUID)
 
-		return respJSON(c, http.StatusCreated, respDetails{
+		return respJSON(c, http.StatusCreated, detailsResp{
 			Message: "Product added",
 			Data: productCardResp{
 				Name:         req.Name,
@@ -100,14 +100,14 @@ func listProducts(svcs *compose.Services) fiber.Handler {
 
 		products, err := svcs.Store.List(ctx)
 		if err != nil {
-			return errorJSON(c, http.StatusInternalServerError, respDetails{
+			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
 		}
 
 		if products.IsEmpty() {
-			return respJSON(c, http.StatusOK, respDetails{
+			return respJSON(c, http.StatusOK, detailsResp{
 				Code:    "005",
 				Message: "There are not products",
 			})
@@ -127,7 +127,7 @@ func listProducts(svcs *compose.Services) fiber.Handler {
 			list = append(list, assemble(v))
 		}
 
-		return respJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "Ok",
 			Data:    list,
 		})
@@ -153,7 +153,7 @@ func createCustomer(svcs *compose.Services) fiber.Handler {
 
 		err := c.BodyParser(&req)
 		if err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: "The JSON structure is not correct",
 				Details: "Check the JSON syntax in the structure",
@@ -168,13 +168,13 @@ func createCustomer(svcs *compose.Services) fiber.Handler {
 		})
 
 		if err != nil {
-			return errorJSON(c, http.StatusInternalServerError, respDetails{
+			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
 		}
 
-		return respJSON(c, http.StatusCreated, respDetails{
+		return respJSON(c, http.StatusCreated, detailsResp{
 			Message: "Customer created",
 			Data: customerProfileResp{
 				FirstName: req.FirstName,
@@ -220,7 +220,7 @@ func deleteCustomer(svcs *compose.Services) fiber.Handler {
 
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: "Positive number expected for ID user",
 			})
@@ -228,14 +228,14 @@ func deleteCustomer(svcs *compose.Services) fiber.Handler {
 
 		err = svcs.Store.RemoveCustomer(ctx, int64(id))
 		if errors.Is(err, store.ErrProductNotFound) {
-			return errorJSON(c, http.StatusNoContent, respDetails{
+			return errorJSON(c, http.StatusNoContent, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
 		}
 
 		if err != nil {
-			return errorJSON(c, http.StatusInternalServerError, respDetails{
+			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "003",
 				Message: "Coudl not delete customer",
 			})
@@ -243,7 +243,7 @@ func deleteCustomer(svcs *compose.Services) fiber.Handler {
 
 		logger.Info("customer", fmt.Sprintf("customer with ID %d removed from DB", id))
 
-		return respJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "Customer delete",
 		})
 	}
@@ -275,7 +275,7 @@ func listCustomers(svcs *compose.Services) fiber.Handler {
 			c.Query("direction"),
 		)
 		if err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
@@ -283,7 +283,7 @@ func listCustomers(svcs *compose.Services) fiber.Handler {
 
 		pr, err := svcs.Store.ListCustomers(ctx, p)
 		if err != nil {
-			return errorJSON(c, http.StatusInternalServerError, respDetails{
+			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
@@ -291,14 +291,14 @@ func listCustomers(svcs *compose.Services) fiber.Handler {
 
 		customers, ok := pr.Rows.(store.Customers)
 		if !ok {
-			return errorJSON(c, http.StatusInternalServerError, respDetails{
+			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "003",
 				Message: "Data assertion",
 			})
 		}
 
 		if customers.IsEmpty() {
-			return respJSON(c, http.StatusOK, respDetails{
+			return respJSON(c, http.StatusOK, detailsResp{
 				Message: "There are not customers",
 			})
 		}
@@ -343,7 +343,7 @@ func findProduct(svcs *compose.Services) fiber.Handler {
 
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: "Positive number expected for ID product",
 			})
@@ -351,20 +351,20 @@ func findProduct(svcs *compose.Services) fiber.Handler {
 
 		product, err := svcs.Store.Find(ctx, int64(id))
 		if errors.Is(err, store.ErrProductNotFound) {
-			return errorJSON(c, http.StatusNotFound, respDetails{
+			return errorJSON(c, http.StatusNotFound, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
 		}
 
 		if err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
 		}
 
-		return respJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, detailsResp{
 			Data: productCardResp{
 				ID:           product.ID,
 				Name:         product.Name,
@@ -396,7 +396,7 @@ func updateProduct(svcs *compose.Services) fiber.Handler {
 		logger.Debug("product", fmt.Sprintf("request to update product ID %d", id))
 
 		if id < 0 || err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: "Positive number expected for ID product",
 			})
@@ -405,7 +405,7 @@ func updateProduct(svcs *compose.Services) fiber.Handler {
 		req := updateProductReq{}
 		err = c.BodyParser(&req)
 		if err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: "The JSON structure is not correct",
 				Details: "Check the JSON syntax in the structure",
@@ -421,14 +421,14 @@ func updateProduct(svcs *compose.Services) fiber.Handler {
 			Price:        req.Price,
 		})
 		if errors.Is(err, store.ErrProductNotFound) {
-			return errorJSON(c, http.StatusNoContent, respDetails{
+			return errorJSON(c, http.StatusNoContent, detailsResp{
 				Code:    "002",
 				Message: err.Error(),
 			})
 		}
 
 		if err != nil {
-			return errorJSON(c, http.StatusInternalServerError, respDetails{
+			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "002",
 				Message: err.Error(),
 			})
@@ -436,7 +436,7 @@ func updateProduct(svcs *compose.Services) fiber.Handler {
 
 		logger.Debug("product", fmt.Sprintf("product ID %d updated", id))
 
-		return respJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "Product updated",
 		})
 
@@ -470,7 +470,7 @@ func deleteProduct(svcs *compose.Services) fiber.Handler {
 
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: "Positive number expected for ID product",
 			})
@@ -478,20 +478,20 @@ func deleteProduct(svcs *compose.Services) fiber.Handler {
 
 		err = svcs.Store.Remove(ctx, int64(id))
 		if errors.Is(err, store.ErrProductNotFound) {
-			return errorJSON(c, http.StatusNoContent, respDetails{
+			return errorJSON(c, http.StatusNoContent, detailsResp{
 				Message: err.Error(),
 			})
 		}
 
 		if err != nil {
-			return errorJSON(c, http.StatusNoContent, respDetails{
+			return errorJSON(c, http.StatusNoContent, detailsResp{
 				Message: fmt.Sprintf("Could not delete product: %s", err),
 			})
 		}
 
 		logger.Debug("product", fmt.Sprintf("product with ID %d removed from DB", id))
 
-		return respJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "Product deleted",
 		})
 	}

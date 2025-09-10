@@ -34,10 +34,9 @@ func generateInvoice(svcs *compose.Services) fiber.Handler {
 
 		err := c.BodyParser(&req)
 		if err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: "The JSON structure is not correct",
-				Details: "Check the JSON syntax in the structure",
 			})
 		}
 
@@ -47,7 +46,7 @@ func generateInvoice(svcs *compose.Services) fiber.Handler {
 		if errors.Is(err, user.ErrNotFound) {
 			logger.Error("generating invoice", fmt.Sprintf("user ID %d not found to generate invoice", clientID))
 
-			return errorJSON(c, http.StatusNotFound, respDetails{
+			return errorJSON(c, http.StatusNotFound, detailsResp{
 				Code:    "002",
 				Message: err.Error(),
 			})
@@ -56,7 +55,7 @@ func generateInvoice(svcs *compose.Services) fiber.Handler {
 		if err != nil {
 			logger.Error("generating invoice", err.Error())
 
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: err.Error(),
 			})
@@ -77,7 +76,7 @@ func generateInvoice(svcs *compose.Services) fiber.Handler {
 			if errors.Is(err, store.ErrProductNotFound) {
 				logger.Debug("generating invoice", fmt.Sprintf("product ID %d not found to add the invoice", item.ProductID))
 
-				return errorJSON(c, http.StatusNotFound, respDetails{
+				return errorJSON(c, http.StatusNotFound, detailsResp{
 					Code:    "002",
 					Message: fmt.Sprintf("%s with id %d", store.ErrProductNotFound, item.ProductID),
 				})
@@ -86,7 +85,7 @@ func generateInvoice(svcs *compose.Services) fiber.Handler {
 			if err != nil {
 				logger.Error("generating invoice", err.Error())
 
-				return errorJSON(c, http.StatusBadRequest, respDetails{
+				return errorJSON(c, http.StatusBadRequest, detailsResp{
 					Code:    "002",
 					Message: err.Error(),
 				})
@@ -107,7 +106,7 @@ func generateInvoice(svcs *compose.Services) fiber.Handler {
 		if err != nil {
 			logger.Error("generating invoice", err.Error())
 
-			return errorJSON(c, http.StatusInternalServerError, respDetails{
+			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "002",
 				Message: err.Error(),
 			})
@@ -115,7 +114,7 @@ func generateInvoice(svcs *compose.Services) fiber.Handler {
 
 		logger.Info("generating invoice", fmt.Sprintf("invoice ID %d generated", invoice.Header.ID))
 
-		return respJSON(c, http.StatusCreated, respDetails{
+		return respJSON(c, http.StatusCreated, detailsResp{
 			Message: "Invoice generated",
 			Data: generateInvoiceReq{
 				Header: req.Header,

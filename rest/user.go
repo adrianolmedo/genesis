@@ -35,7 +35,7 @@ func loginUser(svcs *compose.Services) fiber.Handler {
 		req := userLoginReq{}
 		err := c.BodyParser(&req)
 		if err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: "The JSON structure is not correct",
 				Details: "Check the JSON syntax in the structure",
@@ -44,14 +44,14 @@ func loginUser(svcs *compose.Services) fiber.Handler {
 
 		err = svcs.User.Login(ctx, req.Email, req.Password)
 		if errors.Is(err, user.ErrNotFound) {
-			return errorJSON(c, http.StatusUnauthorized, respDetails{
+			return errorJSON(c, http.StatusUnauthorized, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
 		}
 
 		if err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
@@ -59,13 +59,13 @@ func loginUser(svcs *compose.Services) fiber.Handler {
 
 		token, err := jwt.Generate(req.Email)
 		if err != nil {
-			return errorJSON(c, http.StatusInternalServerError, respDetails{
+			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "004",
 				Message: "The token could not be generated",
 			})
 		}
 
-		return respJSON(c, http.StatusCreated, respDetails{
+		return respJSON(c, http.StatusCreated, detailsResp{
 			Message: "You are logged",
 			Data:    dataTokenResp{token},
 		})
@@ -101,7 +101,7 @@ func signUpUser(svcs *compose.Services) fiber.Handler {
 		req := userSignUpReq{}
 		err := c.BodyParser(&req)
 		if err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: "The JSON structure is not correct",
 				Details: "Check the JSON syntax in the structure",
@@ -116,13 +116,13 @@ func signUpUser(svcs *compose.Services) fiber.Handler {
 		})
 
 		if err != nil {
-			return errorJSON(c, http.StatusInternalServerError, respDetails{
+			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
 		}
 
-		return respJSON(c, http.StatusCreated, respDetails{
+		return respJSON(c, http.StatusCreated, detailsResp{
 			Message: "User created",
 			Data: userProfileResp{
 				FirstName: req.FirstName,
@@ -167,7 +167,7 @@ func findUser(svcs *compose.Services) fiber.Handler {
 
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: "Positive number expected for ID user",
 			})
@@ -175,20 +175,20 @@ func findUser(svcs *compose.Services) fiber.Handler {
 
 		userModel, err := svcs.User.Find(ctx, int64(id))
 		if errors.Is(err, user.ErrNotFound) {
-			return errorJSON(c, http.StatusNotFound, respDetails{
+			return errorJSON(c, http.StatusNotFound, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
 		}
 
 		if err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
 		}
 
-		return respJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "User found",
 			Data: userProfileResp{
 				ID:        userModel.ID,
@@ -219,7 +219,7 @@ func updateUser(svcs *compose.Services) fiber.Handler {
 
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: "Positive number expected for ID user",
 			})
@@ -228,7 +228,7 @@ func updateUser(svcs *compose.Services) fiber.Handler {
 		req := userUpdateReq{}
 		err = c.BodyParser(&req)
 		if err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: "The JSON structure is not correct",
 				Details: "Check the JSON syntax in the structure",
@@ -246,20 +246,20 @@ func updateUser(svcs *compose.Services) fiber.Handler {
 		})
 
 		if errors.Is(err, user.ErrNotFound) {
-			return errorJSON(c, http.StatusNotFound, respDetails{
+			return errorJSON(c, http.StatusNotFound, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
 		}
 
 		if err != nil {
-			return errorJSON(c, http.StatusInternalServerError, respDetails{
+			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
 		}
 
-		return respJSON(c, http.StatusCreated, respDetails{
+		return respJSON(c, http.StatusCreated, detailsResp{
 			Message: "User updated",
 			Data: userProfileResp{
 				ID:        userID,
@@ -300,7 +300,7 @@ func listUsers(svcs *compose.Services) fiber.Handler {
 			c.Query("direction"),
 		)
 		if err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
@@ -308,7 +308,7 @@ func listUsers(svcs *compose.Services) fiber.Handler {
 
 		pr, err := svcs.User.List(ctx, p)
 		if err != nil {
-			return errorJSON(c, http.StatusInternalServerError, respDetails{
+			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
@@ -316,14 +316,14 @@ func listUsers(svcs *compose.Services) fiber.Handler {
 
 		users, ok := pr.Rows.(user.Users)
 		if !ok {
-			return errorJSON(c, http.StatusInternalServerError, respDetails{
+			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "003",
 				Message: "Data assertion",
 			})
 		}
 
 		if users.IsEmpty() {
-			return respJSON(c, http.StatusOK, respDetails{
+			return respJSON(c, http.StatusOK, detailsResp{
 				Code:    "005",
 				Message: "There are not users",
 			})
@@ -343,7 +343,7 @@ func listUsers(svcs *compose.Services) fiber.Handler {
 			list = append(list, assemble(v))
 		}
 
-		return respJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "Ok",
 			Data:    list,
 		})
@@ -368,7 +368,7 @@ func deleteUser(svcs *compose.Services) fiber.Handler {
 
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
-			return errorJSON(c, http.StatusBadRequest, respDetails{
+			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: "Positive number expected for ID user",
 			})
@@ -376,14 +376,14 @@ func deleteUser(svcs *compose.Services) fiber.Handler {
 
 		err = svcs.User.Remove(ctx, int64(id))
 		if errors.Is(err, user.ErrNotFound) {
-			return errorJSON(c, http.StatusNotFound, respDetails{
+			return errorJSON(c, http.StatusNotFound, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
 		}
 
 		if err != nil {
-			return errorJSON(c, http.StatusInternalServerError, respDetails{
+			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "003",
 				Message: fmt.Sprintf("Could not delete user: %s", err),
 			})
@@ -391,7 +391,7 @@ func deleteUser(svcs *compose.Services) fiber.Handler {
 
 		logger.Debug("user", fmt.Sprintf("user ID %d deleted", id))
 
-		return respJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "User deleted",
 		})
 	}

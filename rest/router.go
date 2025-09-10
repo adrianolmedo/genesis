@@ -31,7 +31,7 @@ func Router(svcs *compose.Services) *fiber.App {
 
 	f.Get("/v1/test", func(c *fiber.Ctx) error {
 		logger.Info("testing", "path", c.Path())
-		return respJSON(c, http.StatusOK, respDetails{
+		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "Hello world",
 		})
 	})
@@ -63,15 +63,15 @@ func Router(svcs *compose.Services) *fiber.App {
 }
 
 // respJSON respond JSON.
-func respJSON(c *fiber.Ctx, httpStatus int, details respDetails) error {
+func respJSON(c *fiber.Ctx, httpStatus int, details detailsResp) error {
 	return c.Status(httpStatus).JSON(resp{
 		Status:      "success",
-		respDetails: details,
+		detailsResp: details,
 	})
 }
 
 // errorJSON respond JSON.
-func errorJSON(c *fiber.Ctx, httpStatus int, details respDetails) error {
+func errorJSON(c *fiber.Ctx, httpStatus int, details detailsResp) error {
 	return c.Status(httpStatus).JSON(errorResp{
 		Status: "error",
 		Error:  details,
@@ -83,7 +83,7 @@ func authWare(c *fiber.Ctx) error {
 	token := c.Request().Header.Peek("Authorization")
 	_, err := jwt.Verify(string(token))
 	if err != nil {
-		return errorJSON(c, http.StatusBadRequest, respDetails{
+		return errorJSON(c, http.StatusBadRequest, detailsResp{
 			Code:    "001",
 			Message: "You aren't authenticated",
 			Details: "Sign to access",

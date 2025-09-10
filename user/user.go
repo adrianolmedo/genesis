@@ -4,8 +4,6 @@ import (
 	"errors"
 
 	"github.com/adrianolmedo/genesis"
-
-	"github.com/pborman/uuid"
 )
 
 var (
@@ -30,7 +28,6 @@ func (u User) Validate() error {
 	if u.FirstName == "" || u.Email == "" || u.Password == "" {
 		return errors.New("first name, email or password can't be empty")
 	}
-
 	return nil
 }
 
@@ -40,9 +37,4 @@ type Users []User
 // IsEmpty return true if is empty.
 func (us Users) IsEmpty() bool {
 	return len(us) == 0
-}
-
-// NextUUID generates a new UUID.
-func NextUUID() string {
-	return uuid.New()
 }
