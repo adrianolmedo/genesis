@@ -7,6 +7,7 @@ import (
 	"github.com/adrianolmedo/genesis/user"
 )
 
+// TestCreateUser go test -v -run '^TestCreateUser' -tags integration -args -database-url postgres://user:password@host:port/dbname?sslmode=disable
 func TestCreateUser(t *testing.T) {
 	t.Cleanup(func() {
 		cleanUsersData(t)
@@ -16,14 +17,14 @@ func TestCreateUser(t *testing.T) {
 	db := openDB(ctx, t)
 	defer db.Close()
 
-	u := user.NewRepo(db)
-
 	input := &user.User{
 		FirstName: "John",
 		LastName:  "Doe",
 		Email:     "example@gmail.com",
 		Password:  "1234567a",
 	}
+
+	u := user.NewRepo(db)
 
 	if err := u.Create(ctx, input); err != nil {
 		t.Fatal(err)

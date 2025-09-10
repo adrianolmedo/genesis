@@ -70,7 +70,7 @@ func TestValidateEmail(t *testing.T) {
 		{name: "not-@-email", email: "aol.veaolcom", errExpected: true},
 	}
 
-	u := new(User)
+	u := User{}
 
 	for _, tc := range tt {
 		u.Email = tc.email
