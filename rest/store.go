@@ -31,7 +31,6 @@ func addProduct(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 		req := addProductReq{}
-
 		err := c.BodyParser(&req)
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, detailsResp{
@@ -40,24 +39,19 @@ func addProduct(svcs *compose.Services) fiber.Handler {
 				Details: "Check the JSON syntax in the structure",
 			})
 		}
-
 		product := &store.Product{
 			Name:         req.Name,
 			Observations: req.Observations,
 			Price:        req.Price,
 		}
-
 		err = svcs.Store.Add(ctx, product)
-
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
 		}
-
 		logger.Debug("Product added", "product", product.UUID)
-
 		return respJSON(c, http.StatusCreated, detailsResp{
 			Message: "Product added",
 			Data: productCardResp{
@@ -97,7 +91,6 @@ type productCardResp struct {
 func listProducts(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
-
 		products, err := svcs.Store.List(ctx)
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, detailsResp{
@@ -105,14 +98,12 @@ func listProducts(svcs *compose.Services) fiber.Handler {
 				Message: err.Error(),
 			})
 		}
-
 		if products.IsEmpty() {
 			return respJSON(c, http.StatusOK, detailsResp{
 				Code:    "005",
 				Message: "There are not products",
 			})
 		}
-
 		list := make([]productCardResp, 0, len(products))
 		assemble := func(p store.Product) productCardResp {
 			return productCardResp{
@@ -122,11 +113,9 @@ func listProducts(svcs *compose.Services) fiber.Handler {
 				Price:        p.Price,
 			}
 		}
-
 		for _, v := range products {
 			list = append(list, assemble(v))
 		}
-
 		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "Ok",
 			Data:    list,
@@ -150,7 +139,6 @@ func createCustomer(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 		req := createCustomerReq{}
-
 		err := c.BodyParser(&req)
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, detailsResp{
@@ -159,21 +147,18 @@ func createCustomer(svcs *compose.Services) fiber.Handler {
 				Details: "Check the JSON syntax in the structure",
 			})
 		}
-
 		err = svcs.Store.AddCustomer(ctx, &store.Customer{
 			FirstName: req.FirstName,
 			LastName:  req.LastName,
 			Email:     req.Email,
 			Password:  req.Password,
 		})
-
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
 		}
-
 		return respJSON(c, http.StatusCreated, detailsResp{
 			Message: "Customer created",
 			Data: customerProfileResp{
@@ -217,7 +202,6 @@ type createCustomerReq struct {
 func deleteCustomer(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
-
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, detailsResp{
@@ -225,7 +209,6 @@ func deleteCustomer(svcs *compose.Services) fiber.Handler {
 				Message: "Positive number expected for ID user",
 			})
 		}
-
 		err = svcs.Store.RemoveCustomer(ctx, int64(id))
 		if errors.Is(err, store.ErrProductNotFound) {
 			return errorJSON(c, http.StatusNoContent, detailsResp{
@@ -233,16 +216,13 @@ func deleteCustomer(svcs *compose.Services) fiber.Handler {
 				Message: err.Error(),
 			})
 		}
-
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "003",
 				Message: "Coudl not delete customer",
 			})
 		}
-
 		logger.Info("customer", fmt.Sprintf("customer with ID %d removed from DB", id))
-
 		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "Customer delete",
 		})
@@ -267,7 +247,6 @@ func deleteCustomer(svcs *compose.Services) fiber.Handler {
 func listCustomers(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
-
 		p, err := pgsql.NewPager(
 			c.QueryInt("limit"),
 			c.QueryInt("page"),
@@ -280,7 +259,6 @@ func listCustomers(svcs *compose.Services) fiber.Handler {
 				Message: err.Error(),
 			})
 		}
-
 		pr, err := svcs.Store.ListCustomers(ctx, p)
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, detailsResp{
@@ -288,7 +266,6 @@ func listCustomers(svcs *compose.Services) fiber.Handler {
 				Message: err.Error(),
 			})
 		}
-
 		customers, ok := pr.Rows.(store.Customers)
 		if !ok {
 			return errorJSON(c, http.StatusInternalServerError, detailsResp{
@@ -296,13 +273,11 @@ func listCustomers(svcs *compose.Services) fiber.Handler {
 				Message: "Data assertion",
 			})
 		}
-
 		if customers.IsEmpty() {
 			return respJSON(c, http.StatusOK, detailsResp{
 				Message: "There are not customers",
 			})
 		}
-
 		assemble := func(cx store.Customer) customerProfileResp {
 			return customerProfileResp{
 				ID:        cx.ID,
@@ -311,12 +286,10 @@ func listCustomers(svcs *compose.Services) fiber.Handler {
 				Email:     cx.Email,
 			}
 		}
-
 		data := make([]customerProfileResp, 0, len(customers))
 		for _, v := range customers {
 			data = append(data, assemble(v))
 		}
-
 		return c.Status(http.StatusOK).JSON(pagerResp{
 			Links: p.Links(c.Path(), pr.TotalPages),
 			Meta:  pr,
@@ -340,7 +313,6 @@ func listCustomers(svcs *compose.Services) fiber.Handler {
 func findProduct(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
-
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, detailsResp{
@@ -348,7 +320,6 @@ func findProduct(svcs *compose.Services) fiber.Handler {
 				Message: "Positive number expected for ID product",
 			})
 		}
-
 		product, err := svcs.Store.Find(ctx, int64(id))
 		if errors.Is(err, store.ErrProductNotFound) {
 			return errorJSON(c, http.StatusNotFound, detailsResp{
@@ -356,14 +327,12 @@ func findProduct(svcs *compose.Services) fiber.Handler {
 				Message: err.Error(),
 			})
 		}
-
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
 			})
 		}
-
 		return respJSON(c, http.StatusOK, detailsResp{
 			Data: productCardResp{
 				ID:           product.ID,
@@ -392,16 +361,13 @@ func updateProduct(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 		id, err := strconv.Atoi(c.Params("id"))
-
 		logger.Debug("product", fmt.Sprintf("request to update product ID %d", id))
-
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: "Positive number expected for ID product",
 			})
 		}
-
 		req := updateProductReq{}
 		err = c.BodyParser(&req)
 		if err != nil {
@@ -411,9 +377,7 @@ func updateProduct(svcs *compose.Services) fiber.Handler {
 				Details: "Check the JSON syntax in the structure",
 			})
 		}
-
 		req.ID = int64(id)
-
 		err = svcs.Store.Update(ctx, store.Product{
 			ID:           req.ID,
 			Name:         req.Name,
@@ -426,16 +390,13 @@ func updateProduct(svcs *compose.Services) fiber.Handler {
 				Message: err.Error(),
 			})
 		}
-
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "002",
 				Message: err.Error(),
 			})
 		}
-
 		logger.Debug("product", fmt.Sprintf("product ID %d updated", id))
-
 		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "Product updated",
 		})
@@ -467,7 +428,6 @@ type updateProductReq struct {
 func deleteProduct(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
-
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, detailsResp{
@@ -475,22 +435,18 @@ func deleteProduct(svcs *compose.Services) fiber.Handler {
 				Message: "Positive number expected for ID product",
 			})
 		}
-
 		err = svcs.Store.Remove(ctx, int64(id))
 		if errors.Is(err, store.ErrProductNotFound) {
 			return errorJSON(c, http.StatusNoContent, detailsResp{
 				Message: err.Error(),
 			})
 		}
-
 		if err != nil {
 			return errorJSON(c, http.StatusNoContent, detailsResp{
 				Message: fmt.Sprintf("Could not delete product: %s", err),
 			})
 		}
-
 		logger.Debug("product", fmt.Sprintf("product with ID %d removed from DB", id))
-
 		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "Product deleted",
 		})

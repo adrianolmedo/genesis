@@ -33,7 +33,6 @@ func NewRepo(db dbgen.DBTX) *Repo {
 func (r *Repo) Create(ctx context.Context, m *User) error {
 	m.UUID = genesis.NextUUID()
 	m.CreatedAt = time.Now()
-
 	id, err := r.q.UserCreate(ctx, dbgen.UserCreateParams{
 		Uuid:      uuid.Parse(m.UUID),
 		FirstName: m.FirstName,
@@ -42,11 +41,9 @@ func (r *Repo) Create(ctx context.Context, m *User) error {
 		Password:  m.Password,
 		CreatedAt: m.CreatedAt,
 	})
-
 	if err != nil {
 		return err
 	}
-
 	m.ID = id
 	return nil
 }
@@ -60,11 +57,9 @@ func (r *Repo) ByLogin(ctx context.Context, email, pass string) error {
 	if err != nil {
 		return err
 	}
-
 	if id == 0 {
 		return ErrNotFound
 	}
-
 	return nil
 }
 
@@ -74,11 +69,9 @@ func (r *Repo) ByID(ctx context.Context, id int64) (*User, error) {
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return nil, ErrNotFound
 	}
-
 	if err != nil {
 		return nil, err
 	}
-
 	u := &User{
 		ID:        m.ID,
 		UUID:      m.Uuid.String(),
@@ -87,18 +80,15 @@ func (r *Repo) ByID(ctx context.Context, id int64) (*User, error) {
 		Email:     m.Email,
 		Password:  m.Password,
 	}
-
 	u.CreatedAt = m.CreatedAt
 	u.UpdatedAt = pgsql.NullTimeToPtr(m.UpdatedAt)
 	u.DeletedAt = pgsql.NullTimeToPtr(m.DeletedAt)
-
 	return u, nil
 }
 
 // Update updates a user in the database.
 func (r *Repo) Update(ctx context.Context, m User) error {
 	m.UpdatedAt = pgsql.TimeToPtr(time.Now())
-
 	_, err := r.q.UserUpdate(ctx, dbgen.UserUpdateParams{
 		ID:        m.ID,
 		FirstName: m.FirstName,
@@ -110,11 +100,9 @@ func (r *Repo) Update(ctx context.Context, m User) error {
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return ErrNotFound
 	}
-
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -130,12 +118,10 @@ func (r *Repo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, err
 	if err != nil {
 		return pgsql.PagerResult{}, err
 	}
-
 	totalRows, err := r.q.UserListCount(ctx)
 	if err != nil {
 		return pgsql.PagerResult{}, err
 	}
-
 	return p.Paginate(users, totalRows), nil
 }
 
@@ -201,7 +187,6 @@ func (r *Repo) Delete(ctx context.Context, id int64) error {
 	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return ErrNotFound
 	}
-
 	if err != nil {
 		return err
 	}

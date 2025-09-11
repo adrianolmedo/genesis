@@ -15,7 +15,6 @@ func (s Service) Generate(ctx context.Context, inv *Invoice) error {
 	if err != nil {
 		return err
 	}
-
 	return s.repo.CreateInvoice(ctx, inv)
 }
 
@@ -23,6 +22,5 @@ func generateInvoice(inv *Invoice) error {
 	if inv.Items.IsEmpty() {
 		return ErrItemListCantBeEmpty
 	}
-
 	return nil
 }

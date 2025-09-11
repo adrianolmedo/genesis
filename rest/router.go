@@ -28,37 +28,28 @@ import (
 // @BasePath	/v1/
 func Router(svcs *compose.Services) *fiber.App {
 	f := fiber.New()
-
 	f.Get("/v1/test", func(c *fiber.Ctx) error {
 		logger.Info("testing", "path", c.Path())
 		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "Hello world",
 		})
 	})
-
 	f.Post("/v1/login", loginUser(svcs))
 	f.Post("/v1/users", signUpUser(svcs))
 	f.Get("/v1/users/:id", findUser(svcs))
-
 	f.Get("/v1/users", authWare, listUsers(svcs))
 	f.Put("/v1/users/:id", authWare, updateUser(svcs))
 	f.Delete("/v1/users/:id", authWare, deleteUser(svcs))
-
 	f.Post("/v1/customers", createCustomer(svcs))
 	f.Get("/v1/customers", listCustomers(svcs))
 	f.Delete("v1/customers/:id", deleteCustomer(svcs))
-
 	f.Get("/v1/products", listProducts(svcs))
 	f.Get("/v1/products/:id", findProduct(svcs))
-
 	f.Post("/v1/products", authWare, addProduct(svcs))
 	f.Put("/v1/products/:id", authWare, updateProduct(svcs))
 	f.Delete("/v1/products/:id", authWare, deleteProduct(svcs))
-
 	f.Post("/v1/invoices", authWare, generateInvoice(svcs))
-
 	f.Get("/swagger/*", swagger.WrapHandler)
-
 	return f
 }
 

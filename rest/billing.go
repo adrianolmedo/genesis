@@ -31,7 +31,6 @@ func generateInvoice(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.Context()
 		req := generateInvoiceReq{}
-
 		err := c.BodyParser(&req)
 		if err != nil {
 			return errorJSON(c, http.StatusBadRequest, detailsResp{
@@ -39,22 +38,17 @@ func generateInvoice(svcs *compose.Services) fiber.Handler {
 				Message: "The JSON structure is not correct",
 			})
 		}
-
 		clientID := req.Header.ClientID
-
 		_, err = svcs.User.Find(ctx, clientID)
 		if errors.Is(err, user.ErrNotFound) {
 			logger.Error("generating invoice", fmt.Sprintf("user ID %d not found to generate invoice", clientID))
-
 			return errorJSON(c, http.StatusNotFound, detailsResp{
 				Code:    "002",
 				Message: err.Error(),
 			})
 		}
-
 		if err != nil {
 			logger.Error("generating invoice", err.Error())
-
 			return errorJSON(c, http.StatusBadRequest, detailsResp{
 				Code:    "002",
 				Message: err.Error(),
@@ -67,12 +61,9 @@ func generateInvoice(svcs *compose.Services) fiber.Handler {
 				ProductID: i.ProductID,
 			}
 		}
-
 		items := make(billing.ItemList, 0, len(req.Items))
 		for _, item := range req.Items {
-
 			_, err := svcs.Store.Find(ctx, item.ProductID)
-
 			if errors.Is(err, store.ErrProductNotFound) {
 				logger.Debug("generating invoice", fmt.Sprintf("product ID %d not found to add the invoice", item.ProductID))
 
@@ -81,7 +72,6 @@ func generateInvoice(svcs *compose.Services) fiber.Handler {
 					Message: fmt.Sprintf("%s with id %d", store.ErrProductNotFound, item.ProductID),
 				})
 			}
-
 			if err != nil {
 				logger.Error("generating invoice", err.Error())
 
@@ -90,30 +80,23 @@ func generateInvoice(svcs *compose.Services) fiber.Handler {
 					Message: err.Error(),
 				})
 			}
-
 			items = append(items, assemble(item))
-
 		}
-
 		invoice := &billing.Invoice{
 			Header: &billing.InvoiceHeader{
 				ClientID: clientID,
 			},
 			Items: items,
 		}
-
 		err = svcs.Billing.Generate(ctx, invoice)
 		if err != nil {
 			logger.Error("generating invoice", err.Error())
-
 			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "002",
 				Message: err.Error(),
 			})
 		}
-
 		logger.Info("generating invoice", fmt.Sprintf("invoice ID %d generated", invoice.Header.ID))
-
 		return respJSON(c, http.StatusCreated, detailsResp{
 			Message: "Invoice generated",
 			Data: generateInvoiceReq{

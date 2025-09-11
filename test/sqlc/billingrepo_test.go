@@ -23,20 +23,16 @@ func TestCreateInvoice(t *testing.T) {
 			billing.InvoiceItem{ProductID: 1},
 		},
 	}
-
 	ctx := test.Ctx(t)
 	db := openDB(ctx, t)
 	defer db.Close()
 	insertProductsData(ctx, t, db)
-
 	//ih := NewInvoiceHeader(db)
 	//ii := NewInvoiceItem(db)
 	in := billing.NewRepo(db)
-
 	if err := in.CreateInvoice(ctx, input); err != nil {
 		t.Fatal(err)
 	}
-
 	for _, item := range input.Items {
 		if !(item.ID > 0) {
 			t.Errorf("invoice for product %d not added", item.ProductID)
@@ -57,21 +53,17 @@ func TestCreateTxInvoiceHeader(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	input := &billing.InvoiceHeader{
 		ClientID: 1,
 	}
-
 	r := billing.NewRepo(db)
 	if err := r.CreateHeader(ctx, tx, input); err != nil {
 		tx.Rollback(ctx)
 		t.Fatal(err)
 	}
-
 	if !(input.ID > 0) {
 		t.Fatal("invoice header not created")
 	}
-
 	if err := tx.Commit(ctx); err != nil {
 		t.Fatal(err)
 	}
@@ -83,7 +75,6 @@ func cleanInvoiceHeadersData(t *testing.T) {
 	defer db.Close()
 
 	ih := billing.NewRepo(db)
-
 	err := ih.DeleteAll(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -96,7 +87,6 @@ func cleanInvoiceItemsData(t *testing.T) {
 	defer db.Close()
 
 	ii := billing.NewRepo(db)
-
 	err := ii.DeleteAllItems(ctx)
 	if err != nil {
 		t.Fatal(err)

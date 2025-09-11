@@ -47,7 +47,6 @@ func TestGenerateInvoice(t *testing.T) {
 			wantErrContain: "item list can't be empty",
 		},
 	}
-
 	for _, tc := range tt {
 		err := generateInvoice(tc.input)
 		if (err != nil) != tc.errExpected {

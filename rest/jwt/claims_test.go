@@ -37,7 +37,6 @@ DIhdpkWF5HTL9xPMKy4aUHcCorx8QC2sdDlGq6QyoMEiXA==
 
 func TestClaims(t *testing.T) {
 	input := "example@gmail.com"
-
 	loadKeys(t)
 	token := genToken(t, input)
 	verifyClaims(t, token)

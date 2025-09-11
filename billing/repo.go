@@ -19,10 +19,9 @@ type Repo struct {
 
 // NewInvoice creates a new Invoice repository instance.
 func NewRepo(db *pgxpool.Pool) *Repo {
-	q := dbgen.New(db)
 	return &Repo{
 		db: db,
-		q:  q,
+		q:  dbgen.New(db),
 	}
 }
 
@@ -47,14 +46,12 @@ func (r *Repo) CreateInvoice(ctx context.Context, inv *Invoice) error {
 	if err := r.CreateItem(ctx, tx, inv.Header.ID, inv.Items); err != nil {
 		return fmt.Errorf("invoice items: %w", err)
 	}
-
 	return tx.Commit(ctx)
 }
 
 // CreateHeader creates a new invoice header in the database.
 func (r *Repo) CreateHeader(ctx context.Context, tx pgx.Tx, m *InvoiceHeader) error {
 	m.UUID = genesis.NextUUID()
-
 	row, err := r.q.WithTx(tx).InvoiceHeaderCreate(ctx, dbgen.InvoiceHeaderCreateParams{
 		Uuid:     uuid.Parse(m.UUID),
 		ClientID: m.ClientID,
@@ -62,7 +59,6 @@ func (r *Repo) CreateHeader(ctx context.Context, tx pgx.Tx, m *InvoiceHeader) er
 	if err != nil {
 		return err
 	}
-
 	m.ID = row.ID
 	return nil
 }
@@ -77,10 +73,8 @@ func (r *Repo) CreateItem(ctx context.Context, tx pgx.Tx, headerID int64, items 
 		if err != nil {
 			return err
 		}
-
 		items[i].ID = row.ID
 		items[i].CreatedAt = row.CreatedAt
-
 	}
 	return nil
 }

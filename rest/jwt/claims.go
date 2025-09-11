@@ -31,13 +31,11 @@ func Generate(userEmail string) (string, error) {
 			Issuer:    "genesis",
 		},
 	}
-
 	t := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	signedToken, err := t.SignedString(privateKey)
 	if err != nil {
 		return "", err
 	}
-
 	return signedToken, nil
 }
 
@@ -47,11 +45,9 @@ func Verify(token string) (Claims, error) {
 	if err != nil {
 		return Claims{}, err
 	}
-
 	if !t.Valid {
 		return Claims{}, errors.New("invalid token")
 	}
-
 	claims, ok := t.Claims.(*Claims)
 	if !ok {
 		return Claims{}, errors.New("the claims could not be obtained")
@@ -80,12 +76,10 @@ func loadFiles(private, public string) error {
 	if err != nil {
 		return err
 	}
-
 	publicBytes, err := os.ReadFile(public)
 	if err != nil {
 		return err
 	}
-
 	return parseRSA(privateBytes, publicBytes)
 }
 
@@ -101,11 +95,9 @@ func parseRSA(private, public []byte) error {
 	if err != nil {
 		return err
 	}
-
 	publicKey, err = jwt.ParseRSAPublicKeyFromPEM(public)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
