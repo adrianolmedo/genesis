@@ -1,7 +1,9 @@
 package rest
 
 import (
+	"context"
 	"net/http"
+	"time"
 
 	"github.com/adrianolmedo/genesis/compose"
 	_ "github.com/adrianolmedo/genesis/docs"
@@ -27,6 +29,8 @@ import (
 // @BasePath	/v1/
 func Router(svcs *compose.Services) *fiber.App {
 	f := fiber.New()
+	rateLimit := newRateLimit(2, 5, 5*time.Minute) // 2 req/sec, burst of 5, cleanup inactive IPs after 5 min
+	f.Use(rateLimit.middlewarePerIP, timeoutWare(60*time.Second))
 	f.Get("/v1/test", func(c *fiber.Ctx) error {
 		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "Hello world",
@@ -54,7 +58,7 @@ func Router(svcs *compose.Services) *fiber.App {
 // respJSON respond JSON.
 func respJSON(c *fiber.Ctx, httpStatus int, details detailsResp) error {
 	return c.Status(httpStatus).JSON(resp{
-		Status:      "success",
+		Status:      "Success",
 		detailsResp: details,
 	})
 }
@@ -62,9 +66,34 @@ func respJSON(c *fiber.Ctx, httpStatus int, details detailsResp) error {
 // errorJSON respond JSON.
 func errorJSON(c *fiber.Ctx, httpStatus int, details detailsResp) error {
 	return c.Status(httpStatus).JSON(errorResp{
-		Status: "error",
+		Status: "Error",
 		Error:  details,
 	})
+}
+
+// timeoutWare middleware that enforces a timeout.
+// If the request takes longer than d, it returns 408 Request Timeout.
+func timeoutWare(d time.Duration) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// Create a context with timeout based on the existing request context.
+		ctx, cancel := context.WithTimeout(c.UserContext(), d)
+		defer cancel()
+
+		// Attach the new context to Fiber's context.
+		c.SetUserContext(ctx)
+
+		// Call the next handler in chain.
+		err := c.Next()
+
+		// Check if the timeout expired.
+		if ctx.Err() == context.DeadlineExceeded {
+			return errorJSON(c, http.StatusRequestTimeout, detailsResp{
+				Message: "Request timeout",
+				Details: "The server timed out waiting for the request.",
+			})
+		}
+		return err
+	}
 }
 
 // authWare middleware for handlers that require user login.
