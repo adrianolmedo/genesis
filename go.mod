@@ -1,8 +1,6 @@
 module github.com/adrianolmedo/genesis
 
-go 1.22
-
-toolchain go1.23.2
+go 1.24.0
 
 require (
 	github.com/gofiber/fiber/v2 v2.48.0
@@ -23,6 +21,7 @@ require (
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/time v0.13.0 // indirect
 )
 
 require (
