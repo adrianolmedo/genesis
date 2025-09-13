@@ -1,6 +1,6 @@
 version: "3"
 
-dotenv: [".env.development"]
+dotenv: [".env"]
 
 vars:
   BINARY: genesis
