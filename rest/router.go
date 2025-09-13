@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"context"
 	"net/http"
 	"time"
 
@@ -36,6 +35,8 @@ func Router(svcs *compose.Services) *fiber.App {
 			Message: "Hello world",
 		})
 	})
+	f.Get("/v1/test-ratelimit", testRatelimit())
+	f.Get("/v1/test-timeout", testTimeout())
 	f.Post("/v1/login", loginUser(svcs))
 	f.Post("/v1/users", signUpUser(svcs))
 	f.Get("/v1/users/:id", findUser(svcs))
@@ -69,31 +70,6 @@ func errorJSON(c *fiber.Ctx, httpStatus int, details detailsResp) error {
 		Status: "Error",
 		Error:  details,
 	})
-}
-
-// timeoutWare middleware that enforces a timeout.
-// If the request takes longer than d, it returns 408 Request Timeout.
-func timeoutWare(d time.Duration) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		// Create a context with timeout based on the existing request context.
-		ctx, cancel := context.WithTimeout(c.UserContext(), d)
-		defer cancel()
-
-		// Attach the new context to Fiber's context.
-		c.SetUserContext(ctx)
-
-		// Call the next handler in chain.
-		err := c.Next()
-
-		// Check if the timeout expired.
-		if ctx.Err() == context.DeadlineExceeded {
-			return errorJSON(c, http.StatusRequestTimeout, detailsResp{
-				Message: "Request timeout",
-				Details: "The server timed out waiting for the request.",
-			})
-		}
-		return err
-	}
 }
 
 // authWare middleware for handlers that require user login.

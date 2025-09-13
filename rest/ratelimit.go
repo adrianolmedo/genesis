@@ -78,3 +78,21 @@ func (rl *rateLimit) cleanupWorker() {
 		})
 	}
 }
+
+// testRatelimit godoc
+//
+//	@Summary		Test rate limit
+//	@Description	Simulates a long-running operation to test rate limit
+//	@Tags			debug
+//	@Produce		json
+//	@Success		200	{object}	resp{message=string}
+//	@Router			/test-ratelimit [get]
+func testRatelimit() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		// simulate processing
+		time.Sleep(100 * time.Millisecond)
+		return respJSON(c, http.StatusOK, detailsResp{
+			Message: "You are within the rate limit.",
+		})
+	}
+}
