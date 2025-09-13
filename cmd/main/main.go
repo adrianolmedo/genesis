@@ -22,32 +22,28 @@ import (
 func main() {
 	// Load .env file if exists.
 	if err := godotenv.Load(); err != nil {
-		fmt.Fprintln(os.Stderr, "No .env file found (optional)")
-		os.Exit(1)
+		fmt.Println("No .env file found (optional)")
 	}
 
+	// With ff we can parse flags and environment variables.
 	fs := flag.NewFlagSet("main", flag.ExitOnError)
 	var (
 		host  = fs.String("host", ":", "Internal container IP.")
 		port  = fs.String("port", "80", "Internal container port.")
 		dburl = fs.String("database-url", "", "Database URL. (example \"postgres://user:password@host:port/dbname?sslmode=disable\")")
 	)
-
-	// With ff we can parse flags and environment variables.
 	err := ff.Parse(fs, os.Args[1:], ff.WithEnvVarNoPrefix())
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, "error: ", err)
 		os.Exit(1)
 	}
-
 	cfg := genesis.Config{
 		Host:        *host,
 		Port:        *port,
 		DatabaseURL: *dburl,
 	}
-
 	if err := run(context.Background(), cfg); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(os.Stderr, "error: ", err)
 		logger.Error("run", "err", err.Error())
 		os.Exit(1)
 	}
@@ -64,16 +60,16 @@ func run(ctx context.Context, cfg genesis.Config) error {
 		return fmt.Errorf("certificates could not be loaded: %v", err)
 	}
 
-	// Context that is canceled upon receiving SIGINT/SIGTERM or Ctrl+c.
+	// Context that is canceled upon receiving SIGINT/SIGTERM or Ctrl+c as stop signal.
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
+	// Initialize the storage.
 	db, err := sqlc.NewPool(ctx, cfg)
 	if err != nil {
 		return fmt.Errorf("error from storage: %v", err)
 	}
 	defer db.Close()
-
 	s, err := sqlc.NewStorage(ctx, db, cfg)
 	if err != nil {
 		return fmt.Errorf("error from storage: %v", err)
@@ -81,7 +77,6 @@ func run(ctx context.Context, cfg genesis.Config) error {
 
 	// Initialize the server with its dependencies.
 	srv := rest.Router(compose.NewServices(s))
-
 	go func() {
 		if err := srv.Listen(cfg.Host + cfg.Port); err != nil {
 			logger.Error("HTTP server stopped with error", "err", err.Error())
@@ -96,6 +91,5 @@ func run(ctx context.Context, cfg genesis.Config) error {
 	if err := srv.Shutdown(); err != nil {
 		return fmt.Errorf("error shutting down server: %w", err)
 	}
-
 	return nil
 }
