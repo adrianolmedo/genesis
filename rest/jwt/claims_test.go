@@ -44,6 +44,7 @@ func TestClaims(t *testing.T) {
 
 // loadKeys read mocked credentials.
 func loadKeys(t *testing.T) {
+	t.Helper()
 	err := jwt.ParseRSA(priSRA, pubSRA)
 	if err != nil {
 		t.Fatal(err)
@@ -52,6 +53,7 @@ func loadKeys(t *testing.T) {
 
 // genToken generate token from an email input.
 func genToken(t *testing.T, email string) (token string) {
+	t.Helper()
 	token, err := jwt.Generate(email)
 	if err != nil {
 		t.Fatal(err)
@@ -60,6 +62,7 @@ func genToken(t *testing.T, email string) (token string) {
 }
 
 func verifyClaims(t *testing.T, token string) {
+	t.Helper()
 	_, err := jwt.Verify(token)
 	if err != nil {
 		t.Fatal(err)
