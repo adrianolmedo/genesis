@@ -43,7 +43,6 @@ func TestPager(t *testing.T) {
 	for _, tc := range tt {
 		_, err := pgsql.NewPager(tc.limit, tc.page, tc.sort, tc.direction)
 		errReceived := err != nil
-
 		if errReceived != tc.errExpected {
 			t.Fatalf("%s: NewPager(%d, %d, %q, %q): unexpected error status: %v",
 				tc.name, tc.limit, tc.page, tc.sort, tc.direction, err)

@@ -15,13 +15,8 @@ func timeoutWare(d time.Duration) fiber.Handler {
 		// Create a context with timeout based on the existing request context.
 		ctx, cancel := context.WithTimeout(c.UserContext(), d)
 		defer cancel()
-
-		// Attach the new context to Fiber's context.
-		c.SetUserContext(ctx)
-
-		// Call the next handler in chain.
-		err := c.Next()
-
+		c.SetUserContext(ctx) // Attach the new context to Fiber's context.
+		err := c.Next()       // Call the next handler in chain.
 		// Check if the timeout expired.
 		if ctx.Err() == context.DeadlineExceeded {
 			return errorJSON(c, http.StatusRequestTimeout, detailsResp{
@@ -47,22 +42,18 @@ func testTimeout() fiber.Handler {
 		// We derive a context with a 2-second timeout from the request context.
 		ctx, cancel := context.WithTimeout(c.UserContext(), 2*time.Second)
 		defer cancel()
-
-		// Simulate work that takes 5 seconds.
 		done := make(chan string, 1)
 		go func() {
-			time.Sleep(5 * time.Second)
+			time.Sleep(5 * time.Second) // Simulate work that takes 5 seconds.
 			done <- "Finished work."
 		}()
 		select {
-		case <-ctx.Done():
-			// Timeout expired
+		case <-ctx.Done(): // Timeout expired
 			return errorJSON(c, http.StatusGatewayTimeout, detailsResp{
 				Message: "The operation took too long",
-				//Details: ctx.Err().Error(),
+				Details: "Please try again later.",
 			})
-		case result := <-done:
-			// Response successful before timeout
+		case result := <-done: // Response successful before timeout
 			return respJSON(c, http.StatusOK, detailsResp{
 				Message: result,
 			})
