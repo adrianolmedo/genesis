@@ -24,7 +24,7 @@ func newRateLimit(rps rate.Limit, burst int, ttl time.Duration) *rateLimit {
 		burst: burst,
 		ttl:   ttl,
 	}
-	// start cleanup goroutine to remove old limiters
+	// start goroutine to remove old limiters
 	go rl.cleanupWorker()
 	return rl
 }
@@ -35,8 +35,8 @@ type limiterEntry struct {
 	lastSeen time.Time
 }
 
-// limiterPerIP retrieves or creates a rate limiter for a given IP.
-func (rl *rateLimit) limiterPerIP(ip string) *rate.Limiter {
+// perIP retrieves or creates a rate limiter for a given IP.
+func (rl *rateLimit) perIP(ip string) *rate.Limiter {
 	val, ok := rl.limiters.Load(ip)
 	if ok {
 		entry := val.(*limiterEntry)
@@ -53,7 +53,7 @@ func (rl *rateLimit) limiterPerIP(ip string) *rate.Limiter {
 
 // middlewarePerIP is a Fiber middleware that limits requests per IP.
 func (rl *rateLimit) middlewarePerIP(c *fiber.Ctx) error {
-	limiter := rl.limiterPerIP(c.IP())
+	limiter := rl.perIP(c.IP())
 	if !limiter.Allow() {
 		return errorJSON(c, http.StatusTooManyRequests, detailsResp{
 			Message: "Too many requests",
