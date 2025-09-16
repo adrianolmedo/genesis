@@ -36,7 +36,7 @@ func Router(svcs *compose.Services) *fiber.App {
 		})
 	})
 	f.Get("/v1/test-ratelimit", testRatelimit())
-	f.Get("/v1/test-timeout", timeoutWare(2*time.Second), testTimeout())
+	f.Get("/v1/test-timeout", testTimeout())
 	f.Post("/v1/login", loginUser(svcs))
 	f.Post("/v1/users", signUpUser(svcs))
 	f.Get("/v1/users/:id", findUser(svcs))
