@@ -3,6 +3,7 @@ package sqlc
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/billing"
@@ -38,8 +39,8 @@ func NewPool(ctx context.Context, cfg genesis.Config) (*pgxpool.Pool, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// Optional: test connection.
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
 	err = pool.Ping(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("can't do ping %v", err)
