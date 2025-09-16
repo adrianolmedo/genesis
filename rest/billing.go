@@ -66,7 +66,6 @@ func generateInvoice(svcs *compose.Services) fiber.Handler {
 			_, err := svcs.Store.Find(ctx, item.ProductID)
 			if errors.Is(err, store.ErrProductNotFound) {
 				logger.Debug("generating invoice", fmt.Sprintf("product ID %d not found to add the invoice", item.ProductID))
-
 				return errorJSON(c, http.StatusNotFound, detailsResp{
 					Code:    "002",
 					Message: fmt.Sprintf("%s with id %d", store.ErrProductNotFound, item.ProductID),
@@ -74,7 +73,6 @@ func generateInvoice(svcs *compose.Services) fiber.Handler {
 			}
 			if err != nil {
 				logger.Error("generating invoice", err.Error())
-
 				return errorJSON(c, http.StatusBadRequest, detailsResp{
 					Code:    "002",
 					Message: err.Error(),
