@@ -29,7 +29,7 @@ import (
 //	@Router			/products [post]
 func addProduct(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		ctx := c.Context()
+		ctx := c.UserContext()
 		req := addProductReq{}
 		err := c.BodyParser(&req)
 		if err != nil {
@@ -90,7 +90,7 @@ type productCardResp struct {
 //	@Router			/products [get]
 func listProducts(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		ctx := c.Context()
+		ctx := c.UserContext()
 		products, err := svcs.Store.List(ctx)
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, detailsResp{
@@ -137,7 +137,7 @@ func listProducts(svcs *compose.Services) fiber.Handler {
 //	@Router			/customer [post]
 func createCustomer(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		ctx := c.Context()
+		ctx := c.UserContext()
 		req := createCustomerReq{}
 		err := c.BodyParser(&req)
 		if err != nil {
@@ -201,7 +201,7 @@ type createCustomerReq struct {
 //	@Router			/customers/{id} [delete]
 func deleteCustomer(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		ctx := c.Context()
+		ctx := c.UserContext()
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, detailsResp{
@@ -246,7 +246,7 @@ func deleteCustomer(svcs *compose.Services) fiber.Handler {
 //	@Router			/customers [get]
 func listCustomers(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		ctx := c.Context()
+		ctx := c.UserContext()
 		p, err := pgsql.NewPager(
 			c.QueryInt("limit"),
 			c.QueryInt("page"),
@@ -312,7 +312,7 @@ func listCustomers(svcs *compose.Services) fiber.Handler {
 //	@Router			/products/{id} [get]
 func findProduct(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		ctx := c.Context()
+		ctx := c.UserContext()
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, detailsResp{
