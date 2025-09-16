@@ -56,7 +56,6 @@ func TestProductByID(t *testing.T) {
 	ctx := test.Ctx(t)
 	db := openDB(ctx, t)
 	defer db.Close()
-
 	insertProductsData(ctx, t, db)
 	tt := []struct {
 		name           string
@@ -104,7 +103,6 @@ func TestUpdateProduct(t *testing.T) {
 	ctx := test.Ctx(t)
 	db := openDB(ctx, t)
 	defer db.Close()
-
 	insertProductsData(ctx, t, db)
 	input := store.Product{
 		ID:           1,
@@ -141,7 +139,6 @@ func TestUpdateProduct(t *testing.T) {
 func insertProductsData(ctx context.Context, t *testing.T, db *pgxpool.Pool) {
 	t.Helper()
 	p := store.NewProductRepo(db)
-
 	// Add first product
 	if err := p.Create(ctx, &store.Product{
 		Name:         "Coca-Cola",
@@ -150,7 +147,6 @@ func insertProductsData(ctx context.Context, t *testing.T, db *pgxpool.Pool) {
 	}); err != nil {
 		t.Fatal(err)
 	}
-
 	// Add second product
 	if err := p.Create(ctx, &store.Product{
 		Name:         "Big-Cola",

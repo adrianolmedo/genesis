@@ -15,7 +15,6 @@ func TestCreateUser(t *testing.T) {
 	ctx := test.Ctx(t)
 	db := openDB(ctx, t)
 	defer db.Close()
-
 	input := &user.User{
 		FirstName: "John",
 		LastName:  "Doe",
@@ -46,7 +45,6 @@ func cleanUsersData(t *testing.T) {
 	ctx := test.Ctx(t)
 	db := openDB(ctx, t)
 	defer db.Close()
-
 	u := user.NewRepo(db)
 	err := u.DeleteAll(ctx)
 	if err != nil {

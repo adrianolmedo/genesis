@@ -14,7 +14,6 @@ func TestCreateInvoice(t *testing.T) {
 		cleanInvoiceItemsData(t)
 		cleanInvoiceHeadersData(t)
 	})
-
 	input := &billing.Invoice{
 		Header: &billing.InvoiceHeader{
 			ClientID: 1,
@@ -44,11 +43,9 @@ func TestCreateTxInvoiceHeader(t *testing.T) {
 	t.Cleanup(func() {
 		cleanInvoiceHeadersData(t)
 	})
-
 	ctx := test.Ctx(t)
 	db := openDB(ctx, t)
 	defer db.Close()
-
 	tx, err := db.Begin(context.Background())
 	if err != nil {
 		t.Fatal(err)
@@ -73,7 +70,6 @@ func cleanInvoiceHeadersData(t *testing.T) {
 	ctx := test.Ctx(t)
 	db := openDB(ctx, t)
 	defer db.Close()
-
 	ih := billing.NewRepo(db)
 	err := ih.DeleteAll(ctx)
 	if err != nil {
@@ -85,7 +81,6 @@ func cleanInvoiceItemsData(t *testing.T) {
 	ctx := test.Ctx(t)
 	db := openDB(ctx, t)
 	defer db.Close()
-
 	ii := billing.NewRepo(db)
 	err := ii.DeleteAllItems(ctx)
 	if err != nil {
