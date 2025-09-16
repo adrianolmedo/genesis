@@ -8,6 +8,7 @@ import (
 
 	"github.com/adrianolmedo/genesis"
 	"github.com/adrianolmedo/genesis/pgsql/sqlc"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -20,7 +21,6 @@ var (
 func TestDB(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-
 	db := openDB(ctx, t)
 	db.Close()
 }
