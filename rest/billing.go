@@ -29,7 +29,7 @@ import (
 //	@Router			/invoices [post]
 func generateInvoice(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		ctx := c.Context()
+		ctx := c.UserContext()
 		req := generateInvoiceReq{}
 		err := c.BodyParser(&req)
 		if err != nil {

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"time"
 
 	"github.com/adrianolmedo/genesis/pgsql"
 )
@@ -22,6 +23,8 @@ func NewService(repo *Repo) *Service {
 }
 
 func (s Service) Login(ctx context.Context, email, password string) error {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
 	if err := validateEmail(email); err != nil {
 		return err
 	}

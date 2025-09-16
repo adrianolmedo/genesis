@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -30,7 +31,7 @@ import (
 //	@Router			/login [post]
 func loginUser(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		ctx := c.Context()
+		ctx := c.UserContext()
 		req := userLoginReq{}
 		err := c.BodyParser(&req)
 		if err != nil {
@@ -41,6 +42,14 @@ func loginUser(svcs *compose.Services) fiber.Handler {
 			})
 		}
 		err = svcs.User.Login(ctx, req.Email, req.Password)
+		if errors.Is(err, context.DeadlineExceeded) {
+			logger.Warn("login timeout", "email", req.Email)
+			return errorJSON(c, http.StatusGatewayTimeout, detailsResp{
+				Code:    "005",
+				Message: "The request timed out",
+				Details: "Please try again later.",
+			})
+		}
 		if errors.Is(err, user.ErrNotFound) {
 			return errorJSON(c, http.StatusUnauthorized, detailsResp{
 				Code:    "003",
@@ -91,7 +100,7 @@ type dataTokenResp struct {
 //	@Router			/users [post]
 func signUpUser(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		ctx := c.Context()
+		ctx := c.UserContext()
 		req := userSignUpReq{}
 		err := c.BodyParser(&req)
 		if err != nil {
@@ -154,7 +163,7 @@ type userProfileResp struct {
 //	@Router			/users/{id} [get]
 func findUser(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		ctx := c.Context()
+		ctx := c.UserContext()
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, detailsResp{
@@ -202,7 +211,7 @@ func findUser(svcs *compose.Services) fiber.Handler {
 //	@Router			/users/{id} [put]
 func updateUser(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		ctx := c.Context()
+		ctx := c.UserContext()
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, detailsResp{
@@ -271,7 +280,7 @@ type userUpdateReq struct {
 //	@Router		/users [get]
 func listUsers(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		ctx := c.Context()
+		ctx := c.UserContext()
 		p, err := pgsql.NewPager(
 			c.QueryInt("limit"),
 			c.QueryInt("page"),
@@ -337,7 +346,7 @@ func listUsers(svcs *compose.Services) fiber.Handler {
 //	@Router			/users/{id} [delete]
 func deleteUser(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		ctx := c.Context()
+		ctx := c.UserContext()
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, detailsResp{

@@ -359,7 +359,7 @@ func findProduct(svcs *compose.Services) fiber.Handler {
 //	@Router			/products/{id} [put]
 func updateProduct(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		ctx := c.Context()
+		ctx := c.UserContext()
 		id, err := strconv.Atoi(c.Params("id"))
 		logger.Debug("product", fmt.Sprintf("request to update product ID %d", id))
 		if id < 0 || err != nil {
@@ -427,7 +427,7 @@ type updateProductReq struct {
 //	@Router			/products/{id} [delete]
 func deleteProduct(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		ctx := c.Context()
+		ctx := c.UserContext()
 		id, err := strconv.Atoi(c.Params("id"))
 		if id < 0 || err != nil {
 			return errorJSON(c, http.StatusBadRequest, detailsResp{
