@@ -89,7 +89,6 @@ func (rl *rateLimit) cleanupWorker() {
 //	@Router			/test-ratelimit [get]
 func testRatelimit() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// simulate processing
 		time.Sleep(100 * time.Millisecond)
 		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "You are within the rate limit.",
