@@ -77,7 +77,7 @@ func TestLimitOffset(t *testing.T) {
 	for _, tc := range tt {
 		got := pgsql.LimitOffset(tc.limit, tc.page)
 		if tc.want != got {
-			t.Errorf("%s: want %q, got %q", tc.name, tc.want, got)
+			t.Errorf("%s: got %q, want %q", tc.name, got, tc.want)
 		}
 	}
 }
