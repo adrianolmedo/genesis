@@ -109,7 +109,7 @@ func (r *Repo) Update(ctx context.Context, m User) error {
 // List returns a paginated list of users.
 // It returns a pgsql.PagerResult containing the paginated users and total rows.
 // If an error occurs during the query, it returns an empty PagerResult and the error.
-func (r *Repo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, error) {
+func (r *Repo) List(ctx context.Context, p pgsql.Pager) (pgsql.PagerResult, error) {
 	users, err := r.q.UserListAsc(ctx, dbgen.UserListAscParams{
 		Sort:   p.Sort(),
 		Offset: int32(p.Offset()),
@@ -126,7 +126,7 @@ func (r *Repo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, err
 }
 
 // All is like List but with custom SQL.
-/*func (r *Repo) All(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, error) {
+/*func (r *Repo) All(ctx context.Context, p pgsql.Pager) (pgsql.PagerResult, error) {
 	query := `SELECT id, uuid, first_name, last_name, email, password, created_at, updated_at, deleted_at FROM "user" WHERE deleted_at IS NULL`
 	query += " " + p.OrderBy()
 	query += " " + p.LimitOffset()

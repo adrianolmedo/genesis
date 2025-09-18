@@ -45,7 +45,7 @@ func (r *CustomerRepo) Create(ctx context.Context, m *Customer) error {
 }
 
 // List retrieves a paginated list of customers from the database.
-func (r *CustomerRepo) List(ctx context.Context, p *pgsql.Pager) (pgsql.PagerResult, error) {
+func (r *CustomerRepo) List(ctx context.Context, p pgsql.Pager) (pgsql.PagerResult, error) {
 	customers, err := r.q.CustomerListAsc(ctx, dbgen.CustomerListAscParams{
 		Sort:   p.Sort(),
 		Offset: int32(p.Offset()),

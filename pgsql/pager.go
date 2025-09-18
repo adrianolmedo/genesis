@@ -20,19 +20,19 @@ type Pager struct {
 	direction string
 }
 
-// NewPager creates a new Pager instance.
+// NewPager set values for a Pager and return it.
 // It validates the limit and page number, and normalizes the sort direction.
 // If the limit is 0 or exceeds [PagerMaxLimit], it defaults to PagerMaxLimit.
-func NewPager(limit, page int, sort, direction string) (*Pager, error) {
+func NewPager(limit, page int, sort, direction string) (Pager, error) {
 	limit, err := validateLimit(limit)
 	if err != nil {
-		return nil, err
+		return Pager{}, err
 	}
 	page, err = validatePage(page)
 	if err != nil {
-		return nil, err
+		return Pager{}, err
 	}
-	return &Pager{
+	return Pager{
 		limit:     limit,
 		page:      page,
 		sort:      sort,
@@ -76,25 +76,25 @@ func normalizeDirection(dir string) string {
 }
 
 // Limit restrict to subset of results.
-func (p *Pager) Limit() int { return p.limit }
+func (p Pager) Limit() int { return p.limit }
 
 // Page indicates the page from the client.
-func (p *Pager) Page() int { return p.page }
+func (p Pager) Page() int { return p.page }
 
 // Sort sort results by the value of a field, e.g.: ORDER BY created_at.
-func (p *Pager) Sort() string { return p.sort }
+func (p Pager) Sort() string { return p.sort }
 
 // Direction to display the results in DESC or ASC order based on the
 // Sort value.
-func (p *Pager) Direction() string { return p.direction }
+func (p Pager) Direction() string { return p.direction }
 
 // OrderBy generates an SQL ORDER BY clause.
-func (p *Pager) OrderBy() string {
+func (p Pager) OrderBy() string {
 	return fmt.Sprintf(`ORDER BY %q %s`, p.sort, p.direction)
 }
 
 // LimitOffset generates an SQL LIMIT OFFSET clause.
-func (p *Pager) LimitOffset() string { return LimitOffset(p.limit, p.page) }
+func (p Pager) LimitOffset() string { return LimitOffset(p.limit, p.page) }
 
 // LimitOffset returns a SQL string for LIMIT OFFSET a given limit & page.
 func LimitOffset(limit, page int) string {
@@ -104,7 +104,7 @@ func LimitOffset(limit, page int) string {
 	return fmt.Sprintf("LIMIT %d OFFSET %d", limit, Offset(limit, page))
 }
 
-func (p *Pager) Offset() int { return Offset(p.limit, p.page) }
+func (p Pager) Offset() int { return Offset(p.limit, p.page) }
 
 // Offset calculate offset operation from page and limit.
 func Offset(limit, page int) int {
@@ -115,7 +115,7 @@ func Offset(limit, page int) int {
 }
 
 // Paginate calculates pagination details.
-func (p *Pager) Paginate(rows any, totalRows int64) PagerResult {
+func (p Pager) Paginate(rows any, totalRows int64) PagerResult {
 	if totalRows == 0 {
 		return PagerResult{
 			Page:       p.page,
@@ -170,7 +170,7 @@ type PagerResult struct {
 }
 
 // Links generates HATEOAS pagination links.
-func (p *Pager) Links(path string, totalPages int) PagerLinks {
+func (p Pager) Links(path string, totalPages int) PagerLinks {
 	genLink := func(page int) string {
 		return fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, p.limit, page, p.sort)
 	}
