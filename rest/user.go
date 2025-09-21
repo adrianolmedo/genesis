@@ -53,7 +53,7 @@ func loginUser(svcs *compose.Services) fiber.Handler {
 		if errors.Is(err, user.ErrNotFound) {
 			return errorJSON(c, http.StatusUnauthorized, detailsResp{
 				Code:    "003",
-				Message: err.Error(),
+				Message: "Invalid email or password",
 			})
 		}
 		if err != nil {
