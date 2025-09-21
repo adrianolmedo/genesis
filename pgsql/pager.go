@@ -104,6 +104,7 @@ func LimitOffset(limit, page int) string {
 	return fmt.Sprintf("LIMIT %d OFFSET %d", limit, Offset(limit, page))
 }
 
+// Offset calculates the offset for SQL queries.
 func (p Pager) Offset() int { return Offset(p.limit, p.page) }
 
 // Offset calculate offset operation from page and limit.
