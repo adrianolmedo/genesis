@@ -54,11 +54,11 @@ func (r *Repo) ByLogin(ctx context.Context, email, pass string) error {
 		Email:    email,
 		Password: pass,
 	})
+	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) || id == 0 {
+		return ErrNotFound
+	}
 	if err != nil {
 		return err
-	}
-	if id == 0 {
-		return ErrNotFound
 	}
 	return nil
 }
@@ -110,7 +110,7 @@ func (r *Repo) Update(ctx context.Context, m User) error {
 // It returns a pgsql.PagerResult containing the paginated users and total rows.
 // If an error occurs during the query, it returns an empty PagerResult and the error.
 func (r *Repo) List(ctx context.Context, p pgsql.Pager) (pgsql.PagerResult, error) {
-	users, err := r.q.UserListAsc(ctx, dbgen.UserListAscParams{
+	rows, err := r.q.UserListAsc(ctx, dbgen.UserListAscParams{
 		Sort:   p.Sort(),
 		Offset: int32(p.Offset()),
 		Limit:  int32(p.Limit()),
@@ -122,7 +122,27 @@ func (r *Repo) List(ctx context.Context, p pgsql.Pager) (pgsql.PagerResult, erro
 	if err != nil {
 		return pgsql.PagerResult{}, err
 	}
-	return p.Paginate(users, totalRows), nil
+	return p.Paginate(toDomainUsers(rows), totalRows), nil
+}
+
+// toDomainUsers converts a slice of dbgen.User to a slice of domain.User.
+func toDomainUsers(rows []dbgen.User) Users {
+	users := make(Users, 0, len(rows))
+	for _, row := range rows {
+		m := User{
+			ID:        row.ID,
+			UUID:      row.Uuid.String(),
+			FirstName: row.FirstName,
+			LastName:  row.LastName,
+			Email:     row.Email,
+			Password:  row.Password,
+		}
+		m.CreatedAt = row.CreatedAt
+		m.UpdatedAt = pgsql.NullTimeToPtr(row.UpdatedAt)
+		m.DeletedAt = pgsql.NullTimeToPtr(row.DeletedAt)
+		users = append(users, m)
+	}
+	return users
 }
 
 // All is like List but with custom SQL.
