@@ -77,8 +77,8 @@ func (s Service) Update(ctx context.Context, u User) error {
 }
 
 // List get list of users.
-func (s Service) List(ctx context.Context, p pgsql.Pager) (pgsql.PagerResult, error) {
-	return s.repo.List(ctx, p)
+func (s Service) List(ctx context.Context, f pgsql.Filter) (rows Users, total int64, err error) {
+	return s.repo.List(ctx, f)
 }
 
 // Remove delete User by its ID.

@@ -107,22 +107,22 @@ func (r *Repo) Update(ctx context.Context, m User) error {
 }
 
 // List returns a paginated list of users.
-// It returns a pgsql.PagerResult containing the paginated users and total rows.
-// If an error occurs during the query, it returns an empty PagerResult and the error.
-func (r *Repo) List(ctx context.Context, p pgsql.Pager) (pgsql.PagerResult, error) {
-	rows, err := r.q.UserListAsc(ctx, dbgen.UserListAscParams{
-		Sort:   p.Sort(),
-		Offset: int32(p.Offset()),
-		Limit:  int32(p.Limit()),
+// It returns a pgsql.FilterResult containing the paginated users and total rows.
+// If an error occurs during the query, it returns an empty FilterResult and the error.
+func (r *Repo) List(ctx context.Context, f pgsql.Filter) (rows Users, totalRows int64, err error) {
+	rowsDB, err := r.q.UserListAsc(ctx, dbgen.UserListAscParams{
+		Sort:   f.Sort(),
+		Offset: int32(f.Offset()),
+		Limit:  int32(f.Limit()),
 	})
 	if err != nil {
-		return pgsql.PagerResult{}, err
+		return nil, 0, err
 	}
-	totalRows, err := r.q.UserListCount(ctx)
+	totalRows, err = r.q.UserListCount(ctx)
 	if err != nil {
-		return pgsql.PagerResult{}, err
+		return nil, 0, err
 	}
-	return p.Paginate(toDomainUsers(rows), totalRows), nil
+	return toDomainUsers(rowsDB), totalRows, nil
 }
 
 // toDomainUsers converts a slice of dbgen.User to a slice of domain.User.
@@ -146,14 +146,14 @@ func toDomainUsers(rows []dbgen.User) Users {
 }
 
 // All is like List but with custom SQL.
-/*func (r *Repo) All(ctx context.Context, p pgsql.Pager) (pgsql.PagerResult, error) {
+/*func (r *Repo) All(ctx context.Context, f pgsql.Filter) (pgsql.FilterResult, error) {
 	query := `SELECT id, uuid, first_name, last_name, email, password, created_at, updated_at, deleted_at FROM "user" WHERE deleted_at IS NULL`
-	query += " " + p.OrderBy()
-	query += " " + p.LimitOffset()
+	query += " " + f.OrderBy()
+	query += " " + f.LimitOffset()
 
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
-		return pgsql.PagerResult{}, err
+		return pgsql.FilterResult{}, err
 	}
 	defer rows.Close()
 
@@ -173,7 +173,7 @@ func toDomainUsers(rows []dbgen.User) Users {
 			&deletedAtNull,
 		)
 		if err != nil {
-			return pgsql.PagerResult{}, err
+			return pgsql.FilterResult{}, err
 		}
 
 		m.UpdatedAt = pgsql.PtrFromNullTime(updatedAtNull)
@@ -183,17 +183,17 @@ func toDomainUsers(rows []dbgen.User) Users {
 	}
 
 	if err := rows.Err(); err != nil {
-		return pgsql.PagerResult{}, err
+		return pgsql.FilterResult{}, err
 	}
 
 	// Get total rows to calculate total pages.
 	var totalRows int64
 	err = r.db.QueryRow(ctx, `SELECT COUNT (*) FROM "user" WHERE deleted_at IS NULL`).Scan(&totalRows)
 	if err != nil {
-		return pgsql.PagerResult{}, err
+		return pgsql.FilterResult{}, err
 	}
 
-	return p.Paginate(users, totalRows), nil
+	return f.Paginate(users, totalRows), nil
 }*/
 
 // Delete marks a user as deleted in the storage.

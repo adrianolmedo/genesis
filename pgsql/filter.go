@@ -7,32 +7,32 @@ import (
 	"strings"
 )
 
-// PagerMaxLimit is the default value for the limit in a reasonable range.
-const PagerMaxLimit int = 10
+// FilterMaxLimit is the default value for the limit in a reasonable range.
+const FilterMaxLimit int = 10
 
-// Pager is a struct that encapsulates pagination details.
+// Filter is a struct that encapsulates pagination details.
 // It includes the limit of results per page, the current page number,
 // the field to sort by, and the direction of sorting (ASC or DESC).
-type Pager struct {
+type Filter struct {
 	limit     int
 	page      int
 	sort      string
 	direction string
 }
 
-// NewPager set values for a Pager and return it.
+// NewFilter set values for a Filter and return it.
 // It validates the limit and page number, and normalizes the sort direction.
-// If the limit is 0 or exceeds [PagerMaxLimit], it defaults to PagerMaxLimit.
-func NewPager(limit, page int, sort, direction string) (Pager, error) {
+// If the limit is 0 or exceeds [FilterMaxLimit], it defaults to FilterMaxLimit.
+func NewFilter(limit, page int, sort, direction string) (Filter, error) {
 	limit, err := validateLimit(limit)
 	if err != nil {
-		return Pager{}, err
+		return Filter{}, err
 	}
 	page, err = validatePage(page)
 	if err != nil {
-		return Pager{}, err
+		return Filter{}, err
 	}
-	return Pager{
+	return Filter{
 		limit:     limit,
 		page:      page,
 		sort:      sort,
@@ -40,7 +40,7 @@ func NewPager(limit, page int, sort, direction string) (Pager, error) {
 	}, nil
 }
 
-// validatePage Pager helper, ensures page number is valid.
+// validatePage Filter helper, ensures page number is valid.
 func validatePage(p int) (int, error) {
 	if p < 0 {
 		return p, errors.New("positive number expected for page")
@@ -51,20 +51,20 @@ func validatePage(p int) (int, error) {
 	return p, nil
 }
 
-// validateLimit Pager helper, ensures limit is within a reasonable
-// range (by default value check [PagerMaxLimit] const).
+// validateLimit Filter helper, ensures limit is within a reasonable
+// range (by default value check [FilterMaxLimit] const).
 func validateLimit(n int) (int, error) {
 	if n < 0 {
 		return n, errors.New("positive number expected for limit")
 	}
-	maxLimit := PagerMaxLimit
+	maxLimit := FilterMaxLimit
 	if n == 0 || n > maxLimit {
 		n = maxLimit
 	}
 	return n, nil
 }
 
-// normalizeDirection Pager helper, ensures the direction is either
+// normalizeDirection Filter helper, ensures the direction is either
 // ASC or DESC.
 func normalizeDirection(dir string) string {
 	dir = strings.ToUpper(dir)
@@ -76,25 +76,25 @@ func normalizeDirection(dir string) string {
 }
 
 // Limit restrict to subset of results.
-func (p Pager) Limit() int { return p.limit }
+func (f Filter) Limit() int { return f.limit }
 
 // Page indicates the page from the client.
-func (p Pager) Page() int { return p.page }
+func (f Filter) Page() int { return f.page }
 
 // Sort sort results by the value of a field, e.g.: ORDER BY created_at.
-func (p Pager) Sort() string { return p.sort }
+func (f Filter) Sort() string { return f.sort }
 
 // Direction to display the results in DESC or ASC order based on the
 // Sort value.
-func (p Pager) Direction() string { return p.direction }
+func (f Filter) Direction() string { return f.direction }
 
 // OrderBy generates an SQL ORDER BY clause.
-func (p Pager) OrderBy() string {
-	return fmt.Sprintf(`ORDER BY %q %s`, p.sort, p.direction)
+func (f Filter) OrderBy() string {
+	return fmt.Sprintf(`ORDER BY %q %s`, f.sort, f.direction)
 }
 
 // LimitOffset generates an SQL LIMIT OFFSET clause.
-func (p Pager) LimitOffset() string { return LimitOffset(p.limit, p.page) }
+func (f Filter) LimitOffset() string { return LimitOffset(f.limit, f.page) }
 
 // LimitOffset returns a SQL string for LIMIT OFFSET a given limit & page.
 func LimitOffset(limit, page int) string {
@@ -105,7 +105,7 @@ func LimitOffset(limit, page int) string {
 }
 
 // Offset calculates the offset for SQL queries.
-func (p Pager) Offset() int { return Offset(p.limit, p.page) }
+func (f Filter) Offset() int { return Offset(f.limit, f.page) }
 
 // Offset calculate offset operation from page and limit.
 func Offset(limit, page int) int {
@@ -115,49 +115,46 @@ func Offset(limit, page int) int {
 	return page*limit - limit
 }
 
-// Paginate calculates pagination details.
-func (p Pager) Paginate(rows any, totalRows int64) PagerResult {
+func (f Filter) Paginate(totalRows int64) FilterResult {
 	if totalRows == 0 {
-		return PagerResult{
-			Page:       p.page,
-			Limit:      p.limit,
-			Sort:       p.sort,
+		return FilterResult{
+			Page:       f.page,
+			Limit:      f.limit,
+			Sort:       f.sort,
 			TotalRows:  0,
 			TotalPages: 0,
 			FromRow:    0,
 			ToRow:      0,
-			Rows:       rows,
 		}
 	}
-	totalPages := int(math.Ceil(float64(totalRows) / float64(p.limit)))
+	totalPages := int(math.Ceil(float64(totalRows) / float64(f.limit)))
 	var fromRow, toRow int
-	if p.direction == "ASC" {
-		fromRow = (p.page - 1) * p.limit
-		toRow = fromRow + p.limit
+	if f.direction == "ASC" {
+		fromRow = (f.page - 1) * f.limit
+		toRow = fromRow + f.limit
 		if toRow > int(totalRows) {
 			toRow = int(totalRows)
 		}
 	} else { // DESC case
-		toRow = int(totalRows) - (p.page-1)*p.limit
-		fromRow = toRow - p.limit
+		toRow = int(totalRows) - (f.page-1)*f.limit
+		fromRow = toRow - f.limit
 		if fromRow < 0 {
 			fromRow = 0
 		}
 	}
-	return PagerResult{
-		Page:       p.page,
-		Limit:      p.limit,
-		Sort:       p.sort,
+	return FilterResult{
+		Page:       f.page,
+		Limit:      f.limit,
+		Sort:       f.sort,
 		TotalRows:  totalRows,
 		TotalPages: totalPages,
 		FromRow:    fromRow + 1, // Convert to 1-based index
 		ToRow:      toRow,
-		Rows:       rows,
 	}
 }
 
-// PagerResult contains paginated data.
-type PagerResult struct {
+// FilterResult contains paginated data.
+type FilterResult struct {
 	Limit      int    `json:"limit"`
 	Page       int    `json:"page"`
 	Sort       string `json:"sort"`
@@ -165,27 +162,24 @@ type PagerResult struct {
 	TotalPages int    `json:"totalPages"`
 	FromRow    int    `json:"fromRow"`
 	ToRow      int    `json:"toRow"`
-
-	// Rows subset of results, not all of results.
-	Rows any `json:"-"`
 }
 
 // Links generates HATEOAS pagination links.
-func (p Pager) Links(path string, totalPages int) PagerLinks {
+func (f Filter) Links(path string, totalPages int) FilterLinks {
 	genLink := func(page int) string {
-		return fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, p.limit, page, p.sort)
+		return fmt.Sprintf("%s?limit=%d&page=%d&sort=%s", path, f.limit, page, f.sort)
 	}
 	firstPage := genLink(1)
 	lastPage := genLink(totalPages)
 
 	var previousPage, nextPage string
-	if p.page > 1 {
-		previousPage = genLink(p.page - 1)
+	if f.page > 1 {
+		previousPage = genLink(f.page - 1)
 	}
-	if p.page < totalPages {
-		nextPage = genLink(p.page + 1)
+	if f.page < totalPages {
+		nextPage = genLink(f.page + 1)
 	}
-	return PagerLinks{
+	return FilterLinks{
 		FirstPage:    firstPage,
 		PreviousPage: previousPage,
 		NextPage:     nextPage,
@@ -193,8 +187,8 @@ func (p Pager) Links(path string, totalPages int) PagerLinks {
 	}
 }
 
-// PagerLinks follows HATEOAS principles.
-type PagerLinks struct {
+// FilterLinks follows HATEOAS principles.
+type FilterLinks struct {
 	FirstPage    string `json:"first"`
 	PreviousPage string `json:"prev"`
 	NextPage     string `json:"next"`

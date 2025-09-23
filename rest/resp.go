@@ -22,9 +22,9 @@ type detailsResp struct {
 	Details string `json:"details,omitempty"`
 }
 
-// pagerResp represents a paginated API response using existing DTOs.
-type pagerResp struct {
-	Meta  pgsql.PagerResult `json:"meta"`  // Uses your existing struct for metadata
-	Data  any               `json:"data"`  // Holds the actual paginated data
-	Links pgsql.PagerLinks  `json:"links"` // Uses your existing struct for pagination links
+// filterResp represents a paginated API response using existing DTOs.
+type filterResp struct {
+	Meta  pgsql.FilterResult `json:"meta"`  // Uses your existing struct for metadata
+	Data  any                `json:"data"`  // Holds the actual paginated data
+	Links pgsql.FilterLinks  `json:"links"` // Uses your existing struct for pagination links
 }

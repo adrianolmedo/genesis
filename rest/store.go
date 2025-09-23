@@ -238,7 +238,7 @@ func deleteCustomer(svcs *compose.Services) fiber.Handler {
 //	@Produce		json
 //	@Failure		400			{object}	errorResp
 //	@Failure		500			{object}	errorResp
-//	@Success		200			{object}	pagerResp{links=pgsql.PagerLinks,meta=pgsql.PagerResult,data=[]customerProfileResp}
+//	@Success		200			{object}	filterResp{links=pgsql.FilterLinks,meta=pgsql.FilterResult,data=[]customerProfileResp}
 //	@Param			limit		query		int		false	"Limit of pages"					example(2)
 //	@Param			page		query		int		false	"Current page"						example(1)
 //	@Param			sort		query		string	false	"Sort results by a value"			example(created_at)
@@ -247,7 +247,7 @@ func deleteCustomer(svcs *compose.Services) fiber.Handler {
 func listCustomers(svcs *compose.Services) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		ctx := c.UserContext()
-		p, err := pgsql.NewPager(
+		filter, err := pgsql.NewFilter(
 			c.QueryInt("limit"),
 			c.QueryInt("page"),
 			c.Query("sort", "created_at"),
@@ -259,18 +259,11 @@ func listCustomers(svcs *compose.Services) fiber.Handler {
 				Message: err.Error(),
 			})
 		}
-		pr, err := svcs.Store.ListCustomers(ctx, p)
+		customers, total, err := svcs.Store.ListCustomers(ctx, filter)
 		if err != nil {
 			return errorJSON(c, http.StatusInternalServerError, detailsResp{
 				Code:    "003",
 				Message: err.Error(),
-			})
-		}
-		customers, ok := pr.Rows.(store.Customers)
-		if !ok {
-			return errorJSON(c, http.StatusInternalServerError, detailsResp{
-				Code:    "003",
-				Message: "Data assertion",
 			})
 		}
 		if customers.IsEmpty() {
@@ -278,6 +271,8 @@ func listCustomers(svcs *compose.Services) fiber.Handler {
 				Message: "There are not customers",
 			})
 		}
+		fr := filter.Paginate(total)
+		// assemble helper for transform to DTO
 		assemble := func(cx store.Customer) customerProfileResp {
 			return customerProfileResp{
 				ID:        cx.ID,
@@ -290,9 +285,9 @@ func listCustomers(svcs *compose.Services) fiber.Handler {
 		for _, v := range customers {
 			data = append(data, assemble(v))
 		}
-		return c.Status(http.StatusOK).JSON(pagerResp{
-			Links: p.Links(c.Path(), pr.TotalPages),
-			Meta:  pr,
+		return c.Status(http.StatusOK).JSON(filterResp{
+			Links: filter.Links(c.Path(), fr.TotalPages),
+			Meta:  fr,
 			Data:  data,
 		})
 	}

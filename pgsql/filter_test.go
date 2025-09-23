@@ -6,7 +6,7 @@ import (
 	"github.com/adrianolmedo/genesis/pgsql"
 )
 
-func TestPager(t *testing.T) {
+func TestFilter(t *testing.T) {
 	tt := []struct {
 		name        string // test name
 		limit       int
@@ -41,10 +41,10 @@ func TestPager(t *testing.T) {
 		},
 	}
 	for _, tc := range tt {
-		_, err := pgsql.NewPager(tc.limit, tc.page, tc.sort, tc.direction)
+		_, err := pgsql.NewFilter(tc.limit, tc.page, tc.sort, tc.direction)
 		errReceived := err != nil
 		if errReceived != tc.errExpected {
-			t.Fatalf("%s: NewPager(%d, %d, %q, %q): unexpected error status: %v",
+			t.Fatalf("%s: NewFilter(%d, %d, %q, %q): unexpected error status: %v",
 				tc.name, tc.limit, tc.page, tc.sort, tc.direction, err)
 		}
 	}

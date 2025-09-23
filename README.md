@@ -50,8 +50,8 @@ Example Go codebase based on the main objective of Hexagonal Architecture: isola
 │   │   ├── sqlc.go
 │   │   └── sqlc_test.go
 │   ├── utils.go
-│   ├── pager.go
-│   └── pager_test.go
+│   ├── filter.go
+│   └── filter_test.go
 ├── logger/                         <-- more dependency (infra)
 ├── test/                           <-- integration tests
 │   ├── sqlc/

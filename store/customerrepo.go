@@ -45,21 +45,40 @@ func (r *CustomerRepo) Create(ctx context.Context, m *Customer) error {
 }
 
 // List retrieves a paginated list of customers from the database.
-// TODO: add mapping to domain.Customer
-func (r *CustomerRepo) List(ctx context.Context, p pgsql.Pager) (pgsql.PagerResult, error) {
-	rows, err := r.q.CustomerListAsc(ctx, dbgen.CustomerListAscParams{
+func (r *CustomerRepo) List(ctx context.Context, p pgsql.Filter) (rows Customers, totalRows int64, err error) {
+	rowsDB, err := r.q.CustomerListAsc(ctx, dbgen.CustomerListAscParams{
 		Sort:   p.Sort(),
 		Offset: int32(p.Offset()),
 		Limit:  int32(p.Limit()),
 	})
 	if err != nil {
-		return pgsql.PagerResult{}, err
+		return nil, 0, err
 	}
-	totalRows, err := r.q.CustomerListCount(ctx)
+	totalRows, err = r.q.CustomerListCount(ctx)
 	if err != nil {
-		return pgsql.PagerResult{}, err
+		return nil, 0, err
 	}
-	return p.Paginate(rows, totalRows), nil
+	return toDomainCustomers(rowsDB), totalRows, nil
+}
+
+// toDomainCustomers converts a slice of dbgen.Customer to a slice of Customers.
+func toDomainCustomers(rows []dbgen.Customer) Customers {
+	customers := make(Customers, 0, len(rows))
+	for _, row := range rows {
+		m := Customer{
+			ID:        row.ID,
+			UUID:      row.Uuid.String(),
+			FirstName: row.FirstName,
+			LastName:  row.LastName,
+			Email:     row.Email,
+			Password:  row.Password,
+		}
+		m.CreatedAt = row.CreatedAt
+		m.UpdatedAt = pgsql.NullTimeToPtr(row.UpdatedAt)
+		m.DeletedAt = pgsql.NullTimeToPtr(row.DeletedAt)
+		customers = append(customers, m)
+	}
+	return customers
 }
 
 // Delete soft deletes a customer by setting the DeletedAt field.
