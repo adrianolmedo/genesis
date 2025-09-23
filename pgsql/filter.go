@@ -65,7 +65,7 @@ func validateLimit(n int) (int, error) {
 }
 
 // normalizeDirection Filter helper, ensures the direction is either
-// ASC or DESC.
+// ASC or DESC. By default, it returns ASC.
 func normalizeDirection(dir string) string {
 	dir = strings.ToUpper(dir)
 	validDir := map[string]bool{"ASC": true, "DESC": true}
@@ -115,6 +115,21 @@ func Offset(limit, page int) int {
 	return page*limit - limit
 }
 
+// Paginate calculates pagination metadata for the given totalRows.
+//
+// ItemFrom and ItemTo are 1-based indexes that indicate the position of the
+// returned rows relative to the **sorted result set**, not the underlying
+// table order. This means:
+//   - When Direction = "ASC", ItemFrom is the first row number on the page
+//     and ItemTo is the last row number, counting upward from the beginning.
+//   - When Direction = "DESC", ItemFrom and ItemTo are still relative to the
+//     descending order of the result set. For example, if totalRows = 50,
+//     limit = 10, page = 1, and direction = "DESC", then ItemFrom = 1 and
+//     ItemTo = 10 correspond to the first 10 rows in descending order
+//     (i.e., rows 50–41 in the raw table).
+//
+// This ensures consistency for API clients: ItemFrom/ItemTo always describe
+// the slice of the paginated result **as seen in the API response order**.
 func (f Filter) Paginate(totalRows int64) FilterResult {
 	if totalRows == 0 {
 		return FilterResult{
@@ -123,8 +138,8 @@ func (f Filter) Paginate(totalRows int64) FilterResult {
 			Sort:       f.sort,
 			TotalRows:  0,
 			TotalPages: 0,
-			FromRow:    0,
-			ToRow:      0,
+			ItemFrom:   0,
+			ItemTo:     0,
 		}
 	}
 	totalPages := int(math.Ceil(float64(totalRows) / float64(f.limit)))
@@ -148,8 +163,8 @@ func (f Filter) Paginate(totalRows int64) FilterResult {
 		Sort:       f.sort,
 		TotalRows:  totalRows,
 		TotalPages: totalPages,
-		FromRow:    fromRow + 1, // Convert to 1-based index
-		ToRow:      toRow,
+		ItemFrom:   fromRow + 1, // Convert to 1-based index
+		ItemTo:     toRow,
 	}
 }
 
@@ -160,8 +175,14 @@ type FilterResult struct {
 	Sort       string `json:"sort"`
 	TotalRows  int64  `json:"total"`
 	TotalPages int    `json:"totalPages"`
-	FromRow    int    `json:"fromRow"`
-	ToRow      int    `json:"toRow"`
+
+	// ItemFrom is the 1-based index of the first item on this page,
+	// relative to the sorted result set.
+	ItemFrom int `json:"itemFrom"`
+
+	// ItemTo is the 1-based index of the last item on this page,
+	// relative to the sorted result set.
+	ItemTo int `json:"itemTo"`
 }
 
 // Links generates HATEOAS pagination links.
