@@ -7,6 +7,7 @@ import (
 )
 
 func TestFilter(t *testing.T) {
+	t.Parallel()
 	tt := []struct {
 		name        string // test name
 		limit       int
@@ -51,6 +52,7 @@ func TestFilter(t *testing.T) {
 }
 
 func TestLimitOffset(t *testing.T) {
+	t.Parallel()
 	tt := []struct {
 		name  string // test name
 		page  int
