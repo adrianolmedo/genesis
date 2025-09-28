@@ -28,8 +28,8 @@ import (
 // @BasePath	/v1/
 func Router(svcs *compose.Services) *fiber.App {
 	f := fiber.New()
-	rateLimit := newRateLimit(2, 5, 5*time.Minute) // 2 req/sec, burst of 5, cleanup inactive IPs after 5 min
-	f.Use(rateLimit.middlewarePerIP)
+	rl := newRateLimit(2, 5, 5*time.Minute) // 2 req/sec, burst of 5, cleanup inactive IPs after 5 min
+	f.Use(rateLimitWare(rl))
 	f.Get("/v1/test", func(c *fiber.Ctx) error {
 		return respJSON(c, http.StatusOK, detailsResp{
 			Message: "Hello world",

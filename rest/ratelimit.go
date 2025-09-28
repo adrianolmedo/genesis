@@ -67,16 +67,23 @@ func (rl *rateLimit) cleanupWorker() {
 	}
 }
 
-// middlewarePerIP is a Fiber middleware that limits requests per IP.
-func (rl *rateLimit) middlewarePerIP(c *fiber.Ctx) error {
-	limiter := rl.perIP(c.IP())
-	if !limiter.Allow() {
-		return errorJSON(c, http.StatusTooManyRequests, detailsResp{
-			Message: "Too many requests",
-			Details: "You have exceeded the request limit. Please try again later.",
-		})
+// allow checks whether a request from the given IP is allowed.
+func (rl *rateLimit) allow(ip string) bool {
+	limiter := rl.perIP(ip)
+	return limiter.Allow()
+}
+
+// rateLimitWare middleware to enforce rate limiting.
+func rateLimitWare(rl *rateLimit) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		if !rl.allow(c.IP()) {
+			return errorJSON(c, http.StatusTooManyRequests, detailsResp{
+				Message: "Too many requests",
+				Details: "You have exceeded the request limit. Please try again later.",
+			})
+		}
+		return c.Next()
 	}
-	return c.Next()
 }
 
 // testRatelimit godoc

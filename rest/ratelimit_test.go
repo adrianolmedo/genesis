@@ -12,7 +12,7 @@ import (
 func TestRateLimit(t *testing.T) {
 	app := fiber.New()
 	rl := newRateLimit(2, 2, time.Second) // allow 2 req/sec, burst=2, ttl=1s
-	app.Use(rl.middlewarePerIP)
+	app.Use(rateLimitWare(rl))
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("ok")
 	})
@@ -35,7 +35,7 @@ func TestRateLimit(t *testing.T) {
 func TestRateLimitPerIP(t *testing.T) {
 	app := fiber.New()
 	rl := newRateLimit(1, 1, time.Second) // allow 1 req/sec, burst=1, ttl=1s
-	app.Use(rl.middlewarePerIP)
+	app.Use(rateLimitWare(rl))
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("ok")
 	})
