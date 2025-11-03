@@ -62,7 +62,6 @@ func verify(t *jwt.Token) (any, error) {
 // LoadFiles read RSA files. Ensures that it can only be executed once.
 func LoadFiles(privateFile, publicFile string) error {
 	var err error
-
 	once.Do(func() {
 		err = loadFiles(privateFile, publicFile)
 	})
@@ -90,7 +89,6 @@ func ParseRSA(private, public string) error {
 
 func parseRSA(private, public []byte) error {
 	var err error
-
 	privateKey, err = jwt.ParseRSAPrivateKeyFromPEM(private)
 	if err != nil {
 		return err

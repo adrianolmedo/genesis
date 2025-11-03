@@ -20,10 +20,8 @@ func (c Config) Validate() error {
 	if c.Host == "" || c.Port == "" {
 		return fmt.Errorf("host and port must be specified")
 	}
-
 	if c.DatabaseURL == "" {
 		return fmt.Errorf("database URL is required")
 	}
-
 	return nil
 }
