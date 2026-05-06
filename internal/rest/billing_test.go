@@ -100,10 +100,11 @@ func TestGenerateInvoice(t *testing.T) {
 			t.Fatalf("%s: %v", tc.name, err)
 		}
 
-		// Check body JSON reponse. To fix linebreak in w.Body.String(), add strings.TrimRight and cut if right off the string.
+		// Check body JSON reponse. To fix linebreak in w.Body.String(), 
+		// add strings.TrimRight and cut if right off the string.
 		// https://stackoverflow.com/a/45275479/3408901
 		if tc.wantResponse != strings.TrimRight(w.Body.String(), "\n") {
-			t.Errorf("%s: wrong response body: want %s, got %s", tc.name, tc.wantResponse, w.Body.String())
+			t.Errorf("%s: wrong response body: got %s, want %s", tc.name, w.Body.String(), tc.wantResponse)
 		}
 
 		// w.Body es lo que devuelve c.JSON, para comprobarlo, lo mostramos w.Body.String() en un t.Logf
