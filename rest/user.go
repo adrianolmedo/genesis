@@ -310,6 +310,7 @@ func listUsers(svcs *compose.Services) fiber.Handler {
 			})
 		}
 		fr := filter.Paginate(total)
+
 		// assemble helper for transform to DTO
 		assemble := func(u user.User) userProfileResp {
 			return userProfileResp{

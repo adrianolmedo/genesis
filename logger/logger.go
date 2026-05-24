@@ -29,7 +29,7 @@ func Debug(msg string, args ...any) { Get().Debug(msg, args...) }
 // Info logs an info message.
 func Info(msg string, args ...any) { Get().Info(msg, args...) }
 
-// Info logs a warn message.
+// Warn logs a warn message.
 func Warn(msg string, args ...any) { Get().Warn(msg, args...) }
 
 // Error logs an error message.

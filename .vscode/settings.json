@@ -1,0 +1,12 @@
+{
+    "prettier.useTabs": true,
+    "[go]": {
+        "editor.rulers": [80],
+        "editor.wordWrap": "off",
+    },
+    "gopls": {
+        "ui.diagnostic.staticcheck": true,
+        "ui.completion.usePlaceholders": true,
+        "ui.navigation.importShortcut": "Definition"
+    }
+}

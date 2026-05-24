@@ -71,7 +71,7 @@ func TestValidateEmail(t *testing.T) {
 	u := User{}
 	for _, tc := range tt {
 		u.Email = tc.email
-		err := validateEmail(u.Email)
+		err := validEmail(u.Email)
 		errReceived := err != nil
 		if errReceived != tc.errExpected {
 			t.Fatalf("%s: unexpected error value: %v", tc.name, err)

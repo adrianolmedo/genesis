@@ -21,8 +21,7 @@ func NewService(productRepo *ProductRepo, customerRepo *CustomerRepo) *Service {
 }
 
 func (s Service) Add(ctx context.Context, p *Product) error {
-	err := addProduct(p)
-	if err != nil {
+	if err := addProduct(p); err != nil {
 		return err
 	}
 	return s.productRepo.Create(ctx, p)
@@ -32,8 +31,7 @@ func (s Service) Add(ctx context.Context, p *Product) error {
 // The application logic has been split into a smaller function for unit testing
 // purposes, and it should do so for the other methods of the Service.
 func addProduct(p *Product) error {
-	err := p.Validate()
-	if err != nil {
+	if err := p.Validate(); err != nil {
 		return err
 	}
 	return nil
@@ -47,8 +45,7 @@ func (s Service) Find(ctx context.Context, id int64) (*Product, error) {
 }
 
 func (s Service) Update(ctx context.Context, p Product) error {
-	err := p.Validate()
-	if err != nil {
+	if err := p.Validate(); err != nil {
 		return err
 	}
 	return s.productRepo.Update(ctx, p)

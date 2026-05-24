@@ -25,7 +25,7 @@ func NewService(repo *Repo) *Service {
 func (s Service) Login(ctx context.Context, email, password string) error {
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	if err := validateEmail(email); err != nil {
+	if err := validEmail(email); err != nil {
 		return err
 	}
 	return s.repo.ByLogin(ctx, email, password)
@@ -44,12 +44,10 @@ func (s Service) SignUp(ctx context.Context, u *User) error {
 // a smaller function for unit testing purposes, and it should do so for
 // the other methods of the Service.
 func signUp(u *User) error {
-	err := u.Validate()
-	if err != nil {
+	if err := u.Validate(); err != nil {
 		return err
 	}
-	err = validateEmail(u.Email)
-	if err != nil {
+	if err := validEmail(u.Email); err != nil {
 		return err
 	}
 	return nil
@@ -65,12 +63,10 @@ func (s Service) Find(ctx context.Context, id int64) (*User, error) {
 
 // Update application logic for update a User.
 func (s Service) Update(ctx context.Context, u User) error {
-	err := u.Validate()
-	if err != nil {
+	if err := u.Validate(); err != nil {
 		return err
 	}
-	err = validateEmail(u.Email)
-	if err != nil {
+	if err := validEmail(u.Email); err != nil {
 		return err
 	}
 	return s.repo.Update(ctx, u)
@@ -89,13 +85,13 @@ func (s Service) Remove(ctx context.Context, id int64) error {
 	return s.repo.Delete(ctx, id)
 }
 
-// validateEmail helper to check email pattern.
-func validateEmail(email string) error {
-	validEmail, err := regexp.MatchString(`^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$`, email)
+// validEmail helper to check email pattern.
+func validEmail(email string) error {
+	valid, err := regexp.MatchString(`^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$`, email)
 	if err != nil {
 		return fmt.Errorf("email pattern: %v", err)
 	}
-	if !validEmail {
+	if !valid {
 		return errors.New("invalid email")
 	}
 	return nil
